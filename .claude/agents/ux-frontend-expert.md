@@ -20,19 +20,35 @@ sigue y extiende la de abajo.**
 **Paleta** (valores tomados con muestreo de píxel real sobre los renders — verificar contra Figma/fuente
 original antes de fijarlos como tokens finales de producción, pero úsalos como verdad de partida):
 
-- **Verde bosque (marca / acción primaria):** `#123329` — botones primarios, sidebar oscuro, headers de
-  paneles internos. Es un verde muy oscuro, casi negro-verdoso, **no** un verde brillante/saturado tipo
-  "success green" de librería de componentes.
-- **Crema / hueso (fondo base):** `#faf7f3` — el fondo de página en absolutamente todas las superficies
-  claras (web pública, dashboards, app). Nunca blanco puro (`#ffffff`) como fondo de página.
+**Decisión 2026-09-28: se reemplazó el verde bosque puro por una mezcla azul+verde** (pedido explícito de
+Andrés: "cambiemos ese verde a paletas de azules mezclado con diseños en verdes, mantener el look
+elegante pero también agradable de usar"). El verde ya no es el único color de marca — ahora es un
+**teal** (azul-verde) como primario, con azul y verde como acentos secundarios de peso equivalente:
+
+- **Teal (marca / acción primaria):** `#153A45` — botones primarios, sidebar oscuro, headers de paneles
+  internos. Es el punto medio entre el verde bosque original y un azul marino — se lee como "azul con
+  fondo verde" según el contexto, nunca puramente uno u otro.
+- **Azul acento** (`#3C7291`, acero): peso igual al verde — úsalo en badges/barras de una sede, en
+  "Ventas"/métricas de ingreso, en links de acción ("Ver más →"), en acciones que ya usan azul en el Atlas
+  original (el Atlas real ya usa azul pálido para "En configuración" — este acento lo hereda y lo expande).
+- **Verde acento** (`#5C8768`, sage): igual peso que el azul — variaciones positivas (↑%), otra sede,
+  checkmarks de conciliación/confirmación.
+- **Tints tintados de cada acento** (fondos de chip/badge, nunca el acento sólido como fondo de área
+  grande): azul `#E4EDF1`, verde `#E9F0E9`, mixto/neutro `#E6EBE9`.
+- **Crema / hueso (fondo base):** `#faf7f3` — sin cambios, no depende del verde. Nunca blanco puro
+  (`#ffffff`) como fondo de página.
 - **Tarjeta (ligeramente más clara que el fondo):** `#fcf9f6` — casi imperceptible respecto al fondo,
   la separación de tarjetas se hace con un borde sutil y sombra suave, no con contraste fuerte de color.
-- **Tinta / texto:** `#36373b` — negro cálido, nunca `#000000` puro.
-- **Verdes secundarios (barras, chips de estado, iconos):** `#214033` (oscuro), `#7d967e` (medio, sage),
-  `#bfcab8` / `#c0d8d2` (claro, pálido), `#ebf5ec` (fondo de chip/badge tintado).
-- **Acentos de estado** (solo en pills pequeñas, nunca como color dominante de una vista): azul pálido
-  ("En configuración"), naranja pálido ("Por definir"), rojo suave (alertas/cancelar), amarillo pálido
-  ("Datos de ejemplo").
+- **Tinta / texto:** `#36373b` — negro cálido, sin cambios. Nunca `#000000` puro.
+- **Acentos de estado** (solo en pills pequeñas, nunca como color dominante de una vista): ámbar pálido
+  `#f4e6c8`/`#8a6a2a` ("Datos de ejemplo", pendientes), rojo suave (alertas/cancelar/conflictos).
+
+**Pendiente de resolver (no cerrado):** Andrés no quedó convencido del todo — el Atlas original usa
+fotografía real (espacios del estudio, personas) en secciones hero de arriba y de abajo de varias
+pantallas (sitio público, app de clienta) que el primer mockup de dashboard no necesita pero que si
+aparece en secciones de marketing/marca sí hay que replicar. No handwavear esto: cuando toque construir
+el sitio público o la app de clienta, la sección hero necesita fotografía real de contexto, no solo
+tarjetas de datos — pedir o generar imágenes reales antes de dar por cerrada esa pantalla.
 
 **Tipografía:** títulos grandes en una **serif editorial cálida** con detalles tipo ink-trap (ej. "Cada
 clase, cada sede, en orden.", "Resumen de VIM", "Panel del dueño") — candidatas a verificar: **Fraunces**
@@ -47,8 +63,10 @@ identidad de marca.
   variación porcentual con flecha (↑/↓) en verde/rojo.
 - Badges de sede con color propio por sede (verde, azul, rosa pálido) — consistentes en toda la app,
   nunca reasignados.
-- Botones primarios: verde bosque sólido, esquinas redondeadas moderadas (no full-pill excepto CTAs
+- Botones primarios: teal sólido (`#153A45`), esquinas redondeadas moderadas (no full-pill excepto CTAs
   específicos de marketing), flecha `→` como sufijo en CTAs de acción principal.
+- Iconos: trazo fino (estilo Feather/Lucide, `stroke-width: 2`, sin relleno), nunca emoji ni glifos
+  unicode como marcador de icono — cada nav item, chip de stat card y acción tiene su propio ícono SVG.
 - Pills de estado con fondo pálido tintado + texto del mismo tono oscurecido (nunca texto blanco sobre
   color saturado).
 - Fotografía real de espacios/personas en contexto (no ilustraciones genéricas ni stock obviamente falso)
