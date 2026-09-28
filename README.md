@@ -65,16 +65,40 @@ Hito C — son datos 100% sintéticos, no hay nada real de VIM ni de Forma aquí
   horario + cliente + reserva insertados para los dos tenants ficticios, consultado por la API pública
   real con el JWT de cada usuario de prueba — cada uno ve exactamente sus propias filas en `clientes`,
   `horarios`, `reservas` y `paquetes`, cero fuga
-- [ ] **Las 63 RPCs de negocio (reservar, cancelar, congelar membresía, check-in, lista de espera, etc.)
-  — deliberadamente NO están en la migración de tablas.** La auditoría de funciones del Hito A solo
-  capturó firmas (`auditoria/raw/04_funciones.json`), no el cuerpo real (`prosrc`) de cada función —
-  hay que leer el cuerpo real de Forma función por función antes de portar la lógica, para no
-  reinventarla mal (ej. la regla exacta de cuándo se descuenta un crédito). Es la siguiente pieza,
-  intencionalmente separada.
-- [ ] INSERT/UPDATE/DELETE en las 19 tablas siguen sin política — Postgres los deniega por defecto hoy;
-  cada política de escritura se agrega junto con la RPC que la necesita, no antes
+- [x] **58 de las 63 RPCs de negocio portadas**, leyendo el cuerpo real de cada una en la base viva de
+  Forma (`auditoria/raw/rpc_bodies/*.sql`, `pg_get_functiondef`) — no reinventadas de memoria:
+  - `supabase/migrations/20260928205747_hito_c_rpc_reservas_lista_espera.sql` — reservar, cancelar,
+    confirmar, check-in (simple y múltiple), lista de espera completa, triggers
+    `bloquear_reserva_clase_empezada` y `promover_lista_espera`
+  - `supabase/migrations/20260928210113_hito_c_rpc_membresias.sql` — solicitar/confirmar/rechazar/
+    eliminar/congelar/descongelar/transferir membresía, editar cobro, privatizar fecha + confirmar su
+    pago, confirmar pago de transacción de pasarela
+  - `supabase/migrations/20260928210612_hito_c_rpc_reportes_cron.sql` — 17 reportes/dashboards de staff
+    (KPIs, cobros pendientes, resumen de clientas) + 6 funciones de cron/notificación (`service_role`
+    únicamente, nunca `authenticated`) + anular/eliminar cobro
+- [x] **Patrón de seguridad aplicado en las 58:** el tenant nunca se recibe como parámetro del cliente,
+  siempre se deriva del recurso (horario/reserva/membresía) o de la fila propia de `clientes`, y se
+  valida contra `tenant_memberships` antes de tocar cualquier fila — helpers reutilizables
+  `staff_puede_en_sede()` (roles con alcance de sede), `tengo_rol_en_tenant()` (dueña/gerente_general/
+  contadora, sin sede), `mi_cliente_id()`, `membresia_cubre_sede()`
+- [x] Guatemala UTC-6 hardcodeado reemplazado por `ahora_en_sede()`/`hoy_en_sede()` en las 58 (leen
+  `sedes.timezone` — cada sede su propia zona, no una global)
+- [x] **Verificado con datos reales, no solo revisión de código:** dueña asigna y congela una membresía
+  de su clienta; confirma/cancela reservas propias; cross-tenant probado en 6+ casos distintos (cancelar
+  reserva ajena, unirse a lista de espera ajena, congelar membresía ajena, listar clientas/KPIs del otro
+  tenant) — todos bloqueados o vacíos, cero fuga
+- [ ] **5 funciones diferidas a propósito** (dependen de tablas del módulo "resto", no núcleo):
+  `agregar_cobro_personalizado` (`cobros_personalizados`), `codigos_activos_por_paquete` y
+  `_decrementar_uso_codigo_al_borrar_membresia` (`codigos_descuento*`), `horarios_por_comenzar` y
+  `horarios_por_terminar` (`avisos_operativos_enviados`) — se conectan cuando se porte ese módulo
+- [ ] **Simplificación deliberada:** sin códigos de descuento ni bono de referido en ninguna de las 58
+  (esas tablas son "resto") — `membresias.descuento_pct`/`precio_final` sí existen y se pueden fijar
+  manualmente (`editar_cobro_membresia`), solo no hay soporte de código
+- [ ] INSERT/UPDATE/DELETE directo en las 19 tablas del Hito C sigue sin GRANT — todo pasa por RPC a
+  propósito (matches el patrón real de Forma), correcto y verificado, no pendiente
 - [ ] Poblar `role_permissions` con la matriz real de la sección 12 del maestro — se hace junto con el
-  servicio de autorización, no antes (regla 5 del maestro: no dar nada por hecho sin verificar)
+  servicio de autorización del frontend, no antes (regla 5 del maestro: no dar nada por hecho sin verificar)
 
-Los mismos dos tenants ficticios y usuarios de prueba del Hito B ahora tienen también un paquete, un
-horario, una clienta y una reserva cada uno — quedan como fixture para probar las RPCs del Hito C.
+Los mismos dos tenants ficticios y usuarios de prueba del Hito B ahora tienen también un paquete
+(con cobertura de sede vía `paquete_sedes`), un horario, una clienta y una membresía cada uno — quedan
+como fixture para probar el frontend y el resto de módulos.
