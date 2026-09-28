@@ -49,6 +49,44 @@ Los dos tenants ficticios y sus dos usuarios de prueba (`usera@test.reserveos.lo
 `userb@test.reserveos.local`) se dejan vivos en staging como fixture reutilizable para las pruebas del
 Hito C — son datos 100% sintéticos, no hay nada real de VIM ni de Forma aquí.
 
+## Estado — Backend completo (núcleo + módulo "resto") — 2026-09-28
+
+**Las 63 RPCs núcleo + las 122 del módulo "resto" están todas portadas.** 56 tablas (100% con RLS),
+189 funciones, cero privilegios de `anon` en cualquier tabla — verificado por consulta directa, no
+supuesto. Todo el trabajo del módulo "resto" (tienda, descuentos, finanzas avanzadas, marketing/CRM,
+caja/POS, CMS del sitio, auditoría) vive en migraciones separadas de las del núcleo:
+
+- `20260928211413_resto_tablas.sql` — 28 tablas (tienda, descuentos, finanzas avanzadas, comunicación,
+  CMS, encuestas, config secundaria, auditoría). `contenido_sitio`/`configuracion_contacto`/
+  `configuracion_finanzas` pasan de singleton (patrón real de Forma) a una fila por tenant.
+  **Hallazgo de seguridad real, no solo sintaxis:** las políticas iniciales de `testimonios` y
+  `contenido_sitio` (`using (true)` / filtro sin tenant) habrían expuesto datos de todos los tenants a
+  cualquier autenticado — corregido antes de dar el batch por bueno.
+- `20260928212026_resto_rpc_identidad_dependientes.sql` — `registrar_clienta`, dependientes,
+  consentimiento, bono de referido (deberían haber sido núcleo; el filtro por palabra clave del Hito A
+  las dejó fuera).
+- `20260928212214_resto_rpc_reservas_extendido.sql` — `agendar_clase` (el autoservicio real de
+  reservar, otra que debió ser núcleo), clases de prueba, clases privadas, disponibilidad pública.
+  Elimina las fechas de apertura hardcodeadas de Forma (eran de un solo lanzamiento).
+- `20260928212432_resto_rpc_descuentos.sql`, `20260928212600_resto_rpc_tienda.sql`,
+  `20260928212848_resto_rpc_caja.sql`, `20260928212943_resto_rpc_finanzas_kpis.sql`,
+  `20260928213101_resto_rpc_marketing_crm.sql`, `20260928213318_resto_rpc_misc_auditoria.sql`,
+  `20260928213512_resto_rpc_ultimas_pendientes.sql` — códigos de descuento, carrito/checkout/pedidos/
+  ventas presenciales/gift cards, caja diaria por sede, KPIs financieros, KPIs de marketing/CRM y listas
+  de seguimiento, testimonios/encuestas/auditoría admin, y las 5 funciones núcleo que habían quedado
+  diferidas por depender de tablas de "resto" que ya existen.
+- **`rls_auto_enable`**: event trigger que auto-habilita RLS en cualquier tabla nueva de `public` —
+  verificado en vivo creando una tabla de prueba real, no solo leído del código.
+- Se agregaron durante el camino varias columnas que se habían omitido al principio (bookkeeping de
+  notificaciones en `reservas`/`membresias`/`clientes`, `codigo_descuento_id` en tres tablas) —
+  documentado como omisión real corregida, no como plan.
+
+**Simplificaciones deliberadas que siguen en pie:** sin integración real de pasarela de pago (las
+funciones esperan que el backend externo llame `confirmar_pago_transaccion`/`confirmar_transaccion_carrito`
+vía `service_role`, la integración con Recurrente en sí no está construida); `registrar_venta_presencial`
+ya no tiene un cliente "mostrador" mágico — `p_cliente_id` es obligatorio; `registrar_accion_admin` se
+adjuntó a 5 tablas de dinero como default razonable (Forma no permitía confirmar a cuáles estaba atado).
+
 ## Estado — Hito C (núcleo funcional) — capa de tablas lista, RPCs pendientes
 
 - [x] Las 18 tablas núcleo + 2 tablas puente (`paquete_sedes`, `membresia_sedes` — cobertura de sedes de
@@ -87,13 +125,8 @@ Hito C — son datos 100% sintéticos, no hay nada real de VIM ni de Forma aquí
   de su clienta; confirma/cancela reservas propias; cross-tenant probado en 6+ casos distintos (cancelar
   reserva ajena, unirse a lista de espera ajena, congelar membresía ajena, listar clientas/KPIs del otro
   tenant) — todos bloqueados o vacíos, cero fuga
-- [ ] **5 funciones diferidas a propósito** (dependen de tablas del módulo "resto", no núcleo):
-  `agregar_cobro_personalizado` (`cobros_personalizados`), `codigos_activos_por_paquete` y
-  `_decrementar_uso_codigo_al_borrar_membresia` (`codigos_descuento*`), `horarios_por_comenzar` y
-  `horarios_por_terminar` (`avisos_operativos_enviados`) — se conectan cuando se porte ese módulo
-- [ ] **Simplificación deliberada:** sin códigos de descuento ni bono de referido en ninguna de las 58
-  (esas tablas son "resto") — `membresias.descuento_pct`/`precio_final` sí existen y se pueden fijar
-  manualmente (`editar_cobro_membresia`), solo no hay soporte de código
+- [x] **Las 5 funciones que quedaban diferidas ya se conectaron** (ver sección "Backend completo" arriba)
+  una vez que el módulo "resto" existió.
 - [ ] INSERT/UPDATE/DELETE directo en las 19 tablas del Hito C sigue sin GRANT — todo pasa por RPC a
   propósito (matches el patrón real de Forma), correcto y verificado, no pendiente
 - [ ] Poblar `role_permissions` con la matriz real de la sección 12 del maestro — se hace junto con el
