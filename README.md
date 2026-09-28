@@ -10,8 +10,8 @@ Fuente de verdad de producto/arquitectura: `~/Desktop/MAESTRO_Forma_SaaS_Instruc
 
 - [x] Inventario estático de tablas desde `migrations/*.sql` de Forma real → `auditoria/01_inventario_estatico_tablas.md`
 - [x] Cruce contra el inventario del documento técnico (46 tablas, coinciden 1:1 salvo `cierres_caja_pos` ya eliminada)
-- [ ] Dump del esquema real (`information_schema` + `pg_policies`) — **bloqueado: requiere `supabase login`**
-- [ ] Reconciliar RLS + GRANT reales contra lo documentado
+- [x] Dump del esquema real (`information_schema` + `pg_policies`) → `auditoria/02_esquema_real_rls_grants.md` (hecho vía API de administración de Supabase, **sin** `supabase login` — ver nota operativa en ese archivo sobre el cruce de tokens)
+- [x] Reconciliar RLS + GRANT reales contra lo documentado → mismo archivo: 0 huecos de GRANT, 0 políticas con recursión activa hoy
 - [ ] Marcar tablas/RPCs necesarias para el núcleo del Hito C vs. el resto
 - [ ] Proyecto de Supabase nuevo (staging) para ReserveOS — separado del de Forma
 - [ ] Entrevista VIM, precio, app y pagos pactados (cierra Hito A)
