@@ -1,0 +1,325 @@
+
+=== activos (6 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  descripcion: text NOT NULL
+  fecha: date NOT NULL
+  monto: numeric NOT NULL
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  created_by: uuid DEFAULT auth.uid()
+
+=== admin_acciones_log (8 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  actor_id: uuid
+  actor_nombre: text
+  tabla: text NOT NULL
+  operacion: text NOT NULL
+  registro_id: text
+  detalle: jsonb
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== avisos_operativos_enviados (4 cols) ===
+  horario_id: uuid NOT NULL
+  fecha: date NOT NULL
+  tipo: text NOT NULL
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== carrito_items (8 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  carrito_id: uuid NOT NULL
+  tipo: text NOT NULL
+  producto_id: uuid
+  variante_id: uuid
+  paquete_id: uuid
+  cantidad: integer NOT NULL DEFAULT 1
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== carritos (5 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  cliente_id: uuid NOT NULL
+  estado: text NOT NULL DEFAULT 'activo'::text
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  actualizado_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== cierre_caja (10 cols) ===
+  fecha: date NOT NULL
+  efectivo_sistema: numeric NOT NULL DEFAULT 0
+  efectivo_contado: numeric NOT NULL
+  tarjeta_sistema: numeric NOT NULL DEFAULT 0
+  tarjeta_contado: numeric NOT NULL
+  transferencia_sistema: numeric NOT NULL DEFAULT 0
+  transferencia_contado: numeric NOT NULL
+  notas: text
+  cerrado_por: uuid
+  cerrado_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== cobros_personalizados (8 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  cliente_id: uuid NOT NULL
+  concepto: text NOT NULL
+  monto: numeric NOT NULL
+  metodo_pago: text NOT NULL
+  confirmado_at: timestamp with time zone NOT NULL DEFAULT now()
+  confirmado_por: uuid
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== codigos_descuento (10 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  codigo: text NOT NULL
+  descuento_pct: integer NOT NULL
+  activo: boolean NOT NULL DEFAULT true
+  usos_maximos: integer
+  usos_actuales: integer NOT NULL DEFAULT 0
+  vigente_hasta: date
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  auto_aplicar_canal: text
+  aplica_a: text NOT NULL DEFAULT 'paquetes'::text
+
+=== codigos_descuento_paquetes (3 cols) ===
+  codigo_id: uuid NOT NULL
+  paquete_id: uuid NOT NULL
+  precio_override: numeric
+
+=== codigos_descuento_productos (2 cols) ===
+  codigo_id: uuid NOT NULL
+  producto_id: uuid NOT NULL
+
+=== comunicados (6 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  titulo: text NOT NULL
+  mensaje: text NOT NULL
+  audiencias: ARRAY NOT NULL
+  created_by: uuid
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== comunicados_vistos (3 cols) ===
+  comunicado_id: uuid NOT NULL
+  user_id: uuid NOT NULL
+  visto_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== configuracion_contacto (5 cols) ===
+  id: boolean NOT NULL DEFAULT true
+  whatsapp_numero: text NOT NULL DEFAULT '50230062867'::text
+  facebook_url: text NOT NULL DEFAULT ''::text
+  instagram_url: text NOT NULL DEFAULT ''::text
+  updated_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== configuracion_finanzas (3 cols) ===
+  id: boolean NOT NULL DEFAULT true
+  costo_variable_por_clase: numeric NOT NULL DEFAULT 0
+  updated_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== contact_submissions (5 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  name: text NOT NULL
+  phone: text NOT NULL
+  message: text
+
+=== contenido_sitio (85 cols) ===
+  id: boolean NOT NULL DEFAULT true
+  hero_tagline: text NOT NULL DEFAULT 'Studio boutique de reformer · Guatemala'::text
+  hero_titulo_linea1: text NOT NULL DEFAULT 'Muévete con'::text
+  hero_titulo_marca: text NOT NULL DEFAULT 'Forma.'::text
+  hero_lede: text NOT NULL DEFAULT 'Entrena con nuestro método de reformer, donde el control pesa más que la velocidad. Movimiento lento y preciso, diseñado para tu cuerpo: con lesión, embarazo, en tu primera clase o a los 70 años.'::text
+  hero_punch: text NOT NULL DEFAULT 'Más control. Más presencia. Desde tu primera clase.'::text
+  hero_imagen_url: text NOT NULL DEFAULT '/images/hero-bg.webp'::text
+  filosofia_eyebrow: text NOT NULL DEFAULT 'Nuestra filosofía'::text
+  filosofia_titulo: text NOT NULL DEFAULT 'Cinco cositas que nos importan (de verdad).'::text
+  filosofia_texto: text NOT NULL DEFAULT 'Nada de reglas rígidas ni frases de cartel. Así es como pensamos cada clase, cada saludo y cada detalle contigo.'::text
+  valor1_titulo: text NOT NULL DEFAULT 'Vamos lento, a propósito'::text
+  valor1_texto: text NOT NULL DEFAULT 'Aquí no se trata de sudar más rápido, sino de que cada movimiento cuente: tu cuerpo lo nota.'::text
+  valor2_titulo: text NOT NULL DEFAULT 'Aquí caben todos'::text
+  valor2_texto: text NOT NULL DEFAULT '¿Lesión? ¿Nunca has hecho pilates? ¿70 años? Empezamos justo donde estás, sin drama.'::text
+  valor3_titulo: text NOT NULL DEFAULT 'Más que una clase'::text
+  valor3_texto: text NOT NULL DEFAULT 'Una hora para desconectarte del ruido y reconectar contigo. Eso también es progreso.'::text
+  valor4_titulo: text NOT NULL DEFAULT 'Nos vamos a aprender tu nombre'::text
+  valor4_texto: text NOT NULL DEFAULT 'No eres un número en la lista de reservas. Aquí te reconocemos apenas entras.'::text
+  valor5_titulo: text NOT NULL DEFAULT 'Los detalles sí importan'::text
+  valor5_texto: text NOT NULL DEFAULT 'Del aroma a la música, todo está pensado para que te sientas en casa y no en un gimnasio más.'::text
+  programas_eyebrow: text NOT NULL DEFAULT 'Nuestro trabajo'::text
+  programas_titulo: text NOT NULL DEFAULT 'Programas diseñados, no improvisados.'::text
+  programas_texto: text NOT NULL DEFAULT 'Cada programa parte de un reto real y se construye con un enfoque específico, igual que cualquier trabajo bien hecho.'::text
+  programa1_titulo: text NOT NULL DEFAULT 'Reformer para lesiones y post-cirugía'::text
+  programa1_texto: text NOT NULL DEFAULT 'Movimiento controlado para recuperar confianza después de una lesión o cirugía, sin modificaciones genéricas.'::text
+  programa1_imagen_url: text NOT NULL DEFAULT '/images/program-recuperacion.webp'::text
+  programa2_titulo: text NOT NULL DEFAULT 'Reformer durante el embarazo'::text
+  programa2_texto: text NOT NULL DEFAULT 'Ejercicios ajustados por trimestre, siempre en coordinación con tu médico. Seguir moviéndote, con seguridad.'::text
+  programa2_imagen_url: text NOT NULL DEFAULT '/images/program-prenatal.webp'::text
+  programa3_titulo: text NOT NULL DEFAULT 'Reformer para adultos mayores'::text
+  programa3_texto: text NOT NULL DEFAULT 'Movilidad, equilibrio y fuerza funcional, a tu ritmo, sin sentirte fuera de lugar.'::text
+  programa3_imagen_url: text NOT NULL DEFAULT '/images/program-movilidad.webp'::text
+  updated_at: timestamp with time zone NOT NULL DEFAULT now()
+  filosofia_visible: boolean NOT NULL DEFAULT true
+  programas_visible: boolean NOT NULL DEFAULT true
+  para_todos_visible: boolean NOT NULL DEFAULT true
+  logo_url: text NOT NULL DEFAULT '/images/logo.webp'::text
+  signature_visible: boolean NOT NULL DEFAULT true
+  signature_frase: text NOT NULL DEFAULT '"El control es la nueva fuerza."'::text
+  agendar_eyebrow: text NOT NULL DEFAULT 'Horarios y reservas'::text
+  agendar_titulo: text NOT NULL DEFAULT 'Elige tu horario y agenda tu clase de prueba.'::text
+  agendar_texto: text NOT NULL DEFAULT 'Espacio personalizado. Clases de 50 minutos. Llega 5-10 minutos antes.'::text
+  paquetes_visible: boolean NOT NULL DEFAULT true
+  paquetes_eyebrow: text NOT NULL DEFAULT 'Paquetes y precios'::text
+  paquetes_titulo: text NOT NULL DEFAULT 'Cada paquete, con la claridad que mereces.'::text
+  paquetes_texto: text NOT NULL DEFAULT 'Reserva tu cupo desde la app o escríbenos por WhatsApp si tienes dudas antes de decidir.'::text
+  paquetes_nota_titulo: text NOT NULL DEFAULT 'Reserva y paga desde la app.'::text
+  paquetes_nota_texto: text NOT NULL DEFAULT 'Elige tu paquete, paga por transferencia o con tarjeta en el estudio, y reserva tus clases — todo desde tu cuenta. Si prefieres resolver dudas antes, escríbenos por WhatsApp o pasa directamente por recepción.'::text
+  privado_visible: boolean NOT NULL DEFAULT true
+  privado_nombre: text NOT NULL DEFAULT 'Personalizada 1:1 / 2:1'::text
+  privado_freq: text NOT NULL DEFAULT 'Sesión privada o semi-privada'::text
+  privado_amount: text NOT NULL DEFAULT 'Pregunta en recepción'::text
+  privado_meta: text NOT NULL DEFAULT 'Atención exclusiva, horario a tu medida'::text
+  privado_cta: text NOT NULL DEFAULT 'Preguntar disponibilidad'::text
+  privado_mensaje_whatsapp: text NOT NULL DEFAULT 'Hola, quiero información sobre clases personalizadas 1:1 o 2:1 en Forma Pilates'::text
+  privado_badge: text NOT NULL DEFAULT 'Privada'::text
+  privado_imagen_url: text NOT NULL DEFAULT '/images/price-personalizada.webp'::text
+  ubicacion_visible: boolean NOT NULL DEFAULT true
+  ubicacion_eyebrow: text NOT NULL DEFAULT 'Ubicación'::text
+  ubicacion_titulo: text NOT NULL DEFAULT 'Fácil de encontrar, fácil de llegar.'::text
+  ubicacion_texto: text NOT NULL DEFAULT 'Estamos en Centro Comercial Pasaje Naranjo, con parqueo disponible en el mismo centro comercial.'::text
+  ubicacion_lugar_nombre: text NOT NULL DEFAULT 'Centro Comercial Pasaje Naranjo'::text
+  ubicacion_direccion_linea1: text NOT NULL DEFAULT 'Segundo nivel, Fase 2, Local 208 B'::text
+  ubicacion_direccion_linea2: text NOT NULL DEFAULT 'Guatemala, Guatemala'::text
+  ubicacion_google_maps_url: text NOT NULL DEFAULT 'https://maps.app.goo.gl/LxR4QQwvt8v22TWZA'::text
+  ubicacion_waze_url: text NOT NULL DEFAULT 'https://waze.com/ul?ll=14.6564644,-90.5429265&navigate=yes'::text
+  ubicacion_imagen_url: text NOT NULL DEFAULT '/images/location-map.webp'::text
+  proceso_visible: boolean NOT NULL DEFAULT true
+  proceso_eyebrow: text NOT NULL DEFAULT 'Cómo trabajamos'::text
+  proceso_titulo: text NOT NULL DEFAULT 'Un plan, no una clase suelta.'::text
+  paso1_titulo: text NOT NULL DEFAULT 'Conversamos primero'::text
+  paso1_texto: text NOT NULL DEFAULT 'Antes de tu primera clase ya sabemos tu objetivo, tu condición y tu experiencia previa, así que no llegas a adivinar.'::text
+  paso2_titulo: text NOT NULL DEFAULT 'Armamos tu enfoque'::text
+  paso2_texto: text NOT NULL DEFAULT 'Elegimos el programa y la frecuencia que tiene sentido para tu cuerpo y tu semana real, no la ideal.'::text
+  paso3_titulo: text NOT NULL DEFAULT 'Ajustamos sobre la marcha'::text
+  paso3_texto: text NOT NULL DEFAULT 'Tu coach observa, corrige y adapta cada clase según cómo llegas ese día, no según un guion fijo.'::text
+  reviews_visible: boolean NOT NULL DEFAULT true
+  reviews_eyebrow: text NOT NULL DEFAULT 'Lo que dice nuestra comunidad'::text
+  reviews_titulo: text NOT NULL DEFAULT 'Reviews'::text
+  contacto_visible: boolean NOT NULL DEFAULT true
+  contacto_eyebrow: text NOT NULL DEFAULT '¿Prefieres que te contactemos?'::text
+  contacto_titulo: text NOT NULL DEFAULT 'Déjanos tus datos.'::text
+  contacto_texto: text NOT NULL DEFAULT 'Si no quieres escribirnos por WhatsApp ahora mismo, déjanos tu nombre y teléfono y te contactamos nosotros.'::text
+  footer_tagline: text NOT NULL DEFAULT 'Studio boutique de pilates reformer en Guatemala. Minimalista, chic, inclusivo. Para todos.'::text
+  footer_frase_cierre: text NOT NULL DEFAULT 'Mueve lento. Transforma profundo.'::text
+
+=== encuestas_satisfaccion (7 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  cliente_id: uuid NOT NULL
+  disparador: text NOT NULL
+  satisfaccion: integer NOT NULL
+  recomendaria: boolean NOT NULL
+  comentario: text
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== gasto_marketing (6 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  mes: date NOT NULL
+  canal: text NOT NULL
+  monto: numeric NOT NULL DEFAULT 0
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  updated_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== gastos (9 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  fecha: date NOT NULL
+  categoria: text NOT NULL
+  descripcion: text
+  monto: numeric NOT NULL
+  tipo: text NOT NULL
+  metodo_pago: text
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  created_by: uuid DEFAULT auth.uid()
+
+=== gift_cards (12 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  codigo: text NOT NULL
+  paquete_id: uuid NOT NULL
+  estado: text NOT NULL DEFAULT 'activa'::text
+  comprador_nombre: text
+  destinatario_nombre: text
+  destinatario_email: text
+  canjeada_por: uuid
+  canjeada_at: timestamp with time zone
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  created_by: uuid
+  metodo_pago: text
+
+=== metas_mensuales (5 cols) ===
+  mes: date NOT NULL
+  tipo: text NOT NULL
+  meta: numeric NOT NULL
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  actualizado_por: uuid
+
+=== pasivos (6 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  descripcion: text NOT NULL
+  fecha: date NOT NULL
+  monto: numeric NOT NULL
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  created_by: uuid DEFAULT auth.uid()
+
+=== pedido_items (11 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  pedido_id: uuid NOT NULL
+  tipo: text NOT NULL
+  producto_id: uuid
+  variante_id: uuid
+  paquete_id: uuid
+  nombre: text NOT NULL
+  variante_nombre: text
+  cantidad: integer NOT NULL DEFAULT 1
+  precio_unitario: numeric NOT NULL
+  membresia_id: uuid
+
+=== pedidos (12 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  cliente_id: uuid NOT NULL
+  estado: text NOT NULL DEFAULT 'pendiente_pago'::text
+  metodo_pago: text NOT NULL
+  total: numeric NOT NULL
+  codigo_descuento_id: uuid
+  descuento_pct: numeric NOT NULL DEFAULT 0
+  pagado_at: timestamp with time zone
+  entregado_at: timestamp with time zone
+  entregado_por: uuid
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+  codigo_descuento_usado_id: uuid
+
+=== producto_variantes (7 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  producto_id: uuid NOT NULL
+  nombre: text NOT NULL
+  stock: integer NOT NULL DEFAULT 0
+  orden: integer NOT NULL DEFAULT 0
+  imagen_url: text
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== productos (10 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  nombre: text NOT NULL
+  descripcion: text
+  precio: numeric NOT NULL
+  unidad: text NOT NULL DEFAULT 'unidad'::text
+  imagen_url: text
+  categoria: text NOT NULL DEFAULT 'accesorios'::text
+  activo: boolean NOT NULL DEFAULT true
+  orden: integer NOT NULL DEFAULT 0
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== testimonios (7 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  cliente_id: uuid NOT NULL
+  nombre_publico: text NOT NULL
+  texto: text NOT NULL
+  calificacion: integer NOT NULL
+  aprobado: boolean NOT NULL DEFAULT false
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
+
+=== whatsapp_mensajes (6 cols) ===
+  id: uuid NOT NULL DEFAULT gen_random_uuid()
+  destinatario: text NOT NULL
+  tipo: text NOT NULL
+  estado: text NOT NULL
+  error: text
+  created_at: timestamp with time zone NOT NULL DEFAULT now()
