@@ -6,6 +6,20 @@ del documento maestro.
 
 Fuente de verdad de producto/arquitectura: `~/Desktop/MAESTRO_Forma_SaaS_Instrucciones_Desarrollo.md`
 
+## Ambientes
+
+**Hoy existe un solo proyecto de Supabase** (`agkqppuhyltirrhngybq`, org "ReserveOS") y es staging/
+desarrollo — no producción. Los dos tenants ficticios (`ficticio-a`, `ficticio-b`) y sus datos
+sintéticos viven aquí a propósito, como fixture de pruebas (ver `tests/fixtures.ts`).
+
+**Regla:** este proyecto nunca recibe datos reales de VIM ni de ningún tenant pagador (regla 3 del
+maestro: nunca copiar credenciales ni datos personales reales a staging). Antes de que VIM (o
+cualquier tenant real) empiece a operar de verdad, se crea un **proyecto de Supabase de producción
+separado** — mismo patrón que Forma/ReserveOS ya separados entre sí — y este proyecto se queda como
+staging permanente para seguir probando cambios sin riesgo. Esa creación es parte del Hito D
+(implementación/lanzamiento), no antes: no tiene sentido tener un proyecto de producción vacío
+esperando meses.
+
 ## Estado — Hito A (auditoría y oferta)
 
 - [x] Inventario estático de tablas desde `migrations/*.sql` de Forma real → `auditoria/01_inventario_estatico_tablas.md`
@@ -86,6 +100,31 @@ funciones esperan que el backend externo llame `confirmar_pago_transaccion`/`con
 vía `service_role`, la integración con Recurrente en sí no está construida); `registrar_venta_presencial`
 ya no tiene un cliente "mostrador" mágico — `p_cliente_id` es obligatorio; `registrar_accion_admin` se
 adjuntó a 5 tablas de dinero como default razonable (Forma no permitía confirmar a cuáles estaba atado).
+
+## Estado — Backend endurecido (2026-09-28, tarde)
+
+Después de "backend completo" arriba, se resolvió lo que quedaba de infraestructura real (sin tocar
+integraciones externas — Recurrente/WhatsApp/email/push/FEL siguen pendientes a propósito):
+
+- **Cron real** (`pg_cron`, 2 jobs activos): `liberar_cupos_no_confirmados` cada 10 min,
+  `lista_espera_vencida` cada 15 min — verificado en `cron.job`. Las funciones "para notificar"
+  (recordatorios) quedan sin programar a propósito: sin canal de mensajería que consuma su resultado,
+  programarlas sería trabajo falso.
+- **Storage real** (2 buckets): `public-assets` (público, logos/fotos) y `comprobantes` (privado,
+  convención de carpeta `{tenant_id}/{cliente_id}/...`) — RLS tenant-scoped verificado con subida real
+  (propia funciona, cross-tenant bloqueado con 403).
+- **`role_permissions` poblada de verdad**: 161 celdas de la matriz real (sección 12 del maestro, 43
+  acciones × 7 roles de tenant), generadas por script desde la transcripción exacta, no tecleadas a
+  mano. Más `mi_permiso(tenant, accion)` — el servicio que de verdad la consulta, para que no sea solo
+  una tabla con datos sin usar.
+- **Suite de pruebas automatizadas** (`tests/`, Vitest): 17 pruebas que automatizan las verificaciones
+  manuales de toda la sesión — aislamiento de tablas, RPCs, `mi_permiso`, Storage. `npm install && npm test`.
+- **Política de ambientes documentada** (ver sección "Ambientes" arriba).
+- **Auditoría admin ampliada**: se encontró que faltaba justo lo que el maestro exige explícito
+  (sección 5) — activación/suspensión de módulos (`tenant_entitlements`/`tenant_module_settings`) no
+  tenía el trigger de auditoría. Se agregó, más `tenant_memberships`, `codigos_descuento`,
+  `cobros_personalizados`, `role_permissions`. A propósito fuera: `reservas`/`clientes` (volumen
+  altísimo) y `staff_sedes`/`cierre_caja` (llave compuesta sin columna `id`).
 
 ## Estado — Hito C (núcleo funcional) — capa de tablas lista, RPCs pendientes
 
