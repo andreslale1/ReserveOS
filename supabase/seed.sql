@@ -1,0 +1,30 @@
+-- Catálogo inicial de módulos (sección 5 del documento maestro). No incluye la capa "Obligatoria"
+-- (identidad/tenants/sedes/roles) porque esa no es un módulo apagable — es la base de la sección 12.
+insert into public.module_catalog (key, name, description, depends_on) values
+  ('nucleo_agenda_reservas', 'Núcleo: agenda y reservas', 'Horarios, cupos, reservas, créditos, cancelaciones y asistencia.', '{}'),
+  ('lista_espera', 'Lista de espera', 'Cola de espera y promoción automática de cupo.', '{nucleo_agenda_reservas}'),
+  ('horario_fijo', 'Horario fijo', 'Reserva recurrente automática por horario.', '{nucleo_agenda_reservas}'),
+  ('clases_familia', 'Clases en familia', 'Reserva y cobro compartido para dependientes.', '{nucleo_agenda_reservas}'),
+  ('clases_privadas', 'Clases privadas', 'Privatizar una fecha/horario para una persona o grupo.', '{nucleo_agenda_reservas}'),
+  ('congelacion_membresia', 'Congelación de membresía', 'Pausar consumo de créditos por un periodo.', '{nucleo_agenda_reservas}'),
+  ('checkin_qr', 'Check-in por QR', 'Asistencia vía QR de sede o de clienta.', '{nucleo_agenda_reservas}'),
+  ('cobros_online', 'Cobros en línea', 'Pasarela conectada, checkout y webhooks.', '{nucleo_agenda_reservas}'),
+  ('cobros_transferencia', 'Transferencias', 'Comprobante, verificación humana y caja de sede.', '{nucleo_agenda_reservas}'),
+  ('cobros_caja_pos', 'Caja / POS', 'Cobro presencial con apertura y cierre de caja.', '{nucleo_agenda_reservas}'),
+  ('cobros_reembolsos', 'Reembolsos', 'Solicitud y aprobación de reembolso con trazabilidad.', '{nucleo_agenda_reservas}'),
+  ('finanzas_cierre_caja', 'Cierre de caja', 'Cierre por turno y por sede.', '{cobros_caja_pos}'),
+  ('finanzas_gastos', 'Gastos', 'Registro de gastos fijos y variables por sede.', '{}'),
+  ('finanzas_activos_pasivos', 'Activos y pasivos', 'Balance del estudio.', '{finanzas_gastos}'),
+  ('finanzas_metas', 'Metas mensuales', 'Metas de ingreso y seguimiento.', '{}'),
+  ('finanzas_iva_fel', 'IVA y FEL', 'Facturación electrónica y emisor fiscal del tenant.', '{}'),
+  ('tienda_inventario', 'Tienda e inventario', 'Catálogo, variantes, pedidos e inventario.', '{}'),
+  ('descuentos_gift_cards', 'Descuentos y gift cards', 'Códigos de descuento y tarjetas de regalo.', '{}'),
+  ('referidos', 'Referidos', 'Programa de referidos entre clientas.', '{}'),
+  ('crm_segmentos', 'CRM y segmentos', 'Riesgo, segmento y seguimiento comercial de clientas.', '{}'),
+  ('encuestas', 'Encuestas de satisfacción', 'Encuestas y KPIs de satisfacción.', '{}'),
+  ('campanas_marketing', 'Campañas de marketing', 'WhatsApp, email y push segmentado con consentimiento.', '{}'),
+  ('portal_marca', 'Portal con marca', 'reservas.<dominio> con login, catálogo y panel propios.', '{nucleo_agenda_reservas}'),
+  ('calendario_integrado', 'Calendario integrado', 'Widget de calendario embebido en el sitio del estudio.', '{portal_marca}'),
+  ('widget_transaccional', 'Widget transaccional', 'Reserva/pago sin salir del sitio del estudio.', '{portal_marca,cobros_online}'),
+  ('app_propia', 'App de marca', 'Build nativo de marca sobre el mismo backend.', '{portal_marca}')
+on conflict (key) do nothing;
