@@ -49,10 +49,32 @@ Los dos tenants ficticios y sus dos usuarios de prueba (`usera@test.reserveos.lo
 `userb@test.reserveos.local`) se dejan vivos en staging como fixture reutilizable para las pruebas del
 Hito C — son datos 100% sintéticos, no hay nada real de VIM ni de Forma aquí.
 
-## Siguiente (Hito C — núcleo funcional)
+## Estado — Hito C (núcleo funcional) — capa de tablas lista, RPCs pendientes
 
-Portar/rediseñar multi-tenant las 18 tablas + 63 RPCs núcleo de `auditoria/03_nucleo_hito_c_vs_resto.md`:
-alta de clienta, paquetes (una/varias/todas las sedes), agenda y personal por sede, reservas, créditos,
-lista de espera, check-in y caja básica. Recién ahí se empieza a poblar `role_permissions` con la matriz
-real de la sección 12 del maestro (no antes, para no adivinarla sin el servicio de autorización real
-que la ejercite).
+- [x] Las 18 tablas núcleo + 2 tablas puente (`paquete_sedes`, `membresia_sedes` — cobertura de sedes de
+  paquetes/membresías, sección 7 del maestro) portadas con columnas reales de Forma (consultadas en vivo,
+  no adivinadas) → `supabase/migrations/20260928204012_hito_c_nucleo_tablas.sql`
+- [x] `perfiles` de Forma se absorbió en `tenant_memberships` (ya existía desde el Hito B) en vez de
+  crear una tabla redundante — decisión de diseño explícita, documentada en el comentario de cabecera
+  de la migración
+- [x] RLS habilitado en las 19 tablas nuevas (staff por tenant vía `current_tenant_ids()`, clienta por
+  propiedad directa `user_id = auth.uid()` — las clientas no tienen fila en `tenant_memberships`)
+- [x] GRANT solo `SELECT` para `authenticated`, cero privilegios para `anon` (repetido el chequeo del
+  hallazgo del Hito B en cada tabla nueva — sigue limpio)
+- [x] **Aislamiento verificado con datos reales**, no solo con las tablas vacías del Hito B: paquete +
+  horario + cliente + reserva insertados para los dos tenants ficticios, consultado por la API pública
+  real con el JWT de cada usuario de prueba — cada uno ve exactamente sus propias filas en `clientes`,
+  `horarios`, `reservas` y `paquetes`, cero fuga
+- [ ] **Las 63 RPCs de negocio (reservar, cancelar, congelar membresía, check-in, lista de espera, etc.)
+  — deliberadamente NO están en la migración de tablas.** La auditoría de funciones del Hito A solo
+  capturó firmas (`auditoria/raw/04_funciones.json`), no el cuerpo real (`prosrc`) de cada función —
+  hay que leer el cuerpo real de Forma función por función antes de portar la lógica, para no
+  reinventarla mal (ej. la regla exacta de cuándo se descuenta un crédito). Es la siguiente pieza,
+  intencionalmente separada.
+- [ ] INSERT/UPDATE/DELETE en las 19 tablas siguen sin política — Postgres los deniega por defecto hoy;
+  cada política de escritura se agrega junto con la RPC que la necesita, no antes
+- [ ] Poblar `role_permissions` con la matriz real de la sección 12 del maestro — se hace junto con el
+  servicio de autorización, no antes (regla 5 del maestro: no dar nada por hecho sin verificar)
+
+Los mismos dos tenants ficticios y usuarios de prueba del Hito B ahora tienen también un paquete, un
+horario, una clienta y una reserva cada uno — quedan como fixture para probar las RPCs del Hito C.
