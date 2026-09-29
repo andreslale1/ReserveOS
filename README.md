@@ -6,6 +6,27 @@ del documento maestro.
 
 Fuente de verdad de producto/arquitectura: `~/Desktop/MAESTRO_Forma_SaaS_Instrucciones_Desarrollo.md`
 
+## Estado — Backend cerrado (2026-09-29)
+
+Los dos pendientes reales que quedaron documentados al final de la sesión anterior ya se cerraron,
+verificados de punta a punta (no solo escritos):
+
+- **Códigos de descuento conectados a las compras reales**: `solicitar_membresia`,
+  `agregar_membresia_manual`, `editar_cobro_membresia` y `confirmar_pago_transaccion` ya aceptan un
+  código real (antes solo existían las tablas y la validación, ningún flujo los usaba).
+  `confirmar_pago_membresia` ya no ignora el `descuento_pct` guardado al solicitar. Probado con un
+  código real de 20%: paquete de Q800 confirma en Q640 exacto, código queda con 1 uso.
+- **Cliente mostrador real**: `obtener_cliente_mostrador()` — cada tenant tiene su propia fila
+  "Venta al público" (única por tenant, índice parcial), reemplaza el UUID mágico que tenía Forma.
+  Probado: venta sin `cliente_id` resuelve al mostrador; una segunda venta reutiliza la misma fila.
+- **Espacio dejado para las 5 integraciones pendientes** (a propósito sin conectar nada real):
+  `integracion_pagos/whatsapp/email/push/fel` — tablas de configuración por tenant, dueña-only,
+  con los secretos (API keys/tokens) guardados en **Supabase Vault** (`supabase_vault`, ya instalado),
+  nunca en texto plano — la tabla solo referencia un `secret_id`. Verificado: cero grants de
+  `anon`/`authenticated` sobre el esquema `vault`; una dueña no puede escribir credenciales de otro
+  tenant.
+- Suite de pruebas: 20/20 pasando después de todos estos cambios (`npm test`).
+
 ## Ambientes
 
 **Hoy existe un solo proyecto de Supabase** (`agkqppuhyltirrhngybq`, org "ReserveOS") y es staging/
