@@ -8,10 +8,10 @@ export default function FinalCta() {
           className="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full opacity-30 blur-3xl"
           style={{
             background:
-              "radial-gradient(circle, rgba(232,184,155,0.55), transparent 70%)",
+              "radial-gradient(circle, rgba(47,111,237,0.5), transparent 70%)",
           }}
         />
-        <h2 className="relative mx-auto max-w-lg font-serif text-3xl leading-tight tracking-tight md:text-4xl">
+        <h2 className="relative mx-auto max-w-lg text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
           Tu estudio ya opera. Falta el sistema que lo alcance.
         </h2>
         <p className="relative mx-auto mt-4 max-w-md text-sm text-cream/70">
@@ -20,7 +20,7 @@ export default function FinalCta() {
         </p>
         <a
           href="mailto:hola@reserveos.app"
-          className="press-spring relative mt-8 inline-flex rounded-full bg-peach px-8 py-3.5 text-sm font-medium text-ink shadow-[0_16px_32px_-12px_rgba(0,0,0,0.4)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_-8px_rgba(0,0,0,0.5)]"
+          className="press-spring relative mt-8 inline-flex rounded-full bg-peach px-8 py-3.5 text-sm font-medium text-white shadow-[0_16px_32px_-12px_rgba(0,0,0,0.4)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_-8px_rgba(0,0,0,0.5)]"
         >
           Escribinos →
         </a>

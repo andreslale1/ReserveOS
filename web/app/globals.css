@@ -1,23 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  /* ReserveOS Product Experience Manual v2 — design tokens (source of truth) */
-  --color-cream: #f3eee7; /* Paper */
-  --color-card: #ffffff; /* White */
-  --color-ink: #111111; /* Ink */
-  --color-peach: #e8b89b; /* Peach — primary accent/CTA */
-  --color-blue: #afc7ff; /* Blue */
-  --color-sage: #a7b3a0; /* Sage */
-  --color-peach-tint: #fbf0e9;
-  --color-blue-tint: #eef2ff;
-  --color-sage-tint: #eef1ed;
-  --color-neutral-tint: #ece7e0;
+  /* Escala de grises + azul + verde — estilo confiado, un solo tipo de letra */
+  --color-cream: #f5f5f7; /* fondo — gris frío claro, no crema cálido */
+  --color-card: #ffffff;
+  --color-ink: #111214; /* texto principal, casi negro */
+  --color-ink-soft: #6e7177; /* texto secundario, gris medio */
+  --color-peach: #2f6fed; /* acento primario / CTA — ahora azul, no durazno */
+  --color-blue: #2f6fed;
+  --color-sage: #1f9d55; /* acento secundario — verde limpio */
+  --color-peach-tint: #eaf1fe;
+  --color-blue-tint: #eaf1fe;
+  --color-sage-tint: #e7f6ed;
+  --color-neutral-tint: #eeeef0;
 }
 
 @theme inline {
   --color-cream: var(--color-cream);
   --color-card: var(--color-card);
   --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
   --color-peach: var(--color-peach);
   --color-blue: var(--color-blue);
   --color-sage: var(--color-sage);
@@ -25,7 +27,7 @@
   --color-blue-tint: var(--color-blue-tint);
   --color-sage-tint: var(--color-sage-tint);
   --color-neutral-tint: var(--color-neutral-tint);
-  --font-serif: var(--font-playfair);
+  --font-serif: var(--font-inter);
   --font-sans: var(--font-inter);
 }
 

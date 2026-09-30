@@ -14,7 +14,7 @@ export default async function LoginPage({
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M2 8.5L6 12.5L14 3.5"
-              stroke="#111111"
+              stroke="#ffffff"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -22,7 +22,7 @@ export default async function LoginPage({
           </svg>
         </span>
 
-        <h1 className="mt-5 font-serif text-2xl tracking-tight text-ink">
+        <h1 className="mt-5 text-2xl font-semibold tracking-tight text-ink">
           Entrar a ReserveOS
         </h1>
         <p className="mt-1 text-sm text-ink/60">
@@ -74,7 +74,7 @@ export default async function LoginPage({
 
           <button
             type="submit"
-            className="press-spring mt-2 w-full rounded-full bg-peach py-2.5 text-sm font-medium text-ink transition-colors duration-200 hover:bg-peach/85"
+            className="press-spring mt-2 w-full rounded-full bg-peach py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-peach/85"
           >
             Entrar
           </button>

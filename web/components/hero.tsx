@@ -17,7 +17,7 @@ export default function Hero() {
         className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[520px] rounded-full opacity-50 blur-3xl"
         style={{
           background:
-            "radial-gradient(circle, rgba(232,184,155,0.45), rgba(167,179,160,0.2) 60%, transparent 75%)",
+            "radial-gradient(circle, rgba(47,111,237,0.35), rgba(31,157,85,0.2) 60%, transparent 75%)",
         }}
       />
       <div className="relative mx-auto grid max-w-6xl gap-12 px-6 pt-16 pb-20 md:grid-cols-[1.1fr_0.9fr] md:pt-24 md:pb-28">
@@ -43,10 +43,10 @@ export default function Hero() {
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <a
               href="#contacto"
-              className="press-spring group inline-flex items-center gap-3 rounded-full bg-peach py-2 pl-7 pr-2 text-sm font-medium text-ink shadow-[0_16px_32px_-12px_rgba(232,184,155,0.7)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_-10px_rgba(232,184,155,0.8)]"
+              className="press-spring group inline-flex items-center gap-3 rounded-full bg-peach py-2 pl-7 pr-2 text-sm font-medium text-white shadow-[0_16px_32px_-12px_rgba(47,111,237,0.6)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_20px_40px_-10px_rgba(47,111,237,0.7)]"
             >
               Agendar una demo
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ink/10 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-0.5">
                 →
               </span>
             </a>

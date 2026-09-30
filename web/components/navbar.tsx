@@ -15,14 +15,14 @@ export default function Navbar() {
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path
                 d="M2 8.5L6 12.5L14 3.5"
-                stroke="#111111"
+                stroke="#ffffff"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </svg>
           </span>
-          <span className="font-serif text-lg tracking-tight text-ink">
+          <span className="text-lg font-semibold tracking-tight text-ink">
             ReserveOS
           </span>
         </Link>
@@ -32,23 +32,23 @@ export default function Navbar() {
             <a
               key={l.href}
               href={l.href}
-              className="text-sm text-ink/70 transition-colors duration-200 hover:text-ink"
+              className="text-sm text-ink-soft transition-colors duration-200 hover:text-ink"
             >
               {l.label}
             </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <Link
             href="/login"
-            className="hidden text-sm text-ink/70 transition-colors duration-200 hover:text-ink sm:inline"
+            className="text-sm text-ink-soft transition-colors duration-200 hover:text-ink"
           >
             Entrar
           </Link>
           <a
             href="#contacto"
-            className="press-spring rounded-full bg-peach px-5 py-2 text-sm font-medium text-ink shadow-[0_8px_20px_-6px_rgba(17,17,17,0.25)] transition-colors duration-200 hover:bg-peach/85"
+            className="press-spring rounded-full bg-peach px-5 py-2 text-sm font-medium text-white shadow-[0_8px_20px_-6px_rgba(17,17,17,0.25)] transition-colors duration-200 hover:bg-peach/85"
           >
             Hablemos →
           </a>
