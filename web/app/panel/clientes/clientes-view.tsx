@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { obtenerDetalleCliente } from "./actions";
 
 type Fila = {
@@ -11,7 +11,12 @@ type Fila = {
   estadoMembresia: string;
   clasesRestantes: number | null;
   vencimiento: string | null;
+  visitas: number;
+  ultimaVisita: string | null;
+  ltv: number;
 };
+
+const FILTROS = ["Todas", "Activas", "Inactivas"] as const;
 
 type Detalle = Awaited<ReturnType<typeof obtenerDetalleCliente>>;
 
@@ -30,6 +35,7 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
   const [abierto, setAbierto] = useState<Fila | null>(null);
   const [detalle, setDetalle] = useState<Detalle | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [filtro, setFiltro] = useState<(typeof FILTROS)[number]>("Todas");
 
   function abrir(fila: Fila) {
     setAbierto(fila);
@@ -39,6 +45,16 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
       setDetalle(d);
     });
   }
+
+  const filtradas = useMemo(() => {
+    if (filtro === "Activas") {
+      return clientes.filter((c) => c.estadoMembresia === "activa");
+    }
+    if (filtro === "Inactivas") {
+      return clientes.filter((c) => c.estadoMembresia !== "activa");
+    }
+    return clientes;
+  }, [clientes, filtro]);
 
   return (
     <main className="min-h-screen bg-cream">
@@ -50,31 +66,58 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
-        <ul className="space-y-2">
-          {clientes.map((c) => {
-            const estado = ESTADO_LABEL[c.estadoMembresia] ?? ESTADO_LABEL.sin_paquete;
+        <div className="mb-5 flex gap-2">
+          {FILTROS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setFiltro(f)}
+              className={`rounded-full px-4 py-1.5 text-sm transition-colors duration-200 ${
+                filtro === f
+                  ? "bg-ink text-cream"
+                  : "bg-card text-ink/60 hover:text-ink"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 border-b border-black/[0.06] px-4 pb-2 text-xs font-medium uppercase tracking-wide text-ink/40">
+          <span>Clienta</span>
+          <span className="w-24 text-right">Visitas</span>
+          <span className="w-28 text-right">Última visita</span>
+          <span className="w-20 text-right">LTV</span>
+          <span className="w-28 text-right">Membresía</span>
+        </div>
+
+        <ul className="mt-2 space-y-2">
+          {filtradas.map((c) => {
+            const estado =
+              ESTADO_LABEL[c.estadoMembresia] ?? ESTADO_LABEL.sin_paquete;
             return (
               <li key={c.id}>
                 <button
                   onClick={() => abrir(c)}
-                  className="flex w-full items-center justify-between gap-4 rounded-2xl border border-black/[0.06] bg-card p-4 text-left shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]"
+                  className="grid w-full grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 rounded-2xl border border-black/[0.06] bg-card p-4 text-left shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]"
                 >
                   <div>
                     <p className="text-sm font-medium text-ink">{c.nombre}</p>
                     <p className="text-xs text-ink/50">{c.telefono}</p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    {c.clasesRestantes !== null && (
-                      <span className="text-xs text-ink/50">
-                        {c.clasesRestantes} clases restantes
-                      </span>
-                    )}
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${estado.className}`}
-                    >
-                      {estado.label}
-                    </span>
-                  </div>
+                  <span className="w-24 text-right text-sm tabular-nums text-ink/70">
+                    {c.visitas}
+                  </span>
+                  <span className="w-28 text-right text-xs text-ink/50">
+                    {c.ultimaVisita ?? "—"}
+                  </span>
+                  <span className="w-20 text-right text-sm tabular-nums text-ink/70">
+                    Q{c.ltv}
+                  </span>
+                  <span
+                    className={`w-28 rounded-full px-3 py-1 text-right text-xs font-medium ${estado.className}`}
+                  >
+                    {estado.label}
+                  </span>
                 </button>
               </li>
             );
