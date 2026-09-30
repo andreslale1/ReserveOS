@@ -25,9 +25,9 @@ import Reveal from "./reveal";
 
 export default function HowItWorks() {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
+    <section className="mx-auto max-w-6xl bg-void px-6 py-20">
       <Reveal>
-        <h2 className="max-w-lg font-serif text-3xl leading-tight tracking-tight text-ink md:text-4xl">
+        <h2 className="max-w-lg text-3xl font-black uppercase leading-tight tracking-tight text-white md:text-4xl">
           De la reserva al cierre de caja, sin salir del sistema.
         </h2>
       </Reveal>
@@ -35,10 +35,10 @@ export default function HowItWorks() {
       <div className="mt-14 grid gap-x-8 gap-y-12 md:grid-cols-2">
         {steps.map((step, i) => (
           <Reveal key={step.n} delay={i * 90} className="flex gap-5">
-            <span className="font-serif text-2xl text-ink/25">{step.n}</span>
+            <span className="text-2xl font-bold text-lime/40">{step.n}</span>
             <div>
-              <h3 className="font-serif text-xl text-ink">{step.title}</h3>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink/65">
+              <h3 className="text-xl font-bold text-white">{step.title}</h3>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/55">
                 {step.body}
               </p>
             </div>

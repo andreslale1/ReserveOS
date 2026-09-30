@@ -32,9 +32,9 @@ const groups = [
 ];
 
 const colorMap = {
-  sage: "bg-sage-tint text-sage",
-  blue: "bg-blue-tint text-blue",
-  peach: "bg-peach-tint text-ink",
+  sage: "bg-sage/15 text-sage",
+  blue: "bg-blue/15 text-blue",
+  peach: "bg-lime/15 text-lime",
 };
 
 import Reveal from "./reveal";
@@ -43,14 +43,14 @@ export default function Modules() {
   return (
     <section
       id="modulos"
-      className="border-y border-black/[0.06] bg-card py-20"
+      className="border-y border-white/10 bg-void py-20"
     >
       <div className="mx-auto max-w-6xl px-6">
         <Reveal className="max-w-lg">
-          <h2 className="font-serif text-3xl leading-tight tracking-tight text-ink md:text-4xl">
+          <h2 className="text-3xl font-black uppercase leading-tight tracking-tight text-white md:text-4xl">
             Un núcleo sólido. Módulos que enciendes cuando los necesitas.
           </h2>
-          <p className="mt-4 text-ink/70">
+          <p className="mt-4 text-white/55">
             26 módulos activables por tenant. Empiezas con agenda, reservas y
             cobros — el resto se prende sin migrar de sistema cuando el
             estudio crece.
@@ -69,12 +69,12 @@ export default function Modules() {
                 {group.items.map((item) => (
                   <li
                     key={item.name}
-                    className="group rounded-xl border border-black/[0.06] bg-cream p-4 shadow-[0_2px_8px_-4px_rgba(17,17,17,0.1)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-black/[0.1] hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.2)]"
+                    className="group rounded-xl border border-white/10 bg-void-card p-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-lime/30"
                   >
-                    <p className="text-sm font-medium text-ink">
+                    <p className="text-sm font-medium text-white">
                       {item.name}
                     </p>
-                    <p className="mt-1 text-xs text-ink/55">{item.desc}</p>
+                    <p className="mt-1 text-xs text-white/45">{item.desc}</p>
                   </li>
                 ))}
               </ul>

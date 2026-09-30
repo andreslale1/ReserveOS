@@ -1,14 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* Escala de grises + azul + verde — estilo confiado, un solo tipo de letra */
-  --color-cream: #f5f5f7; /* fondo — gris frío claro, no crema cálido */
+  /* Sitio público: negro + verde lima, atlético y confiado */
+  --color-void: #0a0b08; /* fondo negro del sitio público */
+  --color-void-card: #16180f; /* tarjetas sobre negro */
+  --color-lime: #c6ff3a; /* acento primario — verde lima vibrante */
+  --color-lime-dim: #8fd424; /* variante más oscura para texto sobre lima */
+
+  /* Panel interno: gris claro, legible en uso prolongado */
+  --color-cream: #f5f5f7;
   --color-card: #ffffff;
-  --color-ink: #111214; /* texto principal, casi negro */
-  --color-ink-soft: #6e7177; /* texto secundario, gris medio */
-  --color-peach: #2f6fed; /* acento primario / CTA — ahora azul, no durazno */
+  --color-ink: #111214;
+  --color-ink-soft: #6e7177;
+  --color-peach: #2f6fed;
   --color-blue: #2f6fed;
-  --color-sage: #1f9d55; /* acento secundario — verde limpio */
+  --color-sage: #1f9d55;
   --color-peach-tint: #eaf1fe;
   --color-blue-tint: #eaf1fe;
   --color-sage-tint: #e7f6ed;
@@ -16,6 +22,10 @@
 }
 
 @theme inline {
+  --color-void: var(--color-void);
+  --color-void-card: var(--color-void-card);
+  --color-lime: var(--color-lime);
+  --color-lime-dim: var(--color-lime-dim);
   --color-cream: var(--color-cream);
   --color-card: var(--color-card);
   --color-ink: var(--color-ink);
