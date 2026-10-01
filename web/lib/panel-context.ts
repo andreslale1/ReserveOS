@@ -15,6 +15,10 @@ const TODAS_LAS_RUTAS = [
   "/panel/calendario",
   "/panel/clientes",
   "/panel/finanzas",
+  "/panel/caja",
+  "/panel/tienda",
+  "/panel/descuentos",
+  "/panel/negocio",
   "/panel/automatizaciones",
 ];
 
@@ -25,10 +29,25 @@ const TODAS_LAS_RUTAS = [
 export const NAV_POR_ROL: Record<string, string[]> = {
   duena: TODAS_LAS_RUTAS,
   gerente_general: TODAS_LAS_RUTAS,
-  admin_sede: TODAS_LAS_RUTAS,
-  recepcion: ["/panel/hoy", "/panel/calendario", "/panel/clientes"],
+  admin_sede: [
+    "/panel/hoy",
+    "/panel/calendario",
+    "/panel/clientes",
+    "/panel/finanzas",
+    "/panel/caja",
+    "/panel/tienda",
+    "/panel/descuentos",
+    "/panel/automatizaciones",
+  ],
+  recepcion: [
+    "/panel/hoy",
+    "/panel/calendario",
+    "/panel/clientes",
+    "/panel/caja",
+    "/panel/tienda",
+  ],
   instructora: ["/panel/hoy", "/panel/calendario"],
-  contadora: ["/panel/hoy", "/panel/finanzas"],
+  contadora: ["/panel/hoy", "/panel/finanzas", "/panel/caja"],
 };
 
 export function puedeVer(role: string, ruta: string) {
