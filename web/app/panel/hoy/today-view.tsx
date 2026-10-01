@@ -55,7 +55,7 @@ export default function TodayView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-black/[0.06] bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-ink/45">
@@ -67,7 +67,7 @@ export default function TodayView({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden overflow-hidden rounded-full border border-black/10 text-sm sm:flex">
+            <div className="hidden overflow-hidden rounded-full border border-white/15 text-sm sm:flex">
               {["Día", "Semana", "Mes"].map((v, i) => (
                 <span
                   key={v}
@@ -110,7 +110,7 @@ export default function TodayView({
               const estado = estadoCupo(c.ocupados, c.cupoMaximo);
               return (
                 <Reveal key={c.id} delay={i * 60}>
-                  <li className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-black/[0.06] bg-card p-5 shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]">
+                  <li className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-card p-5 shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]">
                     <div className="flex items-center gap-5">
                       <div className="w-14 text-center">
                         <p className="font-serif text-lg text-blue">

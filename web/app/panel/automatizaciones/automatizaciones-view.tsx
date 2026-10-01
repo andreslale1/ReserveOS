@@ -10,7 +10,7 @@ export default function AutomatizacionesView({
 }) {
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-black/[0.06] bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
         <h1 className="text-2xl font-semibold text-ink md:text-3xl">
           Automatizaciones
         </h1>
@@ -27,7 +27,7 @@ export default function AutomatizacionesView({
           {activas.map((a) => (
             <li
               key={a.nombre}
-              className="flex items-start justify-between gap-4 rounded-2xl border border-black/[0.06] bg-card p-5"
+              className="flex items-start justify-between gap-4 rounded-2xl border border-white/10 bg-card p-5"
             >
               <div>
                 <p className="text-sm font-medium text-ink">{a.nombre}</p>
@@ -51,7 +51,7 @@ export default function AutomatizacionesView({
           {pendientes.map((p) => (
             <li
               key={p.nombre}
-              className="flex items-center justify-between gap-4 rounded-2xl border border-dashed border-black/[0.1] bg-card/60 p-4"
+              className="flex items-center justify-between gap-4 rounded-2xl border border-dashed border-white/15 bg-card/60 p-4"
             >
               <span className="text-sm text-ink">{p.nombre}</span>
               <span className="shrink-0 rounded-full bg-neutral-tint px-3 py-1 text-xs font-medium text-ink-soft">

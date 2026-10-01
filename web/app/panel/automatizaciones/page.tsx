@@ -1,4 +1,5 @@
-import { getPanelContext } from "@/lib/panel-context";
+import { redirect } from "next/navigation";
+import { getPanelContext, puedeVer } from "@/lib/panel-context";
 import AutomatizacionesView from "./automatizaciones-view";
 
 const ACTIVAS = [
@@ -42,6 +43,9 @@ const PENDIENTES = [
 export default async function AutomatizacionesPage() {
   const { membership } = await getPanelContext();
   if (!membership) return null;
+  if (!puedeVer(membership.role, "/panel/automatizaciones")) {
+    redirect("/panel/hoy");
+  }
 
   return <AutomatizacionesView activas={ACTIVAS} pendientes={PENDIENTES} />;
 }

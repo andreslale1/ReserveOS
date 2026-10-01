@@ -58,7 +58,7 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-black/[0.06] bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Clientas</h1>
         <p className="mt-1 text-sm text-ink/60">
           {clientes.length} clientas registradas
@@ -82,7 +82,7 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
           ))}
         </div>
 
-        <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 border-b border-black/[0.06] px-4 pb-2 text-xs font-medium uppercase tracking-wide text-ink/40">
+        <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 border-b border-white/10 px-4 pb-2 text-xs font-medium uppercase tracking-wide text-ink/40">
           <span>Clienta</span>
           <span className="w-24 text-right">Visitas</span>
           <span className="w-28 text-right">Última visita</span>
@@ -98,7 +98,7 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
               <li key={c.id}>
                 <button
                   onClick={() => abrir(c)}
-                  className="grid w-full grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 rounded-2xl border border-black/[0.06] bg-card p-4 text-left shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]"
+                  className="grid w-full grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 rounded-2xl border border-white/10 bg-card p-4 text-left shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]"
                 >
                   <div>
                     <p className="text-sm font-medium text-ink">{c.nombre}</p>
@@ -132,7 +132,7 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
             className="fixed inset-0 z-40 bg-ink/20 backdrop-blur-[2px] transition-opacity duration-300"
             onClick={() => setAbierto(null)}
           />
-          <aside className="drawer-in fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto border-l border-black/[0.06] bg-card p-6 shadow-[0_0_60px_rgba(17,17,17,0.2)]">
+          <aside className="drawer-in fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto border-l border-white/10 bg-card p-6 shadow-[0_0_60px_rgba(17,17,17,0.2)]">
             <button
               onClick={() => setAbierto(null)}
               className="text-sm text-ink/50 hover:text-ink"
@@ -167,7 +167,7 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
                       return (
                         <li
                           key={m.id}
-                          className="rounded-xl border border-black/[0.06] bg-cream p-3 text-sm"
+                          className="rounded-xl border border-white/10 bg-cream p-3 text-sm"
                         >
                           <div className="flex items-center justify-between">
                             <span
@@ -202,7 +202,7 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
                     {detalle.reservas.map((r, i) => (
                       <li
                         key={i}
-                        className="flex items-center justify-between rounded-xl border border-black/[0.06] bg-cream p-3 text-sm"
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-cream p-3 text-sm"
                       >
                         <span className="text-ink/80">
                           {

@@ -1,4 +1,5 @@
-import { getPanelContext } from "@/lib/panel-context";
+import { redirect } from "next/navigation";
+import { getPanelContext, puedeVer } from "@/lib/panel-context";
 import ClientesView from "./clientes-view";
 
 export default async function ClientesPage() {
@@ -6,6 +7,9 @@ export default async function ClientesPage() {
 
   if (!membership) {
     return null;
+  }
+  if (!puedeVer(membership.role, "/panel/clientes")) {
+    redirect("/panel/hoy");
   }
 
   const { data: clientes } = await supabase

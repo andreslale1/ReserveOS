@@ -1,4 +1,5 @@
-import { getPanelContext } from "@/lib/panel-context";
+import { redirect } from "next/navigation";
+import { getPanelContext, puedeVer } from "@/lib/panel-context";
 import FinanzasView from "./finanzas-view";
 
 export default async function FinanzasPage() {
@@ -6,6 +7,9 @@ export default async function FinanzasPage() {
 
   if (!membership) {
     return null;
+  }
+  if (!puedeVer(membership.role, "/panel/finanzas")) {
+    redirect("/panel/hoy");
   }
 
   const hoy = new Date();

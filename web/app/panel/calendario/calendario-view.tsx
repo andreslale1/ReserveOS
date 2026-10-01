@@ -33,7 +33,7 @@ export default function CalendarioView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-black/[0.06] bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-card px-6 py-6 md:px-10">
         <div>
           <h1 className="font-serif text-2xl text-ink md:text-3xl">
             Calendario
@@ -42,7 +42,7 @@ export default function CalendarioView({
             {fechaLegible}
           </p>
         </div>
-        <div className="flex overflow-hidden rounded-full border border-black/10 text-sm">
+        <div className="flex overflow-hidden rounded-full border border-white/15 text-sm">
           {["Día", "Semana", "Mes"].map((v, i) => (
             <span
               key={v}
@@ -57,7 +57,7 @@ export default function CalendarioView({
       <div className="overflow-x-auto px-6 py-8 md:px-10">
         <Reveal>
           <div
-            className="grid min-w-[720px] gap-px overflow-hidden rounded-2xl border border-black/[0.06] bg-black/[0.06]"
+            className="grid min-w-[720px] gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10"
             style={{
               gridTemplateColumns: `88px repeat(${recursos.length || 1}, 1fr)`,
             }}

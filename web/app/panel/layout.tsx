@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { getPanelContext, ROLE_LABEL } from "@/lib/panel-context";
+import { getPanelContext, ROLE_LABEL, puedeVer } from "@/lib/panel-context";
 
-const links = [
+const ALL_LINKS = [
   { href: "/panel/hoy", label: "Hoy" },
   { href: "/panel/calendario", label: "Calendario" },
   { href: "/panel/clientes", label: "Clientas" },
@@ -14,15 +14,19 @@ export default async function PanelLayout({
 }: LayoutProps<"/panel">) {
   const { membership, tenantName } = await getPanelContext();
 
+  const links = membership
+    ? ALL_LINKS.filter((l) => puedeVer(membership.role, l.href))
+    : [];
+
   return (
     <div className="flex min-h-screen flex-col bg-cream md:flex-row">
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-black/[0.06] bg-card px-4 py-6 md:flex">
+      <aside className="hidden w-60 shrink-0 flex-col border-r border-white/10 bg-card px-4 py-6 md:flex">
         <div className="flex items-center gap-2 px-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-peach">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path
                 d="M2 8.5L6 12.5L14 3.5"
-                stroke="#ffffff"
+                stroke="#0a0b08"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -54,7 +58,7 @@ export default async function PanelLayout({
         </div>
       </aside>
 
-      <nav className="flex items-center gap-1 overflow-x-auto border-b border-black/[0.06] bg-card px-4 py-3 md:hidden">
+      <nav className="flex items-center gap-1 overflow-x-auto border-b border-white/10 bg-card px-4 py-3 md:hidden">
         {links.map((l) => (
           <Link
             key={l.href}

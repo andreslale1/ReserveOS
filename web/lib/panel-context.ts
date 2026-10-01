@@ -10,6 +10,31 @@ export const ROLE_LABEL: Record<string, string> = {
   contadora: "Contadora",
 };
 
+const TODAS_LAS_RUTAS = [
+  "/panel/hoy",
+  "/panel/calendario",
+  "/panel/clientes",
+  "/panel/finanzas",
+  "/panel/automatizaciones",
+];
+
+// Visibilidad por rol -- mismo criterio que la matriz de permisos del
+// backend (role_permissions). Se usa tanto para el menu (panel/layout.tsx)
+// como para bloquear acceso directo por URL en cada page.tsx -- ocultar el
+// link del menu no es control de acceso real.
+export const NAV_POR_ROL: Record<string, string[]> = {
+  duena: TODAS_LAS_RUTAS,
+  gerente_general: TODAS_LAS_RUTAS,
+  admin_sede: TODAS_LAS_RUTAS,
+  recepcion: ["/panel/hoy", "/panel/calendario", "/panel/clientes"],
+  instructora: ["/panel/hoy", "/panel/calendario"],
+  contadora: ["/panel/hoy", "/panel/finanzas"],
+};
+
+export function puedeVer(role: string, ruta: string) {
+  return (NAV_POR_ROL[role] ?? TODAS_LAS_RUTAS).includes(ruta);
+}
+
 type Sede = { id: string; name: string; timezone: string };
 
 export async function getPanelContext() {
