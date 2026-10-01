@@ -20,5 +20,15 @@ export default async function DescuentosPage() {
     .eq("tenant_id", membership.tenant_id)
     .order("created_at", { ascending: false });
 
-  return <DescuentosView codigos={codigos ?? []} />;
+  const puedeGestionar = ["duena", "gerente_general", "admin_sede"].includes(
+    membership.role,
+  );
+
+  return (
+    <DescuentosView
+      tenantId={membership.tenant_id}
+      codigos={codigos ?? []}
+      puedeGestionar={puedeGestionar}
+    />
+  );
 }

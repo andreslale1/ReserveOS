@@ -66,38 +66,57 @@ export default async function ReservarPage() {
   const horarioIds = (horarios ?? []).map((h) => h.id);
   const fechas = dias.map((d) => d.fecha);
 
-  const { data: reservas } = horarioIds.length
-    ? await supabase
-        .from("reservas")
-        .select("horario_id, fecha, cliente_id, estado")
-        .in("horario_id", horarioIds)
-        .in("fecha", fechas)
-    : { data: [] };
+  // reservas_propia_select limita esta tabla a solo las reservas de la propia
+  // clienta -- para la ocupacion total (otras clientas) se usa el RPC
+  // agregado ocupacion_horarios, que nunca expone identidades ajenas.
+  const [{ data: misReservas }, { data: ocupacion }] = await Promise.all([
+    horarioIds.length
+      ? supabase
+          .from("reservas")
+          .select("horario_id, fecha")
+          .eq("cliente_id", cliente.id)
+          .eq("estado", "confirmada")
+          .in("horario_id", horarioIds)
+          .in("fecha", fechas)
+      : Promise.resolve({ data: [] }),
+    horarioIds.length
+      ? supabase.rpc("ocupacion_horarios", {
+          p_horario_ids: horarioIds,
+          p_fecha_inicio: fechas[0],
+          p_fecha_fin: fechas[fechas.length - 1],
+        })
+      : Promise.resolve({
+          data: [] as { horario_id: string; fecha: string; ocupados: number }[],
+        }),
+  ]);
 
   const clasesPorDia = dias.map((dia) => ({
     ...dia,
     clases: (horarios ?? [])
       .filter((h) => h.dia_semana === dia.dow)
       .map((h) => {
-        const reservasClase = (reservas ?? []).filter(
+        const ocupados =
+          (
+            (ocupacion ?? []) as {
+              horario_id: string;
+              fecha: string;
+              ocupados: number;
+            }[]
+          ).find((o) => o.horario_id === h.id && o.fecha === dia.fecha)
+            ?.ocupados ?? 0;
+        const miReserva = (misReservas ?? []).some(
           (r) => r.horario_id === h.id && r.fecha === dia.fecha,
-        );
-        const confirmadas = reservasClase.filter(
-          (r) => r.estado === "confirmada",
-        );
-        const miReserva = reservasClase.find(
-          (r) => r.cliente_id === cliente.id && r.estado === "confirmada",
         );
         return {
           id: h.id,
           nombre: h.nombre_clase,
           horaInicio: h.hora_inicio.slice(0, 5),
           cupoMaximo: h.cupo_maximo,
-          ocupados: confirmadas.length,
+          ocupados,
           instructora:
             (h.tenant_memberships as unknown as { nombre: string } | null)
               ?.nombre ?? "Sin asignar",
-          yaReservada: !!miReserva,
+          yaReservada: miReserva,
         };
       }),
   }));
