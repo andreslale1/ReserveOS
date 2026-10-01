@@ -1,0 +1,187 @@
+"use client";
+
+import { useState, useTransition } from "react";
+import { crearEstudio, cambiarEstadoEstudio } from "./actions";
+
+type Tenant = {
+  id: string;
+  slug: string;
+  name: string;
+  status: string;
+  created_at: string;
+  num_sedes: number;
+  num_staff: number;
+  num_clientas: number;
+};
+
+const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
+  activo: { label: "Activo", className: "bg-lime/15 text-lime" },
+  suspendido: { label: "Suspendido", className: "bg-yellow-500/15 text-yellow-400" },
+  cancelado: { label: "Cancelado", className: "bg-white/10 text-white/50" },
+};
+
+export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
+  const [mostrarForm, setMostrarForm] = useState(false);
+  const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [sedeNombre, setSedeNombre] = useState("Sede Principal");
+  const [isPending, startTransition] = useTransition();
+  const [mensaje, setMensaje] = useState<string | null>(null);
+
+  function crear() {
+    setMensaje(null);
+    startTransition(async () => {
+      const res = await crearEstudio({
+        slug,
+        name,
+        sedeNombre,
+        timezone: "America/Guatemala",
+      });
+      if (res.error) {
+        setMensaje(`Error: ${res.error}`);
+      } else {
+        setName("");
+        setSlug("");
+        setSedeNombre("Sede Principal");
+        setMostrarForm(false);
+      }
+    });
+  }
+
+  function cambiarEstado(tenantId: string, status: string) {
+    startTransition(() => {
+      cambiarEstadoEstudio(tenantId, status);
+    });
+  }
+
+  return (
+    <main className="mx-auto max-w-5xl px-6 py-10 md:px-10">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black uppercase tracking-tight text-white md:text-3xl">
+            Estudios
+          </h1>
+          <p className="mt-1 text-sm text-white/50">
+            {tenants.length} estudio{tenants.length === 1 ? "" : "s"} en la
+            plataforma.
+          </p>
+        </div>
+        <button
+          onClick={() => setMostrarForm((v) => !v)}
+          className="press-spring rounded-full bg-lime px-5 py-2 text-sm font-bold uppercase tracking-wide text-void"
+        >
+          {mostrarForm ? "Cancelar" : "+ Nuevo estudio"}
+        </button>
+      </div>
+
+      {mostrarForm && (
+        <div className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-void-card p-5 sm:grid-cols-3">
+          <label className="text-sm text-white/60">
+            Nombre
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="VIM Pilates"
+              className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+            />
+          </label>
+          <label className="text-sm text-white/60">
+            Slug
+            <input
+              type="text"
+              value={slug}
+              onChange={(e) =>
+                setSlug(
+                  e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+                )
+              }
+              placeholder="vim-pilates"
+              className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+            />
+          </label>
+          <label className="text-sm text-white/60">
+            Primera sede
+            <input
+              type="text"
+              value={sedeNombre}
+              onChange={(e) => setSedeNombre(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+            />
+          </label>
+          <div className="sm:col-span-3">
+            <button
+              onClick={crear}
+              disabled={isPending || !name || !slug}
+              className="press-spring rounded-full bg-white px-6 py-2.5 text-sm font-bold uppercase tracking-wide text-void disabled:opacity-50"
+            >
+              {isPending ? "Creando…" : "Crear estudio"}
+            </button>
+            {mensaje && (
+              <span className="ml-4 text-sm text-white/50">{mensaje}</span>
+            )}
+            <p className="mt-3 text-xs text-white/40">
+              Esto crea el tenant y su primera sede. Dar de alta a la dueña
+              (usuario + acceso) todavía se hace a mano por mí — falta
+              construir la invitación de personal (P06 de la matriz).
+            </p>
+          </div>
+        </div>
+      )}
+
+      <ul className="mt-8 space-y-2">
+        {tenants.map((t) => {
+          const estado = ESTADO_LABEL[t.status] ?? ESTADO_LABEL.cancelado;
+          return (
+            <li
+              key={t.id}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-void-card p-5"
+            >
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-white">
+                    {t.name}
+                  </span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${estado.className}`}
+                  >
+                    {estado.label}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-white/40">
+                  {t.slug} · {t.num_sedes} sede{t.num_sedes === 1 ? "" : "s"} ·{" "}
+                  {t.num_staff} staff · {t.num_clientas} clientas
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {t.status !== "activo" && (
+                  <button
+                    disabled={isPending}
+                    onClick={() => cambiarEstado(t.id, "activo")}
+                    className="rounded-full border border-lime/30 px-3 py-1 text-xs text-lime hover:bg-lime/10"
+                  >
+                    Activar
+                  </button>
+                )}
+                {t.status === "activo" && (
+                  <button
+                    disabled={isPending}
+                    onClick={() => cambiarEstado(t.id, "suspendido")}
+                    className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60 hover:text-white"
+                  >
+                    Suspender
+                  </button>
+                )}
+              </div>
+            </li>
+          );
+        })}
+        {tenants.length === 0 && (
+          <li className="rounded-2xl border border-dashed border-white/15 bg-void-card p-8 text-center text-sm text-white/40">
+            No hay estudios todavía.
+          </li>
+        )}
+      </ul>
+    </main>
+  );
+}

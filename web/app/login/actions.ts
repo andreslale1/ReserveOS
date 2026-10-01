@@ -18,5 +18,21 @@ export async function login(formData: FormData) {
     redirect(`/login?error=${encodeURIComponent(error.message)}&next=${encodeURIComponent(next)}`);
   }
 
+  if (next === "/panel") {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { data: esOperador } = user
+      ? await supabase
+          .from("plataforma_staff")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle()
+      : { data: null };
+    if (esOperador) {
+      redirect("/owner");
+    }
+  }
+
   redirect(next);
 }
