@@ -8,24 +8,24 @@ export default async function LoginPage({
   const { error, next } = await searchParams;
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-cream px-6">
-      <div className="w-full max-w-sm rounded-[2rem] border border-black/[0.06] bg-card p-8 shadow-[0_30px_60px_-30px_rgba(17,17,17,0.25)]">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-peach">
+    <main className="flex min-h-screen items-center justify-center bg-void px-6">
+      <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-void-card p-8 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)]">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lime shadow-[0_0_20px_-2px_rgba(198,255,58,0.6)]">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M2 8.5L6 12.5L14 3.5"
-              stroke="#ffffff"
-              strokeWidth="2"
+              stroke="#0a0b08"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
         </span>
 
-        <h1 className="mt-5 text-2xl font-semibold tracking-tight text-ink">
+        <h1 className="mt-5 text-2xl font-black uppercase tracking-tight text-white">
           Entrar a ReserveOS
         </h1>
-        <p className="mt-1 text-sm text-ink/60">
+        <p className="mt-1 text-sm text-white/50">
           Panel del estudio y operación diaria.
         </p>
 
@@ -35,7 +35,7 @@ export default async function LoginPage({
           <div>
             <label
               htmlFor="email"
-              className="mb-1.5 block text-xs font-medium text-ink/70"
+              className="mb-1.5 block text-xs font-medium text-white/60"
             >
               Correo
             </label>
@@ -45,14 +45,14 @@ export default async function LoginPage({
               type="email"
               required
               autoComplete="email"
-              className="w-full rounded-xl border border-black/10 bg-cream px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-peach"
+              className="w-full rounded-xl border border-white/10 bg-void px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-lime"
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="mb-1.5 block text-xs font-medium text-ink/70"
+              className="mb-1.5 block text-xs font-medium text-white/60"
             >
               Contraseña
             </label>
@@ -62,19 +62,19 @@ export default async function LoginPage({
               type="password"
               required
               autoComplete="current-password"
-              className="w-full rounded-xl border border-black/10 bg-cream px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-peach"
+              className="w-full rounded-xl border border-white/10 bg-void px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-lime"
             />
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
+            <p className="rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-300">
               {error}
             </p>
           )}
 
           <button
             type="submit"
-            className="press-spring mt-2 w-full rounded-full bg-peach py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-peach/85"
+            className="press-spring mt-2 w-full rounded-full bg-lime py-2.5 text-sm font-bold uppercase tracking-wide text-void shadow-[0_0_30px_-6px_rgba(198,255,58,0.7)] transition-colors duration-200 hover:bg-lime/85"
           >
             Entrar
           </button>
