@@ -5,6 +5,7 @@ const links = [
   { href: "/panel/hoy", label: "Hoy" },
   { href: "/panel/calendario", label: "Calendario" },
   { href: "/panel/clientes", label: "Clientas" },
+  { href: "/panel/finanzas", label: "Finanzas" },
 ];
 
 export default async function PanelLayout({
