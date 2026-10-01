@@ -19,6 +19,7 @@ const TODAS_LAS_RUTAS = [
   "/panel/tienda",
   "/panel/descuentos",
   "/panel/negocio",
+  "/panel/personal",
   "/panel/automatizaciones",
 ];
 
@@ -37,6 +38,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/caja",
     "/panel/tienda",
     "/panel/descuentos",
+    "/panel/personal",
     "/panel/automatizaciones",
   ],
   recepcion: [

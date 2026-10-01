@@ -10,6 +10,7 @@ const ALL_LINKS = [
   { href: "/panel/finanzas", label: "Finanzas" },
   { href: "/panel/descuentos", label: "Descuentos" },
   { href: "/panel/negocio", label: "Negocio" },
+  { href: "/panel/personal", label: "Personal" },
   { href: "/panel/automatizaciones", label: "Automatizaciones" },
 ];
 
