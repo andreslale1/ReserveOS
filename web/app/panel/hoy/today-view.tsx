@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Reveal from "@/components/reveal";
 
 type Clase = {
@@ -129,6 +130,12 @@ export default function TodayView({
                     </div>
 
                     <div className="flex items-center gap-4">
+                      <Link
+                        href={`/panel/clase/${c.id}/${fecha}`}
+                        className="rounded-full border border-white/15 px-3 py-1 text-xs text-ink/70 hover:text-ink"
+                      >
+                        Abrir clase
+                      </Link>
                       <div className="flex -space-x-2">
                         {c.clientas.slice(0, 4).map((nombreClienta, j) => (
                           <span

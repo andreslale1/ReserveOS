@@ -13,6 +13,10 @@ const ALL_LINKS = [
   { href: "/panel/descuentos", label: "Descuentos" },
   { href: "/panel/negocio", label: "Negocio" },
   { href: "/panel/personal", label: "Personal" },
+  { href: "/panel/sedes", label: "Sedes" },
+  { href: "/panel/reportes", label: "Reportes" },
+  { href: "/panel/seguimiento", label: "Seguimiento" },
+  { href: "/panel/auditoria", label: "Auditoría" },
   { href: "/panel/automatizaciones", label: "Automatizaciones" },
 ];
 
