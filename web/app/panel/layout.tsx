@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getPanelContext, ROLE_LABEL, puedeVer } from "@/lib/panel-context";
+import { getPanelContext, ROLE_LABEL, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 
 const ALL_LINKS = [
   { href: "/panel/hoy", label: "Hoy" },
@@ -27,10 +27,12 @@ const ALL_LINKS = [
 export default async function PanelLayout({
   children,
 }: LayoutProps<"/panel">) {
-  const { membership, tenantName } = await getPanelContext();
+  const { membership, tenantName, modulos } = await getPanelContext();
 
   const links = membership
-    ? ALL_LINKS.filter((l) => puedeVer(membership.role, l.href))
+    ? ALL_LINKS.filter(
+        (l) => puedeVer(membership.role, l.href) && rutaHabilitada(modulos, l.href),
+      )
     : [];
 
   return (

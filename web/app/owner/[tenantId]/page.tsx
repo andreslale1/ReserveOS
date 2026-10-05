@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getOwnerContext } from "@/lib/owner-context";
+import PlanModulos from "./plan-modulos";
 
 const DIAS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 
@@ -30,6 +31,14 @@ export default async function OwnerTenantPage({
   const { data, error } = await supabase.rpc("owner_tenant_detalle", {
     p_tenant_id: tenantId,
   });
+
+  const [{ data: modulos }, { data: planes }, { data: sus }] = await Promise.all([
+    supabase.rpc("modulos_tenant", { p_tenant_id: tenantId }),
+    supabase.rpc("planes_listar"),
+    supabase.rpc("plataforma_estudios_cobro"),
+  ]);
+  const planActual =
+    ((sus ?? []) as { tenant_id: string; plan: string | null }[]).find((x) => x.tenant_id === tenantId)?.plan ?? null;
 
   if (error || !data) {
     return (
@@ -93,6 +102,13 @@ export default async function OwnerTenantPage({
           </p>
         </div>
       </div>
+
+      <PlanModulos
+        tenantId={tenantId}
+        modulos={(modulos ?? []) as { key: string; nombre: string; descripcion: string; depende_de: string[]; activo: boolean }[]}
+        planes={(planes ?? []) as { key: string; nombre: string; precio_mensual: number; max_sedes: number | null }[]}
+        planActual={planActual}
+      />
 
       <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-white/40">
         Sedes

@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
-import { getPanelContext, puedeVer } from "@/lib/panel-context";
+import { getPanelContext, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 import RegistroView from "./registro-view";
 
 export default async function RegistroPage() {
-  const { supabase, membership, sedes } = await getPanelContext();
+  const { supabase, membership, sedes, modulos } = await getPanelContext();
   if (!membership) return null;
-  if (!puedeVer(membership.role, "/panel/finanzas/registro")) redirect("/panel/hoy");
+  if (!puedeVer(membership.role, "/panel/finanzas/registro") || !rutaHabilitada(modulos, "/panel/finanzas/registro")) redirect("/panel/hoy");
 
   const t = membership.tenant_id;
   const mes = new Date().toISOString().slice(0, 7) + "-01";

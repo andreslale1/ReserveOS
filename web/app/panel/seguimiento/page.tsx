@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getPanelContext, puedeVer } from "@/lib/panel-context";
+import { getPanelContext, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 
 type Fuga = {
   cliente_id: string;
@@ -13,9 +13,9 @@ type Fuga = {
 type Pend = { id: string; nombre: string; telefono: string };
 
 export default async function SeguimientoPage() {
-  const { supabase, membership } = await getPanelContext();
+  const { supabase, membership, modulos } = await getPanelContext();
   if (!membership) return null;
-  if (!puedeVer(membership.role, "/panel/seguimiento")) redirect("/panel/hoy");
+  if (!puedeVer(membership.role, "/panel/seguimiento") || !rutaHabilitada(modulos, "/panel/seguimiento")) redirect("/panel/hoy");
 
   const tenantId = membership.tenant_id;
   const [{ data: fuga }, { data: pendientes }, { data: porVencer }] = await Promise.all([

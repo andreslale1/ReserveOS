@@ -67,6 +67,21 @@ export const NAV_POR_ROL: Record<string, string[]> = {
   contadora: ["/panel/hoy", "/panel/finanzas", "/panel/finanzas/registro", "/panel/caja"],
 };
 
+// Módulo contratado que habilita cada pantalla (las no listadas son del núcleo).
+const RUTA_MODULO: Record<string, string> = {
+  "/panel/tienda": "tienda_inventario",
+  "/panel/descuentos": "descuentos_gift_cards",
+  "/panel/caja": "cobros_caja_pos",
+  "/panel/finanzas/registro": "finanzas_gastos",
+  "/panel/seguimiento": "crm_segmentos",
+  "/panel/pagos-pendientes": "cobros_transferencia",
+};
+
+export function rutaHabilitada(modulos: string[], ruta: string) {
+  const req = RUTA_MODULO[ruta];
+  return !req || modulos.includes(req);
+}
+
 export function puedeVer(role: string, ruta: string) {
   return (NAV_POR_ROL[role] ?? TODAS_LAS_RUTAS).includes(ruta);
 }
@@ -97,8 +112,14 @@ export async function getPanelContext() {
       membership: null,
       sedes: [] as Sede[],
       tenantName: "",
+      modulos: [] as string[],
     };
   }
+
+  const { data: modulosData } = await supabase.rpc("mis_modulos", {
+    p_tenant_id: membership.tenant_id,
+  });
+  const modulos = (modulosData as string[] | null) ?? [];
 
   const esDuenaOGerente =
     membership.role === "duena" || membership.role === "gerente_general";
@@ -125,6 +146,7 @@ export async function getPanelContext() {
     user,
     membership,
     sedes,
+    modulos,
     tenantName:
       (membership.tenants as unknown as { name: string } | null)?.name ?? "",
   };

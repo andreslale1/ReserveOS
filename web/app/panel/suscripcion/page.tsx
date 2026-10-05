@@ -10,6 +10,8 @@ export default async function SuscripcionPage() {
 
   const { data } = await supabase.rpc("mi_suscripcion", { p_tenant_id: membership.tenant_id });
   const s = (data as { suscripcion: { plan: string; precio_mensual: number; dia_cobro: number; estado: string; fecha_alta: string } | null; cobros: Cobro[] } | null) ?? null;
+  const { data: mods } = await supabase.rpc("modulos_tenant", { p_tenant_id: membership.tenant_id });
+  const incluidos = ((mods ?? []) as { nombre: string; activo: boolean }[]).filter((m) => m.activo);
   const hoy = new Date().toISOString().slice(0, 10);
   const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
 
@@ -28,6 +30,14 @@ export default async function SuscripcionPage() {
           ) : (
             <p className="text-sm text-ink/60">Todavía no tienes una suscripción registrada. Contacta a ReserveOS.</p>
           )}
+        </section>
+        <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <h2 className="text-base font-semibold text-ink">Qué incluye tu plan</h2>
+          <ul className="mt-3 grid gap-1 sm:grid-cols-2">
+            {incluidos.map((m) => (
+              <li key={m.nombre} className="text-sm text-ink">✓ {m.nombre}</li>
+            ))}
+          </ul>
         </section>
         <section className="rounded-2xl border border-white/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Pagos</h2>

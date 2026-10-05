@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
-import { getPanelContext, puedeVer } from "@/lib/panel-context";
+import { getPanelContext, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 import PagosPendientesView from "./pagos-pendientes-view";
 
 export default async function PagosPendientesPage() {
-  const { supabase, membership } = await getPanelContext();
+  const { supabase, membership, modulos } = await getPanelContext();
 
   if (!membership) {
     return null;
   }
-  if (!puedeVer(membership.role, "/panel/pagos-pendientes")) {
+  if (!puedeVer(membership.role, "/panel/pagos-pendientes") || !rutaHabilitada(modulos, "/panel/pagos-pendientes")) {
     redirect("/panel/hoy");
   }
 

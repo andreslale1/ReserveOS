@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
-import { getPanelContext, puedeVer, fechaYDowEnSede } from "@/lib/panel-context";
+import { getPanelContext, puedeVer, fechaYDowEnSede, rutaHabilitada } from "@/lib/panel-context";
 import CajaView from "./caja-view";
 
 export default async function CajaPage() {
-  const { supabase, membership, sedes } = await getPanelContext();
+  const { supabase, membership, sedes, modulos } = await getPanelContext();
 
   if (!membership) {
     return null;
   }
-  if (!puedeVer(membership.role, "/panel/caja")) {
+  if (!puedeVer(membership.role, "/panel/caja") || !rutaHabilitada(modulos, "/panel/caja")) {
     redirect("/panel/hoy");
   }
 

@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
-import { getPanelContext, puedeVer } from "@/lib/panel-context";
+import { getPanelContext, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 import TiendaView from "./tienda-view";
 
 export default async function TiendaPage() {
-  const { supabase, membership } = await getPanelContext();
+  const { supabase, membership, modulos } = await getPanelContext();
 
   if (!membership) {
     return null;
   }
-  if (!puedeVer(membership.role, "/panel/tienda")) {
+  if (!puedeVer(membership.role, "/panel/tienda") || !rutaHabilitada(modulos, "/panel/tienda")) {
     redirect("/panel/hoy");
   }
 
