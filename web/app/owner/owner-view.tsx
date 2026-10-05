@@ -25,8 +25,11 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [sedeNombre, setSedeNombre] = useState("Sede Principal");
+  const [duenaEmail, setDuenaEmail] = useState("");
+  const [duenaNombre, setDuenaNombre] = useState("");
   const [isPending, startTransition] = useTransition();
   const [mensaje, setMensaje] = useState<string | null>(null);
+  const [invLink, setInvLink] = useState<string | null>(null);
 
   function crear() {
     setMensaje(null);
@@ -36,16 +39,26 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
         name,
         sedeNombre,
         timezone: "America/Guatemala",
+        duenaEmail,
+        duenaNombre,
       });
       if (res.error) {
         setMensaje(`Error: ${res.error}`);
-      } else {
-        setName("");
-        setSlug("");
-        setSedeNombre("Sede Principal");
-        setMostrarForm(false);
+      } else if (res.token) {
+        setInvLink(`${window.location.origin}/invitar/personal/${res.token}`);
       }
     });
+  }
+
+  function nuevoEstudio() {
+    setName("");
+    setSlug("");
+    setSedeNombre("Sede Principal");
+    setDuenaEmail("");
+    setDuenaNombre("");
+    setInvLink(null);
+    setMensaje(null);
+    setMostrarForm(false);
   }
 
   function cambiarEstado(tenantId: string, status: string) {
@@ -67,7 +80,7 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
           </p>
         </div>
         <button
-          onClick={() => setMostrarForm((v) => !v)}
+          onClick={() => (mostrarForm ? nuevoEstudio() : setMostrarForm(true))}
           className="press-spring rounded-full bg-lime px-5 py-2 text-sm font-bold uppercase tracking-wide text-void"
         >
           {mostrarForm ? "Cancelar" : "+ Nuevo estudio"}
@@ -75,57 +88,104 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
       </div>
 
       {mostrarForm && (
-        <div className="mt-6 grid gap-4 rounded-2xl border border-white/10 bg-void-card p-5 sm:grid-cols-3">
-          <label className="text-sm text-white/60">
-            Nombre
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="VIM Pilates"
-              className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
-            />
-          </label>
-          <label className="text-sm text-white/60">
-            Slug
-            <input
-              type="text"
-              value={slug}
-              onChange={(e) =>
-                setSlug(
-                  e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
-                )
-              }
-              placeholder="vim-pilates"
-              className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
-            />
-          </label>
-          <label className="text-sm text-white/60">
-            Primera sede
-            <input
-              type="text"
-              value={sedeNombre}
-              onChange={(e) => setSedeNombre(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
-            />
-          </label>
-          <div className="sm:col-span-3">
-            <button
-              onClick={crear}
-              disabled={isPending || !name || !slug}
-              className="press-spring rounded-full bg-white px-6 py-2.5 text-sm font-bold uppercase tracking-wide text-void disabled:opacity-50"
-            >
-              {isPending ? "Creando…" : "Crear estudio"}
-            </button>
-            {mensaje && (
-              <span className="ml-4 text-sm text-white/50">{mensaje}</span>
-            )}
-            <p className="mt-3 text-xs text-white/40">
-              Esto crea el tenant y su primera sede. Dar de alta a la dueña
-              (usuario + acceso) todavía se hace a mano por mí — falta
-              construir la invitación de personal (P06 de la matriz).
-            </p>
-          </div>
+        <div className="mt-6 rounded-2xl border border-white/10 bg-void-card p-5">
+          {invLink ? (
+            <div>
+              <p className="text-sm font-medium text-white">
+                Estudio creado — mandale este link a la dueña:
+              </p>
+              <div className="mt-2 flex items-center gap-2">
+                <input
+                  readOnly
+                  value={invLink}
+                  onFocus={(e) => e.target.select()}
+                  className="w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-xs text-white"
+                />
+                <button
+                  onClick={() => navigator.clipboard.writeText(invLink)}
+                  className="shrink-0 rounded-full border border-white/15 px-3 py-2 text-xs text-white/60 hover:text-white"
+                >
+                  Copiar
+                </button>
+              </div>
+              <button
+                onClick={nuevoEstudio}
+                className="mt-4 text-xs text-white/50 underline"
+              >
+                Crear otro estudio
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-3">
+              <label className="text-sm text-white/60">
+                Nombre del estudio
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="VIM Pilates"
+                  className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+                />
+              </label>
+              <label className="text-sm text-white/60">
+                Slug
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) =>
+                    setSlug(
+                      e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"),
+                    )
+                  }
+                  placeholder="vim-pilates"
+                  className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+                />
+              </label>
+              <label className="text-sm text-white/60">
+                Primera sede
+                <input
+                  type="text"
+                  value={sedeNombre}
+                  onChange={(e) => setSedeNombre(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+                />
+              </label>
+              <label className="text-sm text-white/60">
+                Nombre de la dueña
+                <input
+                  type="text"
+                  value={duenaNombre}
+                  onChange={(e) => setDuenaNombre(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+                />
+              </label>
+              <label className="text-sm text-white/60 sm:col-span-2">
+                Correo de la dueña
+                <input
+                  type="email"
+                  value={duenaEmail}
+                  onChange={(e) => setDuenaEmail(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+                />
+              </label>
+              <div className="sm:col-span-3">
+                <button
+                  onClick={crear}
+                  disabled={
+                    isPending || !name || !slug || !duenaEmail || !duenaNombre
+                  }
+                  className="press-spring rounded-full bg-white px-6 py-2.5 text-sm font-bold uppercase tracking-wide text-void disabled:opacity-50"
+                >
+                  {isPending ? "Creando…" : "Crear estudio"}
+                </button>
+                {mensaje && (
+                  <span className="ml-4 text-sm text-white/50">
+                    {mensaje}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

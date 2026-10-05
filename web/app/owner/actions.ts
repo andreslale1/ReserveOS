@@ -27,24 +27,41 @@ export async function crearEstudio(input: {
   name: string;
   sedeNombre: string;
   timezone: string;
+  duenaEmail: string;
+  duenaNombre: string;
 }) {
   const check = await verificarOperador();
   if (!check.ok) {
-    return { error: check.error };
+    return { error: check.error, token: null };
   }
 
-  const { error } = await check.supabase.rpc("crear_tenant_plataforma", {
-    p_slug: input.slug,
-    p_name: input.name,
-    p_sede_nombre: input.sedeNombre,
-    p_timezone: input.timezone || "America/Guatemala",
-  });
-  if (error) {
-    return { error: error.message };
+  const { data: creado, error } = await check.supabase.rpc(
+    "crear_tenant_plataforma",
+    {
+      p_slug: input.slug,
+      p_name: input.name,
+      p_sede_nombre: input.sedeNombre,
+      p_timezone: input.timezone || "America/Guatemala",
+    },
+  );
+  if (error || !creado?.[0]) {
+    return { error: error?.message ?? "No se pudo crear el estudio", token: null };
+  }
+
+  const { data: token, error: errorInv } = await check.supabase.rpc(
+    "invitar_primera_duena_plataforma",
+    {
+      p_tenant_id: creado[0].tenant_id,
+      p_email: input.duenaEmail,
+      p_nombre: input.duenaNombre,
+    },
+  );
+  if (errorInv) {
+    return { error: errorInv.message, token: null };
   }
 
   revalidatePath("/owner");
-  return { error: null };
+  return { error: null, token: token as string };
 }
 
 export async function cambiarEstadoEstudio(tenantId: string, status: string) {
