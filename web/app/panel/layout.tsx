@@ -5,6 +5,7 @@ const ALL_LINKS = [
   { href: "/panel/hoy", label: "Hoy" },
   { href: "/panel/calendario", label: "Calendario" },
   { href: "/panel/clientes", label: "Clientas" },
+  { href: "/panel/pagos-pendientes", label: "Pagos pendientes" },
   { href: "/panel/caja", label: "Caja" },
   { href: "/panel/tienda", label: "Tienda" },
   { href: "/panel/finanzas", label: "Finanzas" },
