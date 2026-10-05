@@ -10,6 +10,7 @@ export default function ConfiguracionView({
   tenantId,
   nombre: n0,
   slug,
+  baseUrl,
   color: c0,
   logo: l0,
   dominios,
@@ -17,6 +18,7 @@ export default function ConfiguracionView({
   tenantId: string;
   nombre: string;
   slug: string;
+  baseUrl: string;
   color: string;
   logo: string;
   dominios: { domain: string; verified: boolean }[];
@@ -65,6 +67,15 @@ export default function ConfiguracionView({
           >
             Guardar
           </button>
+        </section>
+        <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <h2 className="text-base font-semibold text-ink">Conectar con la web de tu estudio</h2>
+          <p className="mt-2 text-sm text-ink/70">Tu página pública con horarios y botón de reserva:</p>
+          <p className="mt-1 break-all rounded-lg bg-cream px-3 py-2 text-sm text-ink">{baseUrl}/e/{slug}</p>
+          <p className="mt-4 text-sm text-ink/70">Para mostrar el horario dentro de tu web, pega este código:</p>
+          <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<iframe src="${baseUrl}/e/${slug}" width="100%" height="900" style="border:0"></iframe>`}</pre>
+          <p className="mt-4 text-sm text-ink/70">O solo un botón que lleve a tus clientas a reservar:</p>
+          <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<a href="${baseUrl}/login?next=/reservar">Reservar mi clase</a>`}</pre>
         </section>
         <section className="rounded-2xl border border-white/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Dirección web</h2>

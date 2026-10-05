@@ -30,6 +30,7 @@ const TODAS_LAS_RUTAS = [
   "/panel/finanzas/registro",
   "/panel/configuracion",
   "/panel/agenda-personal",
+  "/panel/suscripcion",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del

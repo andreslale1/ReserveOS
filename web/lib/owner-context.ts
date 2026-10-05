@@ -13,7 +13,7 @@ export async function getOwnerContext() {
 
   const { data: operador } = await supabase
     .from("plataforma_staff")
-    .select("id, nombre")
+    .select("id, nombre, rol")
     .eq("user_id", user.id)
     .maybeSingle();
 

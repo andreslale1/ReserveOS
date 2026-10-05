@@ -14,6 +14,7 @@ const ALL_LINKS = [
   { href: "/panel/descuentos", label: "Descuentos" },
   { href: "/panel/negocio", label: "Negocio" },
   { href: "/panel/configuracion", label: "Configuración" },
+  { href: "/panel/suscripcion", label: "Mi suscripción" },
   { href: "/panel/personal", label: "Personal" },
   { href: "/panel/agenda-personal", label: "Agenda del personal" },
   { href: "/panel/sedes", label: "Sedes" },

@@ -18,6 +18,7 @@ export default async function ConfiguracionPage() {
       tenantId={membership.tenant_id}
       nombre={t?.name ?? ""}
       slug={t?.slug ?? ""}
+      baseUrl={process.env.NEXT_PUBLIC_SITE_URL ?? "https://reserveos-andreslale1s-projects.vercel.app"}
       color={b.color_primario ?? ""}
       logo={b.logo_url ?? ""}
       dominios={dominios ?? []}
