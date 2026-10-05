@@ -3,7 +3,7 @@ import { getPanelContext, puedeVer } from "@/lib/panel-context";
 import ClientesView from "./clientes-view";
 
 export default async function ClientesPage() {
-  const { supabase, membership } = await getPanelContext();
+  const { supabase, membership, sedes } = await getPanelContext();
 
   if (!membership) {
     return null;
@@ -62,9 +62,16 @@ export default async function ClientesPage() {
     };
   });
 
+  const puedeCrear = ["duena", "gerente_general", "admin_sede", "recepcion"].includes(
+    membership.role,
+  );
+
   return (
     <ClientesView
       clientes={filas}
+      tenantId={membership.tenant_id}
+      sedes={sedes}
+      puedeCrear={puedeCrear}
       puedeExportar={["duena", "gerente_general"].includes(membership.role)}
     />
   );

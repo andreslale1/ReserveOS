@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { obtenerDetalleCliente } from "./actions";
+import { crearCliente, obtenerDetalleCliente } from "./actions";
 
 type Fila = {
   id: string;
@@ -15,6 +15,7 @@ type Fila = {
   ultimaVisita: string | null;
   ltv: number;
 };
+type Sede = { id: string; name: string };
 
 const FILTROS = ["Todas", "Activas", "Inactivas"] as const;
 
@@ -33,15 +34,53 @@ const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
 
 export default function ClientesView({
   clientes,
+  tenantId,
+  sedes,
+  puedeCrear,
   puedeExportar,
 }: {
   clientes: Fila[];
+  tenantId: string;
+  sedes: Sede[];
+  puedeCrear: boolean;
   puedeExportar: boolean;
 }) {
   const [abierto, setAbierto] = useState<Fila | null>(null);
   const [detalle, setDetalle] = useState<Detalle | null>(null);
   const [isPending, startTransition] = useTransition();
   const [filtro, setFiltro] = useState<(typeof FILTROS)[number]>("Todas");
+
+  const [mostrarAlta, setMostrarAlta] = useState(false);
+  const [nombre, setNombre] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [email, setEmail] = useState("");
+  const [sedeHabitual, setSedeHabitual] = useState("");
+  const [comoSeEntero, setComoSeEntero] = useState("");
+  const [errorAlta, setErrorAlta] = useState<string | null>(null);
+
+  function crear() {
+    setErrorAlta(null);
+    startTransition(async () => {
+      const res = await crearCliente({
+        tenantId,
+        nombre,
+        telefono,
+        email,
+        sedeHabitualId: sedeHabitual || null,
+        comoSeEntero,
+      });
+      if (res.error) {
+        setErrorAlta(res.error);
+      } else {
+        setNombre("");
+        setTelefono("");
+        setEmail("");
+        setSedeHabitual("");
+        setComoSeEntero("");
+        setMostrarAlta(false);
+      }
+    });
+  }
 
   function abrir(fila: Fila) {
     setAbierto(fila);
@@ -73,17 +112,103 @@ export default function ClientesView({
             {clientes.length} clientas registradas
           </p>
         </div>
-        {puedeExportar && (
-          <a
-            href="/panel/clientes/export"
-            className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink/70 hover:text-ink"
-          >
-            Exportar CSV
-          </a>
-        )}
+        <div className="flex items-center gap-3">
+          {puedeExportar && (
+            <a
+              href="/panel/clientes/export"
+              className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink/70 hover:text-ink"
+            >
+              Exportar CSV
+            </a>
+          )}
+          {puedeCrear && (
+            <button
+              onClick={() => setMostrarAlta((v) => !v)}
+              className="press-spring rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream"
+            >
+              {mostrarAlta ? "Cancelar" : "+ Nueva clienta"}
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
+        {mostrarAlta && (
+          <div className="mb-6 grid gap-4 rounded-2xl border border-white/10 bg-card p-5 sm:grid-cols-2">
+            <label className="text-sm text-ink/60">
+              Nombre
+              <input
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+              />
+            </label>
+            <label className="text-sm text-ink/60">
+              Teléfono
+              <input
+                type="tel"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+              />
+            </label>
+            <label className="text-sm text-ink/60">
+              Email (opcional)
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+              />
+            </label>
+            {sedes.length > 0 && (
+              <label className="text-sm text-ink/60">
+                Sede habitual (opcional)
+                <select
+                  value={sedeHabitual}
+                  onChange={(e) => setSedeHabitual(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+                >
+                  <option value="">Sin preferencia</option>
+                  {sedes.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label className="text-sm text-ink/60 sm:col-span-2">
+              ¿Cómo se enteró? (opcional)
+              <input
+                type="text"
+                value={comoSeEntero}
+                onChange={(e) => setComoSeEntero(e.target.value)}
+                placeholder="Instagram, referido, Google..."
+                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+              />
+            </label>
+            <div className="sm:col-span-2">
+              <button
+                onClick={crear}
+                disabled={isPending || !nombre || !telefono}
+                className="press-spring rounded-full bg-ink px-6 py-2.5 text-sm font-medium text-cream disabled:opacity-50"
+              >
+                {isPending ? "Creando…" : "Crear ficha"}
+              </button>
+              {errorAlta && (
+                <span className="ml-4 text-sm text-red-500">{errorAlta}</span>
+              )}
+              <p className="mt-3 text-xs text-ink/45">
+                Esto crea la ficha de la clienta. El acceso para que ella
+                misma reserve (login propio) todavía se activa a mano por
+                separado.
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="mb-5 flex gap-2">
           {FILTROS.map((f) => (
             <button

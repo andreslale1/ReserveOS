@@ -1,6 +1,31 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+
+export async function crearCliente(input: {
+  tenantId: string;
+  nombre: string;
+  telefono: string;
+  email: string;
+  sedeHabitualId: string | null;
+  comoSeEntero: string;
+}) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("crear_cliente", {
+    p_tenant_id: input.tenantId,
+    p_nombre: input.nombre,
+    p_telefono: input.telefono,
+    p_email: input.email || null,
+    p_sede_habitual_id: input.sedeHabitualId,
+    p_como_se_entero: input.comoSeEntero || null,
+  });
+  if (error) {
+    return { error: error.message };
+  }
+  revalidatePath("/panel/clientes");
+  return { error: null };
+}
 
 export async function obtenerDetalleCliente(clienteId: string) {
   const supabase = await createClient();
