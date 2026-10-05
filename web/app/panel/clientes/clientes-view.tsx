@@ -1,13 +1,14 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { crearCliente, obtenerDetalleCliente } from "./actions";
+import { crearCliente, crearInvitacionClienta, obtenerDetalleCliente } from "./actions";
 
 type Fila = {
   id: string;
   nombre: string;
   telefono: string;
   email: string | null;
+  tieneAcceso: boolean;
   estadoMembresia: string;
   clasesRestantes: number | null;
   vencimiento: string | null;
@@ -46,6 +47,7 @@ export default function ClientesView({
   puedeExportar: boolean;
 }) {
   const [abierto, setAbierto] = useState<Fila | null>(null);
+  const [invitarLink, setInvitarLink] = useState<string | null>(null);
   const [detalle, setDetalle] = useState<Detalle | null>(null);
   const [isPending, startTransition] = useTransition();
   const [filtro, setFiltro] = useState<(typeof FILTROS)[number]>("Todas");
@@ -85,9 +87,19 @@ export default function ClientesView({
   function abrir(fila: Fila) {
     setAbierto(fila);
     setDetalle(null);
+    setInvitarLink(null);
     startTransition(async () => {
       const d = await obtenerDetalleCliente(fila.id);
       setDetalle(d);
+    });
+  }
+
+  function invitar(clienteId: string) {
+    startTransition(async () => {
+      const res = await crearInvitacionClienta(clienteId);
+      if (!res.error && res.token) {
+        setInvitarLink(`${window.location.origin}/invitar/clienta/${res.token}`);
+      }
     });
   }
 
@@ -290,6 +302,44 @@ export default function ClientesView({
               {abierto.telefono}
               {abierto.email ? ` · ${abierto.email}` : ""}
             </p>
+
+            {abierto.tieneAcceso ? (
+              <p className="mt-2 text-xs text-sage">
+                Ya tiene acceso para reservar por su cuenta.
+              </p>
+            ) : !abierto.email ? (
+              <p className="mt-2 text-xs text-ink/45">
+                Agregale un correo para poder activarle el acceso.
+              </p>
+            ) : invitarLink ? (
+              <div className="mt-2">
+                <p className="text-xs text-ink/55">
+                  Mandale este link por WhatsApp o correo:
+                </p>
+                <div className="mt-1 flex items-center gap-2">
+                  <input
+                    readOnly
+                    value={invitarLink}
+                    onFocus={(e) => e.target.select()}
+                    className="w-full rounded-lg border border-ink/15 bg-cream px-2 py-1 text-xs text-ink"
+                  />
+                  <button
+                    onClick={() => navigator.clipboard.writeText(invitarLink)}
+                    className="shrink-0 rounded-full border border-ink/15 px-3 py-1 text-xs text-ink/60 hover:text-ink"
+                  >
+                    Copiar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                disabled={isPending}
+                onClick={() => invitar(abierto.id)}
+                className="mt-2 rounded-full border border-ink/15 px-3 py-1 text-xs text-ink/70 hover:text-ink"
+              >
+                Activar acceso
+              </button>
+            )}
 
             {isPending || !detalle ? (
               <p className="mt-8 text-sm text-ink/40">Cargando…</p>

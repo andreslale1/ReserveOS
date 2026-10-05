@@ -3,6 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
+export async function crearInvitacionClienta(clienteId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("crear_invitacion_clienta", {
+    p_cliente_id: clienteId,
+  });
+  if (error) {
+    return { error: error.message, token: null };
+  }
+  return { error: null, token: data as string };
+}
+
 export async function crearCliente(input: {
   tenantId: string;
   nombre: string;

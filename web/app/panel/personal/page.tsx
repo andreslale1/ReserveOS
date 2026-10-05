@@ -55,6 +55,8 @@ export default async function PersonalPage() {
       personal={personalConSedes}
       sedes={sedes ?? []}
       puedeEditar={puedeEditar}
+      tenantId={membership.tenant_id}
+      miRole={membership.role}
       esDuenaOGerente={["duena", "gerente_general"].includes(membership.role)}
     />
   );

@@ -15,7 +15,7 @@ export default async function ClientesPage() {
   const { data: clientes } = await supabase
     .from("clientes")
     .select(
-      "id, nombre, telefono, email, membresias(estado, clases_totales, clases_usadas, fecha_vencimiento, precio_final), reservas(fecha, asistio)",
+      "id, nombre, telefono, email, user_id, membresias(estado, clases_totales, clases_usadas, fecha_vencimiento, precio_final), reservas(fecha, asistio)",
     )
     .eq("tenant_id", membership.tenant_id)
     .order("nombre");
@@ -49,6 +49,7 @@ export default async function ClientesPage() {
       nombre: c.nombre,
       telefono: c.telefono,
       email: c.email,
+      tieneAcceso: c.user_id !== null,
       estadoMembresia: activa
         ? "activa"
         : (membresiasCliente[0]?.estado ?? "sin_paquete"),
