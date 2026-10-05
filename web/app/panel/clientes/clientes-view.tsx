@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { crearCliente, crearInvitacionClienta, obtenerDetalleCliente } from "./actions";
 
@@ -298,6 +299,12 @@ export default function ClientesView({
             <h2 className="mt-4 font-serif text-xl text-ink">
               {abierto.nombre}
             </h2>
+            <Link
+              href={`/panel/clientes/${abierto.id}`}
+              className="press-spring mt-3 inline-block rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream"
+            >
+              Abrir ficha completa
+            </Link>
             <p className="text-sm text-ink/55">
               {abierto.telefono}
               {abierto.email ? ` · ${abierto.email}` : ""}

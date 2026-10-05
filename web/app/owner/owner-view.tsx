@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { crearEstudio, cambiarEstadoEstudio } from "./actions";
 
@@ -197,9 +198,9 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
               key={t.id}
               className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-void-card p-5"
             >
-              <div>
+              <Link href={`/owner/${t.id}`} className="group">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold text-white">
+                  <span className="text-sm font-semibold text-white group-hover:underline">
                     {t.name}
                   </span>
                   <span
@@ -212,7 +213,7 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
                   {t.slug} · {t.num_sedes} sede{t.num_sedes === 1 ? "" : "s"} ·{" "}
                   {t.num_staff} staff · {t.num_clientas} clientas
                 </p>
-              </div>
+              </Link>
               <div className="flex items-center gap-2">
                 {t.status !== "activo" && (
                   <button
