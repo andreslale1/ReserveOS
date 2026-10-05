@@ -8,6 +8,19 @@ export default async function CalendarioPage() {
     return null;
   }
 
+  const puedeCrear = ["duena", "gerente_general", "admin_sede"].includes(
+    membership.role,
+  );
+
+  const { data: instructoras } = puedeCrear
+    ? await supabase
+        .from("tenant_memberships")
+        .select("id, nombre")
+        .eq("tenant_id", membership.tenant_id)
+        .eq("role", "instructora")
+        .order("nombre")
+    : { data: [] };
+
   const sedeIds = sedes.map((s) => s.id);
   const { dow, fecha } = fechaYDowEnSede(
     sedes[0]?.timezone ?? "America/Guatemala",
@@ -63,5 +76,16 @@ export default async function CalendarioPage() {
     cupoMaximo: h.cupo_maximo,
   }));
 
-  return <CalendarioView fecha={fecha} recursos={recursos} horas={horas} celdas={celdas} />;
+  return (
+    <CalendarioView
+      fecha={fecha}
+      recursos={recursos}
+      horas={horas}
+      celdas={celdas}
+      tenantId={membership.tenant_id}
+      sedes={sedes}
+      instructoras={instructoras ?? []}
+      puedeCrear={puedeCrear}
+    />
+  );
 }
