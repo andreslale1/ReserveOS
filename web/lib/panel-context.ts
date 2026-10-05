@@ -15,6 +15,7 @@ const TODAS_LAS_RUTAS = [
   "/panel/calendario",
   "/panel/clientes",
   "/panel/pagos-pendientes",
+  "/panel/paquetes",
   "/panel/finanzas",
   "/panel/caja",
   "/panel/tienda",
