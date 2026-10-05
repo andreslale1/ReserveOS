@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
-import { cambiarEtapa, eliminarLead, guardarLead } from "./actions";
+import { cambiarEtapa, crearProspecto, eliminarLead } from "./actions";
 
 export type Lead = {
   id: string;
@@ -27,7 +28,7 @@ const ETAPAS = [
   ["perdido", "Perdido"],
 ] as const;
 
-const vacio = { id: null as string | null, nombre: "", contacto: "", telefono: "", email: "", ciudad: "", tipo: "estudio", valor: "", etapa: "prospecto", proximoPaso: "", proximoPasoFecha: "", notas: "" };
+const vacio = { nombre: "", contacto: "", cargo: "", telefono: "", email: "", ciudad: "", sitioWeb: "", fuente: "", tipo: "estudio", valor: "", numSedes: "", planInteres: "", etapa: "prospecto", proximoPaso: "", proximoPasoFecha: "" };
 const input = "mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/60";
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
 
@@ -45,11 +46,6 @@ export default function PipelineView({ leads, resumen }: { leads: Lead[]; resume
       if (r.error) setMsg(r.error);
       else despues?.();
     });
-  }
-
-  function editar(l: Lead) {
-    setF({ id: l.id, nombre: l.nombre, contacto: l.contacto ?? "", telefono: l.telefono ?? "", email: l.email ?? "", ciudad: l.ciudad ?? "", tipo: l.tipo, valor: String(l.valor_mensual), etapa: l.etapa, proximoPaso: l.proximo_paso ?? "", proximoPasoFecha: l.proximo_paso_fecha ?? "", notas: l.notas ?? "" });
-    setAbierto(true);
   }
 
   return (
@@ -71,10 +67,10 @@ export default function PipelineView({ leads, resumen }: { leads: Lead[]; resume
       {abierto && (
         <section className="mt-6 rounded-2xl border border-white/10 bg-void-card p-5">
           <div className="grid gap-3 sm:grid-cols-3">
-            {([["nombre", "Gimnasio / estudio"], ["contacto", "Persona de contacto"], ["telefono", "Teléfono"], ["email", "Correo"], ["ciudad", "Ciudad"], ["valor", "Valor mensual (Q)"]] as const).map(([k, l]) => (
+            {([["nombre", "Gimnasio / estudio"], ["contacto", "Persona de contacto"], ["cargo", "Cargo"], ["telefono", "Teléfono"], ["email", "Correo"], ["ciudad", "Ciudad"], ["sitioWeb", "Sitio web"], ["fuente", "Cómo llegó (fuente)"], ["valor", "Valor mensual (Q)"], ["numSedes", "Número de sedes"], ["planInteres", "Plan de interés"]] as const).map(([k, l]) => (
               <label key={k} className="text-sm text-white/60">
                 {l}
-                <input value={f[k]} onChange={(e) => setF({ ...f, [k]: e.target.value })} className={input} type={k === "valor" ? "number" : "text"} />
+                <input value={f[k]} onChange={(e) => setF({ ...f, [k]: e.target.value })} className={input} type={k === "valor" || k === "numSedes" ? "number" : "text"} />
               </label>
             ))}
             <label className="text-sm text-white/60">
@@ -99,16 +95,12 @@ export default function PipelineView({ leads, resumen }: { leads: Lead[]; resume
               Fecha de la acción
               <input type="date" value={f.proximoPasoFecha} onChange={(e) => setF({ ...f, proximoPasoFecha: e.target.value })} className={input} />
             </label>
-            <label className="text-sm text-white/60 sm:col-span-2">
-              Notas
-              <input value={f.notas} onChange={(e) => setF({ ...f, notas: e.target.value })} className={input} />
-            </label>
           </div>
           <div className="mt-4 flex gap-3">
             <button
               className="rounded-full bg-lime px-4 py-2 text-sm font-semibold text-void disabled:opacity-50"
               disabled={isPending || !f.nombre.trim()}
-              onClick={() => correr(() => guardarLead({ ...f, valor: Number(f.valor || 0) }), () => { setF(vacio); setAbierto(false); })}
+              onClick={() => correr(() => crearProspecto({ ...f, valor: Number(f.valor || 0), numSedes: f.numSedes ? Number(f.numSedes) : null }), () => { setF(vacio); setAbierto(false); })}
             >
               Guardar
             </button>
@@ -128,7 +120,7 @@ export default function PipelineView({ leads, resumen }: { leads: Lead[]; resume
               <ul className="mt-3 space-y-2">
                 {col.map((l) => (
                   <li key={l.id} className="rounded-xl border border-white/10 bg-void p-3 text-sm">
-                    <button className="text-left font-medium text-white hover:text-lime" onClick={() => editar(l)}>{l.nombre}</button>
+                    <Link href={`/owner/pipeline/${l.id}`} className="font-medium text-white hover:text-lime">{l.nombre}</Link>
                     <p className="text-xs text-white/50">{l.tipo}{l.ciudad ? ` · ${l.ciudad}` : ""} · {q(l.valor_mensual)}/mes</p>
                     {l.proximo_paso && (
                       <p className={`mt-1 text-xs ${l.proximo_paso_fecha && l.proximo_paso_fecha < hoy ? "text-red-300" : "text-white/60"}`}>
