@@ -51,3 +51,34 @@ describe("aislamiento entre tenants — RPCs de negocio", () => {
     expect(body).toEqual([]);
   });
 });
+
+describe("aislamiento entre tenants — RPCs nuevas (sedes, finanzas, marca)", () => {
+  const casos: [string, Record<string, unknown>][] = [
+    ["crear_sede", { p_tenant_id: TENANT_B, p_nombre: "Intrusa" }],
+    ["actualizar_marca", { p_tenant_id: TENANT_B, p_nombre: "Hackeado" }],
+    ["definir_meta_mensual", { p_tenant_id: TENANT_B, p_mes: "2026-10-01", p_meta: 1 }],
+    [
+      "registrar_gasto",
+      {
+        p_tenant_id: TENANT_B,
+        p_sede_id: null,
+        p_fecha: "2026-10-01",
+        p_categoria: "x",
+        p_descripcion: null,
+        p_monto: 1,
+        p_tipo: "fijo",
+      },
+    ],
+    [
+      "registrar_activo_pasivo",
+      { p_tenant_id: TENANT_B, p_tabla: "activos", p_descripcion: "x", p_fecha: "2026-10-01", p_monto: 1 },
+    ],
+  ];
+  for (const [fn, args] of casos) {
+    it(`usuario A no puede ejecutar ${fn} sobre el tenant B`, async () => {
+      const { status, body } = await rpc(tokenA, fn, args);
+      expect(status).toBe(400);
+      expect(body.message).toMatch(/No autorizado/);
+    });
+  }
+});

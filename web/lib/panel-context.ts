@@ -27,6 +27,9 @@ const TODAS_LAS_RUTAS = [
   "/panel/seguimiento",
   "/panel/auditoria",
   "/panel/sedes",
+  "/panel/finanzas/registro",
+  "/panel/configuracion",
+  "/panel/agenda-personal",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del
@@ -48,6 +51,8 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/personal",
     "/panel/automatizaciones",
     "/panel/reportes",
+    "/panel/finanzas/registro",
+    "/panel/agenda-personal",
   ],
   recepcion: [
     "/panel/hoy",
@@ -58,7 +63,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/tienda",
   ],
   instructora: ["/panel/hoy", "/panel/calendario"],
-  contadora: ["/panel/hoy", "/panel/finanzas", "/panel/caja"],
+  contadora: ["/panel/hoy", "/panel/finanzas", "/panel/finanzas/registro", "/panel/caja"],
 };
 
 export function puedeVer(role: string, ruta: string) {
