@@ -31,7 +31,13 @@ const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
   sin_paquete: { label: "Sin paquete", className: "bg-neutral-tint text-ink/50" },
 };
 
-export default function ClientesView({ clientes }: { clientes: Fila[] }) {
+export default function ClientesView({
+  clientes,
+  puedeExportar,
+}: {
+  clientes: Fila[];
+  puedeExportar: boolean;
+}) {
   const [abierto, setAbierto] = useState<Fila | null>(null);
   const [detalle, setDetalle] = useState<Detalle | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -58,11 +64,23 @@ export default function ClientesView({ clientes }: { clientes: Fila[] }) {
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
-        <h1 className="font-serif text-2xl text-ink md:text-3xl">Clientas</h1>
-        <p className="mt-1 text-sm text-ink/60">
-          {clientes.length} clientas registradas
-        </p>
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+        <div>
+          <h1 className="font-serif text-2xl text-ink md:text-3xl">
+            Clientas
+          </h1>
+          <p className="mt-1 text-sm text-ink/60">
+            {clientes.length} clientas registradas
+          </p>
+        </div>
+        {puedeExportar && (
+          <a
+            href="/panel/clientes/export"
+            className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink/70 hover:text-ink"
+          >
+            Exportar CSV
+          </a>
+        )}
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">

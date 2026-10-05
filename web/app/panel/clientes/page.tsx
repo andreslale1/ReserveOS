@@ -62,5 +62,10 @@ export default async function ClientesPage() {
     };
   });
 
-  return <ClientesView clientes={filas} />;
+  return (
+    <ClientesView
+      clientes={filas}
+      puedeExportar={["duena", "gerente_general"].includes(membership.role)}
+    />
+  );
 }
