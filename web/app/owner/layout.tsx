@@ -4,6 +4,7 @@ import { getOwnerContext } from "@/lib/owner-context";
 const LINKS = [
   { href: "/owner", label: "Estudios", roles: ["operador", "soporte"] },
   { href: "/owner/pipeline", label: "Pipeline", roles: ["operador", "ventas"] },
+  { href: "/owner/rentabilidad", label: "Rentabilidad", roles: ["operador", "finanzas"] },
   { href: "/owner/tareas", label: "Tareas", roles: ["operador", "ventas", "finanzas", "soporte"] },
   { href: "/owner/activaciones", label: "Activaciones", roles: ["operador", "ventas", "soporte"] },
   { href: "/owner/planes", label: "Planes", roles: ["operador", "finanzas", "ventas", "soporte"] },

@@ -17,8 +17,11 @@ export async function guardarSuscripcion(tenantId: string, plan: string, precio:
 export async function generarCobros(periodo: string) {
   return llamar("generar_cobros_mes", { p_periodo: periodo });
 }
-export async function registrarPago(cobroId: string, metodo: string, referencia: string, fecha: string) {
-  return llamar("registrar_pago_cobro", { p_cobro_id: cobroId, p_metodo: metodo, p_referencia: referencia || null, p_fecha: fecha || null });
+export async function registrarPago(cobroId: string, metodo: string, referencia: string, fecha: string, monto: number | null) {
+  return llamar("registrar_pago_cobro", { p_cobro_id: cobroId, p_metodo: metodo, p_referencia: referencia || null, p_fecha: fecha || null, p_monto: monto });
+}
+export async function crearCobro(tenantId: string, concepto: string, monto: number, descuento: number, vence: string, notas: string) {
+  return llamar("cobro_crear", { p_tenant_id: tenantId, p_concepto: concepto, p_monto: monto, p_descuento: descuento, p_vence: vence || null, p_notas: notas || null });
 }
 export async function anularCobro(cobroId: string) {
   return llamar("anular_cobro_plataforma", { p_cobro_id: cobroId });

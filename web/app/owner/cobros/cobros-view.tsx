@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { anularCobro, cambiarEstadoEstudio, generarCobros, guardarSuscripcion, registrarPago } from "./actions";
+import { anularCobro, cambiarEstadoEstudio, crearCobro, generarCobros, guardarSuscripcion, registrarPago } from "./actions";
 
 export type Resumen = {
   estudios_activos: number; mrr: number; cobrado_mes: number; por_cobrar: number; en_mora: number; estudios_en_mora: number;
@@ -11,8 +11,9 @@ export type Estudio = {
   sub_estado: string | null; pendiente: number; en_mora: number; dias_mora: number; ultimo_pago: string | null;
 };
 export type Cobro = {
-  id: string; tenant_id: string; estudio: string; periodo: string; monto: number; estado: string;
-  fecha_vencimiento: string; fecha_pago: string | null; metodo: string | null; en_mora: boolean;
+  id: string; tenant_id: string; estudio: string; periodo: string; concepto: string; monto: number; descuento: number;
+  pagado: number; saldo: number; estado: string; fecha_vencimiento: string; fecha_pago: string | null;
+  metodo: string | null; en_mora: boolean; plan_snapshot: string | null; notas: string | null;
 };
 
 const q = (n: number | null) => `Q${Number(n ?? 0).toLocaleString("es-GT")}`;
@@ -24,8 +25,9 @@ export default function CobrosView({ resumen, estudios, cobros }: { resumen: Res
   const [editando, setEditando] = useState<string | null>(null);
   const [sub, setSub] = useState({ plan: "estandar", precio: "", dia: "1", estado: "activa" });
   const [pagando, setPagando] = useState<string | null>(null);
-  const [pago, setPago] = useState({ metodo: "transferencia", ref: "", fecha: new Date().toISOString().slice(0, 10) });
-  const [filtro, setFiltro] = useState<"pendiente" | "pagado" | "todos">("pendiente");
+  const [pago, setPago] = useState({ metodo: "transferencia", ref: "", fecha: new Date().toISOString().slice(0, 10), monto: "" });
+  const [nuevo, setNuevo] = useState({ abierto: false, tenantId: "", concepto: "setup", monto: "", descuento: "", vence: "", notas: "" });
+  const [filtro, setFiltro] = useState<"abierto" | "pagado" | "todos">("abierto");
   const mesActual = new Date().toISOString().slice(0, 7) + "-01";
 
   function correr(fn: () => Promise<{ error: string | null; data?: unknown }>, ok: string, despues?: () => void) {
@@ -46,7 +48,7 @@ export default function CobrosView({ resumen, estudios, cobros }: { resumen: Res
     ["Por cobrar", q(resumen.por_cobrar), "text-white"],
     ["En mora", `${q(resumen.en_mora)} · ${resumen.estudios_en_mora} estudio(s)`, resumen.en_mora > 0 ? "text-red-300" : "text-white"],
   ];
-  const lista = cobros.filter((c) => (filtro === "todos" ? c.estado !== "anulado" : c.estado === filtro));
+  const lista = cobros.filter((c) => (filtro === "todos" ? c.estado !== "anulado" : filtro === "abierto" ? ["pendiente", "parcial"].includes(c.estado) : c.estado === filtro));
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-8 md:px-10">
@@ -140,23 +142,44 @@ export default function CobrosView({ resumen, estudios, cobros }: { resumen: Res
       </section>
 
       <section className="mt-8 rounded-2xl border border-white/10 bg-void-card p-5">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-base font-semibold">Cobros</h2>
+          <a href="/owner/cobros/export" className="text-xs text-white/50 hover:text-white">Exportar CSV</a>
+          <button className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/70" onClick={() => setNuevo({ ...nuevo, abierto: !nuevo.abierto })}>+ Cobro (setup, sede extra…)</button>
           <div className="flex gap-2 text-xs">
-            {(["pendiente", "pagado", "todos"] as const).map((f) => (
+            {(["abierto", "pagado", "todos"] as const).map((f) => (
               <button key={f} onClick={() => setFiltro(f)} className={`rounded-full px-3 py-1 ${filtro === f ? "bg-lime text-void" : "border border-white/15 text-white/60"}`}>
-                {f === "pendiente" ? "Pendientes" : f === "pagado" ? "Pagados" : "Todos"}
+                {f === "abierto" ? "Por cobrar" : f === "pagado" ? "Pagados" : "Todos"}
               </button>
             ))}
           </div>
         </div>
+        {nuevo.abierto && (
+          <div className="mt-3 flex flex-wrap items-end gap-3 rounded-xl border border-white/10 p-3">
+            <label className="text-xs text-white/50">Estudio<br />
+              <select className={input} value={nuevo.tenantId} onChange={(x) => setNuevo({ ...nuevo, tenantId: x.target.value })}>
+                <option value="">Elige…</option>{estudios.map((e) => <option key={e.tenant_id} value={e.tenant_id}>{e.nombre}</option>)}
+              </select></label>
+            <label className="text-xs text-white/50">Concepto<br />
+              <select className={input} value={nuevo.concepto} onChange={(x) => setNuevo({ ...nuevo, concepto: x.target.value })}>
+                <option value="setup">Configuración inicial</option><option value="sede_extra">Sede extra</option><option value="modulo">Módulo</option><option value="app">App de marca</option><option value="otro">Otro</option>
+              </select></label>
+            <label className="text-xs text-white/50">Monto (Q)<br /><input className={`${input} w-28`} type="number" value={nuevo.monto} onChange={(x) => setNuevo({ ...nuevo, monto: x.target.value })} /></label>
+            <label className="text-xs text-white/50">Descuento (Q)<br /><input className={`${input} w-24`} type="number" value={nuevo.descuento} onChange={(x) => setNuevo({ ...nuevo, descuento: x.target.value })} /></label>
+            <label className="text-xs text-white/50">Vence<br /><input className={input} type="date" value={nuevo.vence} onChange={(x) => setNuevo({ ...nuevo, vence: x.target.value })} /></label>
+            <input className={`${input} w-48`} placeholder="Nota" value={nuevo.notas} onChange={(x) => setNuevo({ ...nuevo, notas: x.target.value })} />
+            <button className="rounded-full bg-lime px-4 py-1.5 text-sm font-semibold text-void disabled:opacity-50" disabled={isPending || !nuevo.tenantId || !(Number(nuevo.monto) > 0)}
+              onClick={() => correr(() => crearCobro(nuevo.tenantId, nuevo.concepto, Number(nuevo.monto), Number(nuevo.descuento || 0), nuevo.vence, nuevo.notas), "Cobro creado.", () => setNuevo({ ...nuevo, abierto: false, monto: "", descuento: "", notas: "" }))}>Crear</button>
+          </div>
+        )}
         <ul className="mt-3 divide-y divide-white/10">
           {lista.length === 0 && <li className="py-3 text-sm text-white/50">Nada por aquí.</li>}
           {lista.map((c) => (
             <li key={c.id} className="py-3">
               <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                 <span>
-                  {c.estudio} · {c.periodo.slice(0, 7)} · {q(c.monto)}
+                  {c.estudio} · {c.periodo.slice(0, 7)} · <span className="text-white/60">{c.concepto}</span> · {q(c.monto - c.descuento)}
+                  {c.pagado > 0 && c.estado !== "pagado" && <span className="text-white/60"> (pagado {q(c.pagado)}, saldo {q(c.saldo)})</span>}
                   <span className="text-white/50"> · vence {c.fecha_vencimiento}</span>
                 </span>
                 <span className="flex items-center gap-3">
@@ -165,7 +188,7 @@ export default function CobrosView({ resumen, estudios, cobros }: { resumen: Res
                   ) : (
                     <>
                       {c.en_mora && <span className="text-red-300">En mora</span>}
-                      <button className="rounded-full bg-lime px-3 py-1 text-xs font-semibold text-void" onClick={() => setPagando(pagando === c.id ? null : c.id)}>Registrar pago</button>
+                      <button className="rounded-full bg-lime px-3 py-1 text-xs font-semibold text-void" onClick={() => { setPagando(pagando === c.id ? null : c.id); setPago({ ...pago, monto: String(c.saldo) }); }}>Registrar pago</button>
                       <button className="text-xs text-white/40 hover:text-white" disabled={isPending} onClick={() => correr(() => anularCobro(c.id), "Cobro anulado.")}>Anular</button>
                     </>
                   )}
@@ -176,10 +199,11 @@ export default function CobrosView({ resumen, estudios, cobros }: { resumen: Res
                   <select className={input} value={pago.metodo} onChange={(x) => setPago({ ...pago, metodo: x.target.value })}>
                     <option value="transferencia">Transferencia</option><option value="efectivo">Efectivo</option><option value="cheque">Cheque</option>
                   </select>
+                  <input className={`${input} w-28`} type="number" placeholder="Monto" value={pago.monto} onChange={(x) => setPago({ ...pago, monto: x.target.value })} />
                   <input className={input} placeholder="Referencia" value={pago.ref} onChange={(x) => setPago({ ...pago, ref: x.target.value })} />
                   <input className={input} type="date" value={pago.fecha} onChange={(x) => setPago({ ...pago, fecha: x.target.value })} />
                   <button className="rounded-full bg-lime px-4 py-1.5 text-sm font-semibold text-void disabled:opacity-50" disabled={isPending}
-                    onClick={() => correr(() => registrarPago(c.id, pago.metodo, pago.ref, pago.fecha), "Pago registrado.", () => setPagando(null))}>
+                    onClick={() => correr(() => registrarPago(c.id, pago.metodo, pago.ref, pago.fecha, pago.monto ? Number(pago.monto) : null), "Pago registrado.", () => setPagando(null))}>
                     Confirmar pago
                   </button>
                 </div>
