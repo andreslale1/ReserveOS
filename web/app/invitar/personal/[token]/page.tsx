@@ -6,10 +6,12 @@ import { createClient } from "@/lib/supabase/client";
 
 const ROLE_LABEL: Record<string, string> = {
   gerente_general: "Gerente general",
+  gerente_regional: "Gerencia regional",
   admin_sede: "Administradora de sede",
   recepcion: "Recepción",
   instructora: "Instructora",
   contadora: "Contadora",
+  marketing: "Marketing del estudio",
 };
 
 type Invitacion = {

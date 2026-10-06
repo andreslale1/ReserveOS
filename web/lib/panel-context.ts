@@ -4,10 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 export const ROLE_LABEL: Record<string, string> = {
   duena: "Dueña",
   gerente_general: "Gerente general",
+  gerente_regional: "Gerencia regional",
   admin_sede: "Administradora de sede",
   recepcion: "Recepción",
   instructora: "Instructora",
   contadora: "Contadora",
+  marketing: "Marketing",
 };
 
 const TODAS_LAS_RUTAS = [
@@ -34,6 +36,7 @@ const TODAS_LAS_RUTAS = [
   "/panel/soporte",
   "/panel/cierres",
   "/panel/salas",
+  "/panel/delegaciones",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del
@@ -61,6 +64,24 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/cierres",
     "/panel/salas",
   ],
+  gerente_regional: [
+    "/panel/hoy",
+    "/panel/calendario",
+    "/panel/clientes",
+    "/panel/pagos-pendientes",
+    "/panel/finanzas",
+    "/panel/caja",
+    "/panel/tienda",
+    "/panel/personal",
+    "/panel/automatizaciones",
+    "/panel/reportes",
+    "/panel/finanzas/registro",
+    "/panel/agenda-personal",
+    "/panel/soporte",
+    "/panel/cierres",
+    "/panel/salas",
+  ],
+  marketing: ["/panel/hoy", "/panel/seguimiento"],
   recepcion: [
     "/panel/hoy",
     "/panel/calendario",

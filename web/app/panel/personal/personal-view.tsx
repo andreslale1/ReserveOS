@@ -15,10 +15,12 @@ type Sede = { id: string; name: string };
 
 const ROLES_INVITABLES: { value: string; label: string }[] = [
   { value: "gerente_general", label: "Gerente general" },
+  { value: "gerente_regional", label: "Gerencia regional (varias sedes)" },
   { value: "admin_sede", label: "Administradora de sede" },
   { value: "recepcion", label: "Recepción" },
   { value: "instructora", label: "Instructora" },
   { value: "contadora", label: "Contadora" },
+  { value: "marketing", label: "Marketing del estudio" },
 ];
 
 export default function PersonalView({

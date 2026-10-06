@@ -55,6 +55,10 @@ describe("aislamiento entre tenants — RPCs de negocio", () => {
 describe("aislamiento entre tenants — RPCs nuevas (sedes, finanzas, marca)", () => {
   const casos: [string, Record<string, unknown>][] = [
     ["crear_sede", { p_tenant_id: TENANT_B, p_nombre: "Intrusa" }],
+    ["guardar_reglas_reservas", { p_tenant_id: TENANT_B, p_horas_cancelacion: 1, p_horas_confirmacion: 1, p_devuelve_credito: true, p_anticipacion_dias: 30, p_max_por_dia: null }],
+    ["delegacion_crear", { p_tenant_id: TENANT_B, p_membership_id: null, p_rol: "recepcion", p_action: "P35", p_sede_ids: null, p_vence: null, p_motivo: "intrusión" }],
+    ["cerrar_fechas", { p_tenant_id: TENANT_B, p_sede_id: null, p_desde: "2026-12-01", p_hasta: "2026-12-02", p_motivo: "intrusión" }],
+    ["importar_clientes", { p_tenant_id: TENANT_B, p_filas: [{ nombre: "X", telefono: "55512345" }], p_solo_validar: false }],
     ["actualizar_marca", { p_tenant_id: TENANT_B, p_nombre: "Hackeado" }],
     ["definir_meta_mensual", { p_tenant_id: TENANT_B, p_mes: "2026-10-01", p_meta: 1 }],
     [
