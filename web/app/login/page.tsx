@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { login } from "./actions";
 
 export default async function LoginPage({
@@ -6,6 +7,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string; next?: string }>;
 }) {
   const { error, next } = await searchParams;
+  const estudio = decodeURIComponent((await headers()).get("x-tenant-nombre") ?? "");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-void px-6">
@@ -23,10 +25,10 @@ export default async function LoginPage({
         </span>
 
         <h1 className="mt-5 text-2xl font-black uppercase tracking-tight text-white">
-          Entrar a ReserveOS
+          {estudio ? `Entrar a ${estudio}` : "Entrar a ReserveOS"}
         </h1>
         <p className="mt-1 text-sm text-white/50">
-          Panel del estudio y operación diaria.
+          {estudio ? "Tus clases, paquetes y reservas." : "Panel del estudio y operación diaria."}
         </p>
 
         <form action={login} className="mt-8 space-y-4">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { guardarMarca, guardarReglas } from "./actions";
+import { guardarMarca, guardarReglas, quitarDominio, solicitarDominio } from "./actions";
 
 const input =
   "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
@@ -22,7 +22,7 @@ export default function ConfiguracionView({
   baseUrl: string;
   color: string;
   logo: string;
-  dominios: { domain: string; verified: boolean }[];
+  dominios: { id: string; domain: string; verified: boolean }[];
   reglas: { horasCancelacion: number; horasConfirmacion: number; devuelveCredito: boolean; anticipacionDias: number; maxPorDia: number | null };
 }) {
   const [isPending, startTransition] = useTransition();
@@ -30,6 +30,7 @@ export default function ConfiguracionView({
   const [nombre, setNombre] = useState(n0);
   const [color, setColor] = useState(c0);
   const [logo, setLogo] = useState(l0);
+  const [dom, setDom] = useState("");
   const [r, setR] = useState({ ...reglas, maxPorDia: reglas.maxPorDia === null ? "" : String(reglas.maxPorDia) });
 
   return (
@@ -98,16 +99,22 @@ export default function ConfiguracionView({
           <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<a href="${baseUrl}/login?next=/reservar">Reservar mi clase</a>`}</pre>
         </section>
         <section className="rounded-2xl border border-white/10 bg-card p-5">
-          <h2 className="text-base font-semibold text-ink">Dirección web</h2>
-          <p className="mt-2 text-sm text-ink/70">Identificador: {slug}</p>
-          <ul className="mt-2 text-sm text-ink/70">
-            {dominios.length === 0 && <li>Sin dominio propio conectado. Para conectarlo, contacta a ReserveOS.</li>}
+          <h2 className="text-base font-semibold text-ink">Tu propio dominio</h2>
+          <p className="mt-1 text-sm text-ink/65">Identificador: <strong>{slug}</strong>. Tus clientas pueden entrar desde, por ejemplo, <em>reservas.tuestudio.com</em>.</p>
+          <ul className="mt-3 divide-y divide-white/10">
+            {dominios.length === 0 && <li className="py-2 text-sm text-ink/55">Aún no has solicitado un dominio.</li>}
             {dominios.map((d) => (
-              <li key={d.domain}>
-                {d.domain} · {d.verified ? "verificado" : "pendiente de verificar"}
+              <li key={d.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+                <span className="text-ink">{d.domain} <span className={d.verified ? "text-sage" : "text-ink/50"}>· {d.verified ? "activo" : "pendiente de activar"}</span></span>
+                <button className="text-xs text-ink/50 hover:text-ink" disabled={isPending} onClick={() => { setMsg(null); startTransition(async () => { const r = await quitarDominio(d.id); setMsg(r.error ? { ok: false, texto: r.error } : { ok: true, texto: "Dominio quitado." }); }); }}>Quitar</button>
               </li>
             ))}
           </ul>
+          <div className="mt-3 flex gap-2">
+            <input className={`${input} mt-0 flex-1`} placeholder="reservas.tuestudio.com" value={dom} onChange={(e) => setDom(e.target.value)} />
+            <button className="press-spring rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending || dom.trim().length < 4}
+              onClick={() => { setMsg(null); startTransition(async () => { const r = await solicitarDominio(tenantId, dom); setMsg(r.error ? { ok: false, texto: r.error } : { ok: true, texto: "Solicitud enviada. En tu proveedor de dominio crea un registro CNAME hacia cname.vercel-dns.com; ReserveOS lo activa cuando lo verifique." }); if (!r.error) setDom(""); }); }}>Solicitar</button>
+          </div>
         </section>
       </div>
     </main>

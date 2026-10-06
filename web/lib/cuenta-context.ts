@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -17,11 +17,16 @@ export async function getCuenta() {
   const contextos = ((data ?? []) as Contexto[]).filter((c) => c.es_clienta);
   const todos = (data ?? []) as Contexto[];
   if (contextos.length === 0) {
-    return { supabase, user, contextos, todos, actual: null as Contexto | null };
+    return { supabase, user, contextos, todos, actual: null as Contexto | null, dominioEstudio: null as string | null };
+  }
+  // En el dominio propio de un estudio, el contexto lo manda el host verificado (no una cookie ni un parámetro).
+  const hostTenant = (await headers()).get("x-tenant-id");
+  if (hostTenant) {
+    return { supabase, user, contextos, todos, actual: contextos.find((c) => c.tenant_id === hostTenant) ?? null, dominioEstudio: hostTenant };
   }
   const guardado = (await cookies()).get(COOKIE_ESTUDIO)?.value;
   let actual = contextos.find((c) => c.tenant_id === guardado) ?? null;
   if (!actual && contextos.length === 1) actual = contextos[0];
   if (!actual) redirect("/elegir-estudio");
-  return { supabase, user, contextos, todos, actual };
+  return { supabase, user, contextos, todos, actual, dominioEstudio: null as string | null };
 }

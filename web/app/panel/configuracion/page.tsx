@@ -9,7 +9,7 @@ export default async function ConfiguracionPage() {
 
   const [{ data: t }, { data: dominios }, { data: reglas }] = await Promise.all([
     supabase.from("tenants").select("name, slug, branding").eq("id", membership.tenant_id).maybeSingle(),
-    supabase.from("tenant_domains").select("domain, verified").eq("tenant_id", membership.tenant_id),
+    supabase.from("tenant_domains").select("id, domain, verified").eq("tenant_id", membership.tenant_id),
     supabase.from("configuracion_reservas").select("horas_minimas_cancelacion, horas_minimas_confirmacion, cancelacion_tardia_devuelve_credito, anticipacion_maxima_dias, max_reservas_dia_por_clienta").eq("tenant_id", membership.tenant_id).maybeSingle(),
   ]);
   const b = (t?.branding ?? {}) as { color_primario?: string; logo_url?: string };

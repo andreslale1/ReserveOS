@@ -14,6 +14,7 @@ const LINKS = [
   { href: "/owner/cobros", label: "Cobros", roles: ["operador", "finanzas"] },
   { href: "/owner/rentabilidad", label: "Rentabilidad", roles: ["operador", "finanzas"] },
   { href: "/owner/soporte", label: "Soporte", roles: ["operador", "soporte", "implementacion", "ingenieria"] },
+  { href: "/owner/dominios", label: "Dominios", roles: ["operador", "soporte", "implementacion", "ingenieria"] },
   { href: "/owner/salud", label: "Salud", roles: ["operador", "soporte", "implementacion", "ingenieria"] },
   { href: "/owner/equipo", label: "Equipo", roles: ["operador", "auditor"] },
   { href: "/owner/auditoria", label: "Auditoría", roles: ["operador", "auditor"] },

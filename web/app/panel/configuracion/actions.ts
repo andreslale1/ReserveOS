@@ -26,3 +26,18 @@ export async function guardarReglas(tenantId: string, r: { horasCancelacion: num
   revalidatePath("/panel/configuracion");
   return { error: null };
 }
+
+export async function solicitarDominio(tenantId: string, dominio: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("dominio_solicitar", { p_tenant_id: tenantId, p_domain: dominio });
+  if (error) return { error: error.message };
+  revalidatePath("/panel/configuracion");
+  return { error: null };
+}
+export async function quitarDominio(id: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("dominio_baja", { p_id: id });
+  if (error) return { error: error.message };
+  revalidatePath("/panel/configuracion");
+  return { error: null };
+}
