@@ -14,6 +14,7 @@ const ALL_LINKS = [
   { href: "/panel/gift-cards", label: "Gift cards" },
   { href: "/panel/finanzas", label: "Finanzas" },
   { href: "/panel/finanzas/registro", label: "Gastos y balance" },
+  { href: "/panel/facturacion", label: "Facturación" },
   { href: "/panel/descuentos", label: "Descuentos" },
   { href: "/panel/negocio", label: "Negocio" },
   { href: "/panel/configuracion", label: "Configuración" },
