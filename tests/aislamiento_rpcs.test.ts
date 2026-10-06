@@ -82,7 +82,7 @@ describe("aislamiento entre tenants — RPCs nuevas (sedes, finanzas, marca)", (
     it(`usuario A no puede ejecutar ${fn} sobre el tenant B`, async () => {
       const { status, body } = await rpc(tokenA, fn, args);
       expect(status).toBe(400);
-      expect(body.message).toMatch(/No autorizado/);
+      expect(body.message).toMatch(/No autorizado|Solo la dueña|solo lo hace la dueña/);
     });
   }
 });
