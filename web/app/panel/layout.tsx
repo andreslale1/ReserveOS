@@ -15,6 +15,7 @@ const ALL_LINKS = [
   { href: "/panel/negocio", label: "Negocio" },
   { href: "/panel/configuracion", label: "Configuración" },
   { href: "/panel/suscripcion", label: "Mi suscripción" },
+  { href: "/panel/soporte", label: "Soporte" },
   { href: "/panel/personal", label: "Personal" },
   { href: "/panel/agenda-personal", label: "Agenda del personal" },
   { href: "/panel/sedes", label: "Sedes" },
@@ -27,7 +28,11 @@ const ALL_LINKS = [
 export default async function PanelLayout({
   children,
 }: LayoutProps<"/panel">) {
-  const { membership, tenantName, modulos } = await getPanelContext();
+  const { supabase, membership, tenantName, modulos } = await getPanelContext();
+  const { data: incidentes } = membership
+    ? await supabase.rpc("incidentes_activos", { p_tenant_id: membership.tenant_id })
+    : { data: [] };
+  const avisos = (incidentes ?? []) as { titulo: string; severidad: string; estado: string }[];
 
   const links = membership
     ? ALL_LINKS.filter(
@@ -87,7 +92,16 @@ export default async function PanelLayout({
         ))}
       </nav>
 
-      <div className="flex-1">{children}</div>
+      <div className="flex-1">
+        {avisos.length > 0 && (
+          <div className="border-b border-white/10 bg-peach-tint px-6 py-3 text-sm text-ink md:px-10">
+            {avisos.map((a, i) => (
+              <p key={i}><strong>Aviso de ReserveOS:</strong> {a.titulo} · {a.estado}</p>
+            ))}
+          </div>
+        )}
+        {children}
+      </div>
     </div>
   );
 }
