@@ -11,7 +11,9 @@ const TABS = [
 ];
 
 export default async function CuentaLayout({ children }: { children: React.ReactNode }) {
-  const { actual, contextos, todos, dominioEstudio } = await getCuenta();
+  const { supabase, actual, contextos, todos, dominioEstudio } = await getCuenta();
+  const { data: mods } = actual ? await supabase.rpc("mis_modulos", { p_tenant_id: actual.tenant_id }) : { data: [] };
+  const conTienda = ((mods as string[] | null) ?? []).includes("tienda_inventario");
   if (!actual) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-cream px-6 text-center">
@@ -36,7 +38,7 @@ export default async function CuentaLayout({ children }: { children: React.React
       <div className="mx-auto max-w-2xl px-5 py-6">{children}</div>
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-black/10 bg-white/95 backdrop-blur">
         <ul className="mx-auto flex max-w-2xl justify-around">
-          {TABS.map((t) => (
+          {[...TABS.slice(0, 3), ...(conTienda ? [{ href: "/cuenta/tienda", label: "Tienda" }] : []), ...TABS.slice(3)].map((t) => (
             <li key={t.href}><Link href={t.href} className="block px-3 py-3.5 text-xs font-medium text-ink/70 hover:text-ink">{t.label}</Link></li>
           ))}
         </ul>

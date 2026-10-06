@@ -13,3 +13,11 @@ export async function solicitarPaquete(paqueteId: string, referencia: string, co
   revalidatePath("/cuenta", "layout");
   return { error: null };
 }
+
+export async function canjearCodigo(tenantId: string, codigo: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("canjear_gift_card", { p_tenant_id: tenantId, p_codigo: codigo });
+  if (error) return { error: error.message };
+  revalidatePath("/cuenta", "layout");
+  return { error: null };
+}

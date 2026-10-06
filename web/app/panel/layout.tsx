@@ -10,6 +10,8 @@ const ALL_LINKS = [
   { href: "/panel/pagos", label: "Pagos y reembolsos" },
   { href: "/panel/caja", label: "Caja" },
   { href: "/panel/tienda", label: "Tienda" },
+  { href: "/panel/productos", label: "Productos e inventario" },
+  { href: "/panel/gift-cards", label: "Gift cards" },
   { href: "/panel/finanzas", label: "Finanzas" },
   { href: "/panel/finanzas/registro", label: "Gastos y balance" },
   { href: "/panel/descuentos", label: "Descuentos" },

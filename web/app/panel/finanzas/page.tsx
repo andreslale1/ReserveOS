@@ -44,6 +44,8 @@ export default async function FinanzasPage() {
         .maybeSingle(),
     ]);
 
+  const { data: atribucion } = await supabase.rpc("finanzas_atribucion", { p_tenant_id: membership.tenant_id, p_desde: inicioMes, p_hasta: finMes });
+
   const ingresos = (membresias ?? []).reduce(
     (acc, m) => acc + Number(m.precio_final ?? 0),
     0,
@@ -55,6 +57,7 @@ export default async function FinanzasPage() {
 
   return (
     <FinanzasView
+      atribucion={atribucion as never}
       ingresos={ingresos}
       gastos={totalGastos}
       neto={ingresos - totalGastos}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { solicitarPaquete } from "./actions";
+import { canjearCodigo, solicitarPaquete } from "./actions";
 
 export type Paquete = { id: string; nombre: string; descripcion: string | null; num_clases: number | null; precio: number; vigencia_dias: number; cobertura: string; sedes: string | null };
 export type Transferencia = { banco: string; tipo_cuenta: string; numero_cuenta: string; titular: string };
@@ -9,7 +9,8 @@ type Mio = { id: string; paquete: string; estado: string; totales: number | null
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
 const input = "mt-1 w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-ink outline-none focus:border-ink/40";
 
-export default function PaquetesView({ catalogo, transferencia, mios }: { catalogo: Paquete[]; transferencia: Transferencia | null; mios: Mio[] }) {
+export default function PaquetesView({ tenantId, catalogo, transferencia, mios }: { tenantId: string; catalogo: Paquete[]; transferencia: Transferencia | null; mios: Mio[] }) {
+  const [regalo, setRegalo] = useState("");
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
   const [elegido, setElegido] = useState<string | null>(null);
@@ -36,6 +37,15 @@ export default function PaquetesView({ catalogo, transferencia, mios }: { catalo
           </ul>
         </section>
       )}
+
+      <section className="rounded-2xl border border-black/10 bg-white p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Tengo una gift card</h2>
+        <div className="mt-2 flex gap-2">
+          <input className={`${input} mt-0 flex-1 uppercase`} placeholder="GC-XXXXXX" value={regalo} onChange={(e) => setRegalo(e.target.value)} />
+          <button className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending || regalo.trim().length < 4}
+            onClick={() => { setMsg(null); startTransition(async () => { const r = await canjearCodigo(tenantId, regalo); if (r.error) setMsg({ ok: false, texto: r.error }); else { setMsg({ ok: true, texto: "¡Listo! Tu paquete de regalo ya está activo." }); setRegalo(""); } }); }}>Canjear</button>
+        </div>
+      </section>
 
       <section className="grid gap-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Comprar un paquete</h2>

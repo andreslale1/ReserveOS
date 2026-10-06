@@ -10,5 +10,5 @@ export default async function PaquetesPage() {
     supabase.rpc("mi_resumen", { p_tenant_id: t }),
   ]);
   const mios = ((res as { paquetes: { id: string; paquete: string; estado: string; totales: number | null; usadas: number; vence: string; congelada: boolean; sedes: string | null }[] } | null)?.paquetes) ?? [];
-  return <PaquetesView catalogo={(cat ?? []) as Paquete[]} transferencia={(tr ?? null) as Transferencia | null} mios={mios} />;
+  return <PaquetesView tenantId={t} catalogo={(cat ?? []) as Paquete[]} transferencia={(tr ?? null) as Transferencia | null} mios={mios} />;
 }
