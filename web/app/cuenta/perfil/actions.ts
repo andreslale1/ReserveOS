@@ -25,3 +25,7 @@ export async function firmarConsentimiento(tenantId: string, c: { emergencia: st
     p_experiencia_pilates: c.experiencia, p_consiente_responsabilidad: c.responsabilidad, p_consiente_cancelacion: c.cancelacion, p_autoriza_imagen: c.imagen, p_firma_nombre: c.firma,
   });
 }
+
+export async function guardarPreferencias(tenantId: string, marketing: boolean, email: boolean, whatsapp: boolean) {
+  return llamar("guardar_mis_preferencias", { p_tenant_id: tenantId, p_marketing: marketing, p_email: email, p_whatsapp: whatsapp });
+}

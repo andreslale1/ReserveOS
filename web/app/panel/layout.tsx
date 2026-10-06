@@ -27,6 +27,7 @@ const ALL_LINKS = [
   { href: "/panel/cierres", label: "Feriados y cierres" },
   { href: "/panel/reportes", label: "Reportes" },
   { href: "/panel/seguimiento", label: "Seguimiento" },
+  { href: "/panel/campanas", label: "Campañas" },
   { href: "/panel/auditoria", label: "Auditoría" },
   { href: "/panel/automatizaciones", label: "Automatizaciones" },
 ];

@@ -1,19 +1,20 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { agregarDependiente, firmarConsentimiento, guardarPerfil, quitarDependiente } from "./actions";
+import { agregarDependiente, firmarConsentimiento, guardarPerfil, guardarPreferencias, quitarDependiente } from "./actions";
 
 const input = "mt-1 w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-ink outline-none focus:border-ink/40";
 const card = "rounded-2xl border border-black/10 bg-white p-5";
 
-export default function PerfilView({ tenantId, perfil, consentimientoPendiente, dependientes }: {
-  tenantId: string; perfil: { nombre: string; telefono: string; email: string; emergencia: string; cuidados: string };
+export default function PerfilView({ preferencias, tenantId, perfil, consentimientoPendiente, dependientes }: {
+  preferencias: { marketing_ok: boolean; email_ok: boolean; whatsapp_ok: boolean }; tenantId: string; perfil: { nombre: string; telefono: string; email: string; emergencia: string; cuidados: string };
   consentimientoPendiente: boolean; dependientes: { id: string; nombre: string; fecha_nacimiento: string | null }[];
 }) {
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
   const [p, setP] = useState(perfil);
   const [d, setD] = useState({ nombre: "", nacimiento: "" });
+  const [pref, setPref] = useState(preferencias);
   const [c, setC] = useState({ experiencia: "", responsabilidad: false, cancelacion: false, imagen: false, firma: "" });
 
   function correr(fn: () => Promise<{ error: string | null }>, ok: string, despues?: () => void) {
@@ -54,6 +55,15 @@ export default function PerfilView({ tenantId, perfil, consentimientoPendiente, 
           <input type="date" className={`${input} mt-0`} value={d.nacimiento} onChange={(e) => setD({ ...d, nacimiento: e.target.value })} />
           <button className="rounded-full border border-black/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending || !d.nombre.trim()} onClick={() => correr(() => agregarDependiente(tenantId, d.nombre, d.nacimiento), "Agregado.", () => setD({ nombre: "", nacimiento: "" }))}>Agregar</button>
         </div>
+      </section>
+
+      <section className={card}>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mensajes del estudio</h2>
+        <p className="mt-1 text-xs text-ink/55">Los avisos de tus reservas y de tu paquete te llegan siempre. Las promociones solo si tú lo aceptas.</p>
+        <label className="mt-3 flex items-start gap-2 text-sm text-ink"><input type="checkbox" className="mt-1" checked={pref.marketing_ok} onChange={(e) => setPref({ ...pref, marketing_ok: e.target.checked })} /> Quiero recibir promociones y novedades del estudio</label>
+        <label className="mt-2 flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={pref.email_ok} onChange={(e) => setPref({ ...pref, email_ok: e.target.checked })} /> Por correo</label>
+        <label className="mt-2 flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={pref.whatsapp_ok} onChange={(e) => setPref({ ...pref, whatsapp_ok: e.target.checked })} /> Por WhatsApp</label>
+        <button className="mt-3 rounded-full border border-black/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending} onClick={() => correr(() => guardarPreferencias(tenantId, pref.marketing_ok, pref.email_ok, pref.whatsapp_ok), "Preferencias guardadas.")}>Guardar preferencias</button>
       </section>
 
       {consentimientoPendiente && (
