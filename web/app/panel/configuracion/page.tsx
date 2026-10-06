@@ -3,7 +3,7 @@ import { getPanelContext, puedeVer } from "@/lib/panel-context";
 import ConfiguracionView from "./configuracion-view";
 
 export default async function ConfiguracionPage() {
-  const { supabase, membership } = await getPanelContext();
+  const { supabase, membership, modulos } = await getPanelContext();
   if (!membership) return null;
   if (!puedeVer(membership.role, "/panel/configuracion")) redirect("/panel/hoy");
 
@@ -23,6 +23,7 @@ export default async function ConfiguracionPage() {
       color={b.color_primario ?? ""}
       logo={b.logo_url ?? ""}
       dominios={dominios ?? []}
+      puedeIntegrar={membership.role === "duena" && modulos.includes("cobros_online")}
       reglas={{
         horasCancelacion: reglas?.horas_minimas_cancelacion ?? 2,
         horasConfirmacion: reglas?.horas_minimas_confirmacion ?? 1,

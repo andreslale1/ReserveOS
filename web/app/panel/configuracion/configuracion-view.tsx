@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { guardarMarca, guardarReglas, quitarDominio, solicitarDominio } from "./actions";
+import { generarSecretoWebhook, guardarMarca, guardarReglas, quitarDominio, solicitarDominio } from "./actions";
 
 const input =
   "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
@@ -15,6 +15,7 @@ export default function ConfiguracionView({
   logo: l0,
   dominios,
   reglas,
+  puedeIntegrar,
 }: {
   tenantId: string;
   nombre: string;
@@ -23,6 +24,7 @@ export default function ConfiguracionView({
   color: string;
   logo: string;
   dominios: { id: string; domain: string; verified: boolean }[];
+  puedeIntegrar: boolean;
   reglas: { horasCancelacion: number; horasConfirmacion: number; devuelveCredito: boolean; anticipacionDias: number; maxPorDia: number | null };
 }) {
   const [isPending, startTransition] = useTransition();
@@ -31,6 +33,8 @@ export default function ConfiguracionView({
   const [color, setColor] = useState(c0);
   const [logo, setLogo] = useState(l0);
   const [dom, setDom] = useState("");
+  const [prov, setProv] = useState("");
+  const [secreto, setSecreto] = useState<string | null>(null);
   const [r, setR] = useState({ ...reglas, maxPorDia: reglas.maxPorDia === null ? "" : String(reglas.maxPorDia) });
 
   return (
@@ -98,6 +102,27 @@ export default function ConfiguracionView({
           <p className="mt-4 text-sm text-ink/70">O solo un botón que lleve a tus clientas a reservar:</p>
           <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<a href="${baseUrl}/login?next=/reservar">Reservar mi clase</a>`}</pre>
         </section>
+        {puedeIntegrar && (
+          <section className="rounded-2xl border border-white/10 bg-card p-5">
+            <h2 className="text-base font-semibold text-ink">Pagos en línea</h2>
+            <p className="mt-1 text-sm text-ink/65">Para conectar tu proveedor de pagos, ReserveOS te da una dirección y una clave secreta. Tu proveedor (o quien lo integre) las usa para avisarnos de cada pago, y nosotros comprobamos la firma antes de activar nada.</p>
+            <div className="mt-3 flex gap-2">
+              <input className={`${input} mt-0 flex-1`} placeholder="nombre-del-proveedor" value={prov} onChange={(e) => setProv(e.target.value.toLowerCase())} />
+              <button className="press-spring rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending || prov.trim().length < 2}
+                onClick={() => { setMsg(null); startTransition(async () => { const r = await generarSecretoWebhook(tenantId, prov.trim()); if (r.error) setMsg({ ok: false, texto: r.error }); else setSecreto(r.secreto); }); }}>Generar clave</button>
+            </div>
+            {secreto && (
+              <div className="mt-3 rounded-xl bg-cream p-4 text-sm text-ink">
+                <p className="font-medium">Guárdala ahora: no se vuelve a mostrar.</p>
+                <p className="mt-2 text-xs text-ink/60">Dirección de avisos</p>
+                <p className="break-all font-mono text-xs">{baseUrl}/api/pagos/{slug}/{prov.trim()}</p>
+                <p className="mt-2 text-xs text-ink/60">Clave secreta</p>
+                <p className="break-all font-mono text-xs">{secreto}</p>
+                <p className="mt-2 text-xs text-ink/55">Cada aviso debe ir firmado con HMAC-SHA256 en la cabecera <code>x-reserveos-signature</code>.</p>
+              </div>
+            )}
+          </section>
+        )}
         <section className="rounded-2xl border border-white/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Tu propio dominio</h2>
           <p className="mt-1 text-sm text-ink/65">Identificador: <strong>{slug}</strong>. Tus clientas pueden entrar desde, por ejemplo, <em>reservas.tuestudio.com</em>.</p>

@@ -46,4 +46,9 @@ describe("superficie de funciones expuestas", () => {
     const { status } = await rpc(null, "horarios_publicos", { p_slug: "no-existe-zzz" });
     expect(status).toBe(200);
   });
+  it("el webhook de pagos rechaza una firma falsa o un estudio inexistente (sin revelar nada)", async () => {
+    const { status, body } = await rpc(null, "pago_webhook", { p_slug: "no-existe-zzz", p_proveedor: "x", p_firma: "falsa", p_cuerpo: "{}" });
+    expect(status).toBe(400);
+    expect(JSON.stringify(body)).toMatch(/Solicitud no válida/);
+  });
 });

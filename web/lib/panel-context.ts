@@ -37,6 +37,7 @@ const TODAS_LAS_RUTAS = [
   "/panel/cierres",
   "/panel/salas",
   "/panel/delegaciones",
+  "/panel/pagos",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del
@@ -63,6 +64,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/soporte",
     "/panel/cierres",
     "/panel/salas",
+    "/panel/pagos",
   ],
   gerente_regional: [
     "/panel/hoy",
@@ -91,7 +93,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/tienda",
   ],
   instructora: ["/panel/hoy", "/panel/calendario"],
-  contadora: ["/panel/hoy", "/panel/finanzas", "/panel/finanzas/registro", "/panel/caja"],
+  contadora: ["/panel/hoy", "/panel/finanzas", "/panel/finanzas/registro", "/panel/caja", "/panel/pagos"],
 };
 
 // Módulo contratado que habilita cada pantalla (las no listadas son del núcleo).
@@ -102,6 +104,7 @@ const RUTA_MODULO: Record<string, string> = {
   "/panel/finanzas/registro": "finanzas_gastos",
   "/panel/seguimiento": "crm_segmentos",
   "/panel/pagos-pendientes": "cobros_transferencia",
+  "/panel/pagos": "cobros_reembolsos",
 };
 
 export function rutaHabilitada(modulos: string[], ruta: string) {

@@ -41,3 +41,10 @@ export async function quitarDominio(id: string) {
   revalidatePath("/panel/configuracion");
   return { error: null };
 }
+
+export async function generarSecretoWebhook(tenantId: string, proveedor: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("generar_secreto_webhook", { p_tenant_id: tenantId, p_proveedor: proveedor });
+  if (error) return { error: error.message, secreto: null as string | null };
+  return { error: null, secreto: data as string };
+}
