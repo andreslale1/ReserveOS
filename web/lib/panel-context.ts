@@ -32,6 +32,8 @@ const TODAS_LAS_RUTAS = [
   "/panel/agenda-personal",
   "/panel/suscripcion",
   "/panel/soporte",
+  "/panel/cierres",
+  "/panel/salas",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del
@@ -56,6 +58,8 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/finanzas/registro",
     "/panel/agenda-personal",
     "/panel/soporte",
+    "/panel/cierres",
+    "/panel/salas",
   ],
   recepcion: [
     "/panel/hoy",

@@ -95,3 +95,7 @@ export async function reabrirClase(horarioId: string, fecha: string) {
     p_fecha: fecha,
   });
 }
+
+export async function asignarSala(horarioId: string, fecha: string, salaId: string | null) {
+  return llamar(horarioId, fecha, "asignar_sala_horario", { p_horario_id: horarioId, p_sala_id: salaId });
+}

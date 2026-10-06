@@ -19,6 +19,8 @@ const ALL_LINKS = [
   { href: "/panel/personal", label: "Personal" },
   { href: "/panel/agenda-personal", label: "Agenda del personal" },
   { href: "/panel/sedes", label: "Sedes" },
+  { href: "/panel/salas", label: "Salas" },
+  { href: "/panel/cierres", label: "Feriados y cierres" },
   { href: "/panel/reportes", label: "Reportes" },
   { href: "/panel/seguimiento", label: "Seguimiento" },
   { href: "/panel/auditoria", label: "Auditoría" },

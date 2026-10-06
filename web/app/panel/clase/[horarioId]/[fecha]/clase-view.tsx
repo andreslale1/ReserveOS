@@ -6,6 +6,7 @@ import {
   agregarAsistente,
   anotarEnEspera,
   cambiarCupo,
+  asignarSala,
   cancelarClase,
   marcarAsistencia,
   quitarAsistente,
@@ -35,6 +36,8 @@ export default function ClaseView({
   noEsFutura,
   clase,
   cancelada,
+  salaId,
+  salas,
   asistentes,
   espera,
   clientas,
@@ -47,6 +50,8 @@ export default function ClaseView({
   noEsFutura: boolean;
   clase: { nombre: string; hora: string; cupo: number; sede: string; instructora: string };
   cancelada: boolean;
+  salaId: string;
+  salas: { id: string; nombre: string }[];
   asistentes: Asistente[];
   espera: { id: string; nombre: string }[];
   clientas: { id: string; nombre: string }[];
@@ -58,6 +63,7 @@ export default function ClaseView({
   const [nueva, setNueva] = useState("");
   const [cupo, setCupo] = useState(String(clase.cupo));
   const [confirmarCancelar, setConfirmarCancelar] = useState(false);
+  const [sala, setSala] = useState(salaId);
 
   function correr(fn: () => Promise<{ error: string | null }>, ok: string, despues?: () => void) {
     setMsg(null);
@@ -207,6 +213,17 @@ export default function ClaseView({
                 Guardar cupo
               </button>
             </div>
+            {salas.length > 0 && (
+              <div className="mt-4 flex flex-wrap items-end gap-3">
+                <label className="text-sm text-ink/60">Sala
+                  <select value={sala} onChange={(e) => setSala(e.target.value)} className={`${input} w-56`}>
+                    <option value="">Sin sala</option>
+                    {salas.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}
+                  </select>
+                </label>
+                <button className={boton} disabled={isPending || sala === salaId} onClick={() => correr(() => asignarSala(horarioId, fecha, sala || null), "Sala actualizada.")}>Guardar sala</button>
+              </div>
+            )}
             <div className="mt-5 border-t border-white/10 pt-4">
               {cancelada ? (
                 <button className={botonSec} disabled={isPending} onClick={() => correr(() => reabrirClase(horarioId, fecha), "Clase reabierta.")}>

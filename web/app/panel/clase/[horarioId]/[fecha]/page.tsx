@@ -17,14 +17,14 @@ export default async function ClasePage({
   const { data: h } = await supabase
     .from("horarios")
     .select(
-      "id, nombre_clase, hora_inicio, hora_fin, cupo_maximo, sede_id, sedes(name), tenant_memberships(nombre)",
+      "id, nombre_clase, hora_inicio, hora_fin, cupo_maximo, sede_id, sala_id, sedes(name), tenant_memberships(nombre)",
     )
     .eq("id", horarioId)
     .eq("tenant_id", membership.tenant_id)
     .maybeSingle();
   if (!h) notFound();
 
-  const [{ data: reservas }, { data: espera }, { data: cancelada }, { data: clientas }] =
+  const [{ data: reservas }, { data: espera }, { data: cancelada }, { data: clientas }, { data: salas }] =
     await Promise.all([
       supabase
         .from("reservas")
@@ -50,6 +50,7 @@ export default async function ClasePage({
         .select("id, nombre")
         .eq("tenant_id", membership.tenant_id)
         .order("nombre"),
+      supabase.from("salas").select("id, nombre").eq("sede_id", h.sede_id).eq("activa", true).order("nombre"),
     ]);
 
   type C = { nombre: string; telefono: string; cuidados_especiales: string | null } | null;
@@ -77,6 +78,8 @@ export default async function ClasePage({
           (h.tenant_memberships as unknown as { nombre: string } | null)
             ?.nombre ?? "Sin asignar",
       }}
+      salaId={h.sala_id ?? ""}
+      salas={salas ?? []}
       cancelada={cancelada !== null}
       asistentes={(reservas ?? []).map((r) => {
         const c = r.clientes as unknown as C;

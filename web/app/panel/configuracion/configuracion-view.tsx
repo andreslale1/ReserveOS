@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { guardarMarca } from "./actions";
+import { guardarMarca, guardarReglas } from "./actions";
 
 const input =
   "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
@@ -14,6 +14,7 @@ export default function ConfiguracionView({
   color: c0,
   logo: l0,
   dominios,
+  reglas,
 }: {
   tenantId: string;
   nombre: string;
@@ -22,12 +23,14 @@ export default function ConfiguracionView({
   color: string;
   logo: string;
   dominios: { domain: string; verified: boolean }[];
+  reglas: { horasCancelacion: number; horasConfirmacion: number; devuelveCredito: boolean; anticipacionDias: number; maxPorDia: number | null };
 }) {
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
   const [nombre, setNombre] = useState(n0);
   const [color, setColor] = useState(c0);
   const [logo, setLogo] = useState(l0);
+  const [r, setR] = useState({ ...reglas, maxPorDia: reglas.maxPorDia === null ? "" : String(reglas.maxPorDia) });
 
   return (
     <main className="min-h-screen bg-cream">
@@ -67,6 +70,23 @@ export default function ConfiguracionView({
           >
             Guardar
           </button>
+        </section>
+        <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <h2 className="text-base font-semibold text-ink">Reglas de reserva</h2>
+          <p className="mt-1 text-sm text-ink/60">Aplican a todas tus sedes y a todas tus clientas.</p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <label className="text-sm text-ink/60">Horas mínimas para cancelar sin penalización
+              <input type="number" min={0} max={72} className={input} value={r.horasCancelacion} onChange={(e) => setR({ ...r, horasCancelacion: Number(e.target.value) })} /></label>
+            <label className="text-sm text-ink/60">Horas antes de la clase para pedir confirmación
+              <input type="number" min={0} max={24} className={input} value={r.horasConfirmacion} onChange={(e) => setR({ ...r, horasConfirmacion: Number(e.target.value) })} /></label>
+            <label className="text-sm text-ink/60">Días máximos de anticipación para reservar
+              <input type="number" min={1} max={365} className={input} value={r.anticipacionDias} onChange={(e) => setR({ ...r, anticipacionDias: Number(e.target.value) })} /></label>
+            <label className="text-sm text-ink/60">Máximo de clases por día por clienta (vacío = sin límite)
+              <input type="number" min={1} className={input} value={r.maxPorDia} onChange={(e) => setR({ ...r, maxPorDia: e.target.value })} /></label>
+          </div>
+          <label className="mt-3 flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={r.devuelveCredito} onChange={(e) => setR({ ...r, devuelveCredito: e.target.checked })} /> Devolver la clase aunque cancele tarde</label>
+          <button className="press-spring mt-4 rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending}
+            onClick={() => { setMsg(null); startTransition(async () => { const x = await guardarReglas(tenantId, { horasCancelacion: r.horasCancelacion, horasConfirmacion: r.horasConfirmacion, devuelveCredito: r.devuelveCredito, anticipacionDias: r.anticipacionDias, maxPorDia: r.maxPorDia === "" ? null : Number(r.maxPorDia) }); setMsg(x.error ? { ok: false, texto: x.error } : { ok: true, texto: "Reglas guardadas." }); }); }}>Guardar reglas</button>
         </section>
         <section className="rounded-2xl border border-white/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Conectar con la web de tu estudio</h2>
