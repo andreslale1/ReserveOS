@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getCuenta } from "@/lib/cuenta-context";
+import QRCode from "qrcode";
 import CheckinButton from "./checkin-button";
+import MiQr from "./mi-qr";
 
 type Resumen = {
   nombre: string; consentimiento_pendiente: boolean;
@@ -13,6 +15,8 @@ export default async function InicioPage() {
   const { data } = await supabase.rpc("mi_resumen", { p_tenant_id: actual!.tenant_id });
   const r = data as Resumen | null;
   if (!r) return null;
+  const { data: codigo } = await supabase.rpc("mi_codigo_checkin", { p_tenant_id: actual!.tenant_id, p_renovar: false });
+  const qrImagen = codigo ? await QRCode.toDataURL(`RSCK:${codigo}`, { margin: 1, width: 440 }) : null;
   const activos = r.paquetes.filter((p) => p.estado === "activa");
   const pendientes = r.paquetes.filter((p) => p.estado === "pendiente_pago");
   const fmt = (f: string) => new Date(f + "T00:00:00").toLocaleDateString("es-GT", { weekday: "short", day: "numeric", month: "short" });
@@ -59,6 +63,7 @@ export default async function InicioPage() {
           ))}
         </ul>
         <CheckinButton />
+        {qrImagen && <MiQr tenantId={actual!.tenant_id} imagen={qrImagen} codigo={codigo as string} />}
       </section>
     </div>
   );

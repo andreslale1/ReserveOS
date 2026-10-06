@@ -42,6 +42,7 @@ const TODAS_LAS_RUTAS = [
   "/panel/gift-cards",
   "/panel/campanas",
   "/panel/facturacion",
+  "/panel/checkin",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del
@@ -72,6 +73,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/productos",
     "/panel/gift-cards",
     "/panel/facturacion",
+    "/panel/checkin",
   ],
   gerente_regional: [
     "/panel/hoy",
@@ -100,8 +102,9 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/tienda",
     "/panel/productos",
     "/panel/gift-cards",
+    "/panel/checkin",
   ],
-  instructora: ["/panel/hoy", "/panel/calendario"],
+  instructora: ["/panel/hoy", "/panel/calendario", "/panel/checkin"],
   contadora: ["/panel/hoy", "/panel/finanzas", "/panel/finanzas/registro", "/panel/caja", "/panel/pagos", "/panel/facturacion"],
 };
 
@@ -118,6 +121,7 @@ const RUTA_MODULO: Record<string, string> = {
   "/panel/gift-cards": "descuentos_gift_cards",
   "/panel/campanas": "campanas_marketing",
   "/panel/facturacion": "finanzas_iva_fel",
+  "/panel/checkin": "checkin_qr",
 };
 
 export function rutaHabilitada(modulos: string[], ruta: string) {

@@ -1,39 +1,41 @@
-# ReserveOS — Esquema completo (5 oct 2026)
+# ReserveOS — Arquitectura completa (6 oct 2026)
 
-Plataforma SaaS multi-tenant para estudios y gimnasios (reservas, paquetes, caja, finanzas, CRM).
-Cada estudio es un "tenant" aislado. VIM Pilates es el primer cliente previsto. Forma Pilates y CRM
-Municipal son proyectos independientes: **este repo nunca los toca**.
+Plataforma SaaS multi-tenant para estudios y gimnasios: reservas, paquetes, caja, finanzas, tienda, comunicaciones y facturación,
+más la consola con la que ReserveOS (la empresa) vende, activa, cobra y da soporte a sus clientes. Cada estudio es un "tenant"
+aislado. Forma Pilates y CRM Municipal son proyectos independientes: **este repositorio nunca los toca**.
+
+Cifras reales de la base (consultadas el 6 oct): **96 tablas (100% con RLS) · 383 funciones · 99 políticas · 3 tareas automáticas ·
+196 permisos de la matriz · 26 módulos vendibles · 73 migraciones**. Frontend: **66 páginas, ~13,300 líneas de TypeScript**.
 
 ---
 
 ## 1. Vista general
 
 ```
-                         reserveos.app  (Vercel, proyecto "reserveos")
- ┌───────────────────────────────────────────────────────────────────────────────┐
- │  Next.js 16 + React 19 + Tailwind 4 (carpeta web/)                            │
- │                                                                               │
- │   /            Página de venta de ReserveOS (pública)                         │
- │   /e/[slug]    Página pública de un estudio: horarios + botón reservar        │
- │   /login       Entrada única (personal, clientas, operador)                   │
- │   /invitar/*   Activación de cuenta por link (personal / clienta)             │
- │   /reservar    App de la clienta (reservar, cancelar, lista de espera)        │
- │   /panel/*     Panel del estudio (dueña, gerente, admin, recepción, etc.)     │
- │   /owner/*     Consola del operador (tú): estudios, pipeline, cobros         │
- └──────────────────────────────────┬────────────────────────────────────────────┘
-                                    │  @supabase/ssr  (cookie de sesión, JWT)
-                                    ▼
- ┌───────────────────────────────────────────────────────────────────────────────┐
- │  Supabase (proyecto agkqppuhyltirrhngybq, us-east-1, org "ReserveOS")         │
- │   Auth · Postgres (67 tablas, 100% con RLS) · 243 funciones/RPC               │
- │   73 políticas RLS · 2 cron (pg_cron) · 2 buckets Storage · Vault (secretos)  │
- └───────────────────────────────────────────────────────────────────────────────┘
+                        reserveos.app  (Vercel, proyecto "reserveos")  +  dominios propios por estudio
+ ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+ │  Next.js 16 · React 19 · Tailwind 4   (carpeta web/)                                          │
+ │                                                                                               │
+ │  PÚBLICO     /  /contacto  /e/[slug]  /login  /invitar/*  /elegir-estudio  /api/pagos/*       │
+ │  CLIENTA     /cuenta  (inicio · clases · tienda · paquetes · historial · perfil)  — app PWA    │
+ │  ESTUDIO     /panel/*  (≈40 pantallas según rol y módulos contratados)                        │
+ │  REServeOS   /owner/*  (dirección · CRM · cobros · soporte · salud · equipo · auditoría…)     │
+ └──────────────────────────────────────┬────────────────────────────────────────────────────────┘
+                                        │  @supabase/ssr · cookie de sesión · JWT
+                                        ▼
+ ┌───────────────────────────────────────────────────────────────────────────────────────────────┐
+ │  Supabase (agkqppuhyltirrhngybq, us-east-1)  Auth · Postgres · pg_cron · Storage · Vault      │
+ └───────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Principio central:** la web casi nunca escribe en tablas directamente. Toda acción que cambia
-datos es una **función de Postgres (RPC)** que valida el rol y el tenant adentro. El tenant jamás lo
-manda el navegador; se deduce del usuario o del recurso. Si la interfaz fallara, la base de datos
-sigue protegiendo.
+**Principios** (todos verificados con pruebas, no solo escritos):
+
+1. **La web casi nunca escribe en tablas**: toda acción es una función (RPC) que valida rol, sede y módulo adentro. El tenant nunca lo manda el navegador.
+2. **El anónimo solo puede ejecutar 7 funciones** (página pública, captación, dominio, invitaciones, testimonios, webhook de pagos). Cualquier función nueva **nace cerrada** (disparador de eventos).
+3. **Los módulos contratados se hacen cumplir en la base**: una tabla de un módulo apagado rechaza escrituras y oculta lecturas, venga de donde venga.
+4. **La matriz de permisos es ejecutable**: `role_permissions` + `_exigir_accion()` aplicada en 19 funciones sensibles, con delegaciones reales.
+5. **Concurrencia**: cupo de clase serializado por candado, créditos acotados por restricción, canje de gift card atómico.
+6. **Dinero**: cada cobro se atribuye a la sede donde se hace y se cuenta una sola vez; eventos de pago firmados e idempotentes.
 
 ---
 
@@ -41,200 +43,98 @@ sigue protegiendo.
 
 ```
 ReserveOS/
-├── ARQUITECTURA.md          este documento
-├── README.md                estado por hitos y política de ambientes
-├── package.json / vitest.config.ts     pruebas (raíz)
-├── aplicar-migraciones.sh   script que pide token y corre supabase db push
-├── .env.local               claves de Supabase para pruebas (fuera de git)
-├── .claude/agents/ux-frontend-expert.md   guía de diseño del frontend
-├── .agents/skills/          skills de diseño/animación instalados
-├── auditoria/               material de la auditoría de Forma (cuerpos reales de RPCs, RLS, grants)
-├── supabase/
-│   ├── config.toml
-│   ├── seed.sql
-│   └── migrations/          43 archivos SQL, orden cronológico = historia del esquema
-├── tests/                   Vitest: aislamiento entre tenants (25 pruebas)
-│   ├── aislamiento_tablas.test.ts     un tenant no lee tablas de otro
-│   ├── aislamiento_rpcs.test.ts       un tenant no ejecuta RPCs sobre otro
-│   ├── aislamiento_storage.test.ts    buckets aislados por tenant
-│   └── fixtures.ts / helpers.ts       tenants ficticio-a / ficticio-b
-└── web/                     la aplicación (Next.js)
-    ├── proxy.ts             middleware: refresca sesión; exige login en /panel
-    ├── next.config.ts
-    ├── lib/
-    │   ├── supabase/{client,server,middleware}.ts
-    │   ├── panel-context.ts     rol del usuario, sedes, NAV_POR_ROL, puedeVer()
-    │   ├── owner-context.ts     verifica que es operador (plataforma_staff)
-    │   └── client-context.ts    perfil de clienta para /reservar
-    ├── components/          landing: hero, navbar, how-it-works, modules, footer, reveal…
-    └── app/                 rutas (ver sección 4)
+├── ARQUITECTURA.md · README.md · GUION_PRUEBAS.md      documentación (el guion es para que pruebes sin código)
+├── package.json            npm test  ·  npm run test:escenarios
+├── supabase/migrations/    73 archivos SQL (la historia completa del esquema)
+├── tests/
+│   ├── aislamiento_*.test.ts, superficie_funciones.test.ts     Vitest: 45 pruebas de seguridad
+│   └── escenarios/         15 escenarios SQL de punta a punta + 2 de concurrencia + lista blanca + limpieza
+├── auditoria/              material de la auditoría de Forma (cuerpos reales de RPCs, RLS, grants)
+└── web/
+    ├── proxy.ts            sesión + resolución del estudio por dominio verificado
+    ├── lib/                supabase/{client,server,middleware} · panel-context (roles, módulos, menú) · owner-context · cuenta-context
+    ├── components/         landing pública
+    └── app/                rutas (sección 4). Patrón por módulo: page.tsx (datos + rol) → *-view.tsx (pantalla) → actions.ts (RPC)
 ```
 
-Convención en cada módulo del panel: `page.tsx` (servidor: lee datos y verifica rol) →
-`*-view.tsx` (cliente: interfaz y formularios) → `actions.ts` (servidor: llama RPCs).
-Tamaño: ~9,100 líneas de TypeScript en `web/`.
-
 ---
 
-## 3. Base de datos (Supabase / Postgres)
+## 3. Base de datos
 
-### 3.1 Tablas por dominio (67)
-
-| Dominio | Tablas |
+### 3.1 Dominios de tablas (96)
+| Dominio | Qué contiene |
 |---|---|
-| **Multi-tenant y accesos** | `tenants`, `tenant_domains`, `sedes`, `tenant_memberships` (rol de cada persona), `staff_sedes` (qué sedes ve cada staff), `module_catalog`, `tenant_entitlements`, `tenant_module_settings`, `role_permissions` (161 celdas de la matriz) |
-| **Clientas** | `clientes` (ficha, consentimientos, familia/tutor), `invitaciones_clienta`, `invitaciones_personal` |
-| **Agenda** | `horarios` (clases semanales o de fecha única), `horario_cancelaciones`, `horario_fechas_privadas`, `horario_fechas_privadas_personas` |
-| **Reservas** | `reservas`, `lista_espera`, `lista_espera_notificaciones` |
-| **Paquetes y membresías** | `paquetes`, `paquete_sedes`, `membresias`, `membresia_sedes`, `cobros_personalizados` |
-| **Pagos y caja** | `pago_transacciones`, `configuracion_pago`, `cierre_caja` |
-| **Tienda** | `productos`, `producto_variantes`, `carritos`, `carrito_items`, `pedidos`, `pedido_items`, `gift_cards` |
-| **Descuentos** | `codigos_descuento`, `codigos_descuento_paquetes`, `codigos_descuento_productos` |
-| **Finanzas** | `gastos`, `gasto_marketing`, `activos`, `pasivos`, `metas_mensuales`, `configuracion_finanzas` |
-| **Marketing / CRM** | `comunicados`, `comunicados_vistos`, `encuestas_satisfaccion`, `testimonios`, `contact_submissions`, `whatsapp_mensajes`, `avisos_operativos_enviados` |
-| **Sitio y app** | `contenido_sitio`, `configuracion_app`, `configuracion_contacto`, `configuracion_reservas`, `push_tokens`, `notificaciones_push_enviadas` |
-| **Auditoría y errores** | `admin_acciones_log`, `error_logs` |
-| **Integraciones (solo esquema, sin proveedor conectado)** | `integracion_pagos`, `integracion_whatsapp`, `integracion_email`, `integracion_push`, `integracion_fel` — secretos en Supabase Vault |
-| **Plataforma (tú, el operador)** | `plataforma_staff` (con rol: operador/ventas/finanzas/soporte), `plataforma_leads` (pipeline), `plataforma_suscripciones`, `plataforma_cobros` |
+| Multi-tenant y accesos | tenants, tenant_domains, sedes, tenant_memberships, staff_sedes, module_catalog, tenant_entitlements, tenant_module_settings, role_permissions, **delegaciones** |
+| Clientas | clientes (con código QR de check-in), invitaciones, **comunicacion_preferencias** |
+| Agenda | horarios (+ sala), horario_cancelaciones, fechas privadas, **salas**, **sede_cierres** (feriados) |
+| Reservas | reservas, lista_espera (+ notificaciones) |
+| Paquetes y membresías | paquetes, paquete_sedes, membresias (+ sedes), cobros_personalizados |
+| Pagos | pago_transacciones, **pago_eventos** (idempotencia), **reembolsos**, configuracion_pago, cierre_caja |
+| Tienda | productos, producto_variantes, carritos, pedidos (+ items), gift_cards (con vencimiento), **movimientos_inventario** |
+| Finanzas | gastos, activos, pasivos, metas, configuracion_finanzas |
+| Facturación del estudio | **configuracion_fiscal**, **documentos_fiscales** |
+| Comunicaciones | **plantillas_mensaje, segmentos, campanas_estudio, cola_mensajes**, comunicados, whatsapp_mensajes |
+| Soporte | **plataforma_tickets, plataforma_ticket_mensajes, plataforma_incidentes** |
+| Plataforma (ReserveOS) | plataforma_staff (8 roles), **plataforma_empresas/contactos/leads (oportunidades)/actividades/tareas/proyectos**, **plataforma_campanas, propuestas, contratos**, plataforma_suscripciones, plataforma_cobros, **plataforma_pagos, plataforma_costos, plataforma_planes**, plataforma_exclusiones, plataforma_captaciones |
+| Auditoría y errores | admin_acciones_log (también registra la plataforma), error_logs |
+| Integraciones (solo esquema) | integracion_pagos / whatsapp / email / push / fel — secretos en Vault |
 
-### 3.2 Funciones (RPC) — por familia
+### 3.2 Seguridad
+- RLS en las 96 tablas; `anon` sin privilegios de tabla.
+- Aislamiento por `current_tenant_ids()` / `tengo_rol_en_tenant()` / `staff_puede_en_sede()` (con la gerencia regional tratada como admin de varias sedes).
+- Tablas de plataforma sin políticas: solo accesibles por RPC con rol interno (operador, ventas, finanzas, soporte, implementación, ingeniería, marketing, auditor).
+- **Hallazgo corregido el 6 oct**: 334 funciones eran ejecutables sin cuenta (algunas activaban paquetes sin pagar). Ahora: lista blanca de 7 + disparador que cierra las nuevas + pruebas permanentes.
 
-- **Reservas:** `admin_agregar_reserva`, `admin_cancelar_reserva`, `cancelar_mi_reserva`,
-  `confirmar_mi_reserva`, `unirse_lista_espera`, `salir_lista_espera`, `promover_lista_espera` (trigger
-  automático), `registrar_asistencia`, `cancelar_clase_fecha`, `reabrir_clase_fecha`.
-- **Membresías:** `agregar_membresia_manual` (venta y cortesía), `solicitar_membresia`,
-  `confirmar_pago_membresia`, `rechazar_membresia_pendiente`, `congelar_/descongelar_membresia`,
-  `transferir_membresia`, `ajustar_creditos_membresia`, `editar_cobro_membresia`, `anular_cobro_membresia`.
-- **Agenda y personal:** `crear_horario`, `actualizar_horario`, `asignar_sede_personal`,
-  `quitar_sede_personal`, `crear_invitacion_personal`, `crear_invitacion_clienta`.
-- **Clientas:** `crear_cliente`, `actualizar_cliente`, familia (`agregar_dependiente`…), `export_resumen_clientes`.
-- **Catálogo:** `crear_paquete`, `actualizar_paquete`, descuentos (`crear_codigo_descuento`…).
-- **Caja y finanzas:** `cerrar_caja`, `caja_esperado_del_dia`, `registrar_gasto`, `eliminar_gasto`,
-  `registrar_activo_pasivo`, `definir_meta_mensual`, familia `kpi_*` (≈25 indicadores).
-- **Empresa:** `crear_sede`, `cerrar_sede`, `reabrir_sede`, `actualizar_marca`.
-- **CRM:** `clientas_riesgo_fuga`, `membresias_por_vencer`, `clientas_consentimiento_pendiente`.
-- **Plataforma:** `listar_tenants_plataforma`, `crear_tenant_plataforma`, `owner_tenant_detalle`,
-  `lead_guardar`, `lead_cambiar_etapa`, `suscripcion_guardar`, `generar_cobros_mes`,
-  `registrar_pago_cobro`, `plataforma_resumen`, `plataforma_estudios_cobro`, `mi_suscripcion`.
-- **Públicas:** `horarios_publicos(slug)` — la única accesible sin login.
-- **Ayudantes de seguridad:** `current_tenant_ids()`, `tengo_rol_en_tenant()`, `staff_puede_en_sede()`,
-  `mi_cliente_id()`, `membresia_cubre_sede()`, `mi_permiso()`, `ahora_en_sede()`, `hoy_en_sede()`
-  (zona horaria por sede, no fija).
-
-### 3.3 Automatismos
-- `pg_cron`: `liberar_cupos_no_confirmados` (cada 10 min) y `lista_espera_vencida` (cada 15 min).
-- Triggers: promoción automática de lista de espera al cancelar; auditoría automática de cambios admin.
-- Storage: `public-assets` (público) y `comprobantes` (privado), aislados por tenant.
-
-### 3.4 Seguridad
-1. RLS en las 67 tablas; `anon` sin privilegios de tabla.
-2. Aislamiento por `current_tenant_ids()` (security definer, sin recursión).
-3. Escrituras sensibles solo por RPC con verificación de rol y sede.
-4. Tablas de plataforma sin ninguna política: solo accesibles vía RPC.
-5. 25 pruebas automáticas verifican que un tenant no toca a otro.
+### 3.3 Tareas automáticas (pg_cron)
+`liberar_cupos_no_confirmados` (10 min) · `lista_espera_vencida` (15 min) · `encolar_recordatorios` (diario: paquetes que vencen en 3 días).
 
 ---
 
-## 4. Frontend — mapa de rutas
+## 4. Frontend — rutas
 
-### Públicas
-| Ruta | Qué es |
-|---|---|
-| `/` | Landing de ReserveOS (hero, problema/solución, módulos, cómo funciona, CTA) |
-| `/e/[slug]` | Página del estudio: nombre, logo, color, horarios por sede, botón "Reservar mi clase" |
-| `/login` | Acceso único; redirige por rol (`/panel`, `/owner`, `/reservar`) |
-| `/invitar/personal/[token]`, `/invitar/clienta/[token]` | Activar cuenta con el link recibido |
+### Pública
+`/` landing · `/contacto` (captación: crea empresa, contacto, oportunidad y tarea) · `/e/[slug]` página del estudio con horarios · `/login` · `/invitar/*` · `/elegir-estudio` · `POST /api/pagos/[slug]/[proveedor]` (webhook firmado) · `/manifest.webmanifest`, `/pwa-icon/*`, `/sw.js` (app instalable)
 
-### Clienta
-| `/reservar` | Ver clases de los próximos días, reservar, cancelar, lista de espera |
+### Clienta `/cuenta` (móvil primero, instalable)
+Inicio (saldo, próximas, check-in, **QR**) · Clases (explica por qué no puede reservar; lista de espera; para dependientes) · Tienda · Paquetes (comprar por transferencia, canjear gift card) · Historial (clases, compras, **solicitar reembolso**) · Perfil (datos, familia, consentimiento, preferencias de mensajes). Una identidad, varios estudios: se elige el contexto de forma explícita; en un dominio propio lo fija el host verificado.
 
-### Panel del estudio `/panel` (menú según rol)
-| Pantalla | Qué hace | Matriz |
-|---|---|---|
-| Hoy | Clases del día, cupos, enlace a cada clase | P16 |
-| Calendario | Vista por instructora, crear clases | P13–P15 |
-| Clase (`/panel/clase/[id]/[fecha]`) | Lista, asistencia, lista de espera, cupo, cancelar fecha | P14, P19–P21 |
-| Clientas | Directorio, alta, invitación, exportar CSV | P09–P11, P38 |
-| Ficha (`/panel/clientes/[id]`) | Paquetes y saldo, vender/regalar, ajustar créditos, congelar, transferir, reservar por ella, editar datos | P12, P18, P24–27 |
-| Pagos pendientes | Aprobar o rechazar transferencias | P30–31 |
-| Paquetes | Catálogo, precios, cobertura | P23 |
-| Caja | Esperado vs real, cierre de caja | P32 |
-| Tienda | Productos y pedidos | P39 |
-| Descuentos | Códigos, vigencia, uso | P40 |
-| Finanzas | Ingresos, gastos, neto, meta del mes | P33–34 |
-| Gastos y balance | Registrar gastos, activos/pasivos, meta, exportar CSV | P35–37 |
-| Negocio | KPIs: retención, adquisición, ranking de instructoras | P22 |
-| Reportes | Asistencia y ocupación por horario | P22 |
-| Seguimiento | Clientas en riesgo, paquetes por vencer, consentimiento pendiente | P41 |
-| Personal | Invitar, roles, asignar sedes | P06, P08 |
-| Agenda del personal | Clases semanales por instructora | P07 |
-| Sedes | Crear, cerrar, reabrir | P05 |
-| Configuración | Nombre, color, logo; link y código para la web del estudio | P04 |
-| Mi suscripción | Plan y pagos a ReserveOS | — |
-| Auditoría | Últimas 200 acciones administrativas | P43 |
-| Automatizaciones | Estado de automatismos (sin builder) | — |
+### Estudio `/panel` (el menú depende del rol **y** de los módulos contratados)
+Hoy · Calendario · Clase (asistencia, espera, cupo, sala, cancelar fecha) · **Check-in** · Clientas (+ ficha completa, importar CSV, exportar) · Pagos pendientes · **Pagos y reembolsos** · Paquetes · Caja · Tienda · **Productos e inventario** · **Gift cards** · Descuentos · Finanzas (con **ingresos por sede**) · Gastos y balance · **Facturación** · Negocio · Reportes · Seguimiento · **Campañas** · Personal · Agenda del personal · Sedes · **Salas** · **Feriados y cierres** · Configuración (marca, **reglas de reserva**, dominio, pagos en línea) · **Delegaciones** · Mi suscripción · **Soporte** · Auditoría · Automatizaciones
 
-### Operador `/owner`
-| Estudios | Lista, crear estudio con su dueña, detalle por estudio |
-| Pipeline | Prospectos por etapa, valor, próxima acción |
-| Cobros | MRR, cobrado, por cobrar, mora; suscripciones; registrar pagos; suspender |
+### ReserveOS `/owner` (según rol interno)
+**Dirección** · **Pipeline** (+ ficha de oportunidad con contactos, historial, tareas, **propuestas versionadas**) · **Tareas** · **Activaciones** (lista de salida a producción) · Estudios (+ plan y módulos por estudio) · **Planes** · **Contratos** · **Marketing** (campañas con atribución) · Cobros (pagos parciales, setup, mora) · **Rentabilidad** · **Soporte** (tickets, incidentes) · **Salud** · **Dominios** · **Equipo** · **Auditoría**
 
-### Roles → pantallas
-- **Dueña / Gerente:** todo `/panel` de su estudio.
-- **Admin de sede:** operación + finanzas de sus sedes.
-- **Recepción:** Hoy, Calendario, Clientas, Pagos pendientes, Caja, Tienda.
-- **Instructora:** Hoy, Calendario (asistencia en sus clases).
-- **Contadora:** Hoy, Finanzas, Gastos y balance, Caja.
-- **Clienta:** `/reservar`.
-- **Operador (operador/ventas/finanzas/soporte):** `/owner` según rol interno.
-La visibilidad se define en un solo lugar: `NAV_POR_ROL` en `web/lib/panel-context.ts`, y la
-base de datos la hace cumplir de nuevo en cada RPC.
-
-### Diseño
-Tokens del manual v2: Ink `#111`, Paper `#F3EEE7`, Peach `#E8B89B`, Sage, Blue; Inter + Playfair.
-Panel interno oscuro/lima en algunas vistas; sitio público claro. Animación de entrada con `Reveal`.
+### Roles
+Estudio: dueña, gerente general, **gerencia regional**, admin de sede, recepción, instructora, contadora, **marketing**, clienta.
+ReserveOS: operador, ventas, finanzas, soporte, implementación, ingeniería, marketing, auditor.
 
 ---
 
-## 5. Flujos clave
-
-1. **Alta de un estudio:** operador crea estudio → se genera invitación de dueña → dueña activa cuenta
-   → configura marca, paquetes, horarios, personal → invita clientas.
-2. **Venta de paquete:** ficha de clienta → `agregar_membresia_manual` (efectivo/transferencia/tarjeta
-   o cortesía) → membresía activa con cobertura de sedes.
-3. **Reserva:** clienta (o recepción por ella) → RPC valida cupo, membresía y sede → descuenta clase;
-   si cancela, devuelve la clase y el trigger promueve a la lista de espera.
-4. **Asistencia:** instructora/recepción marca asistió o no vino.
-5. **Cobro a estudios (tuyo):** suscripción por estudio → "Generar cobros del mes" → registras pagos →
-   mora visible → suspender.
-6. **Integración con la web de un estudio:** enlace al login, iframe de `/e/slug`, o botón.
+## 5. Flujos de dinero y datos
+1. **Venta**: ficha → `agregar_membresia_manual` → ingreso de la sede, entra a caja; se puede facturar una sola vez.
+2. **Pago en línea**: proveedor → `pago_webhook` (firma HMAC con secreto del estudio en Vault, anti-repetición, verificación de monto) → activa una sola vez.
+3. **Reembolso**: la clienta o el personal lo piden → solo quien tiene P31 (o delegación) aprueba → se anula la compra, su factura queda "por anular" → se marca cuándo se devolvió el dinero.
+4. **Mensajes**: avisos de reserva y de paquete por vencer salen solos; las promociones solo con consentimiento; todo pasa por una cola con reintentos.
+5. **Cobro a estudios**: suscripción → generar cobros del mes (idempotente) → pagos parciales → mora → suspensión; rentabilidad = cobrado − costos.
 
 ---
 
-## 6. Despliegue y operación
-
-- **Hosting:** Vercel, proyecto `reserveos` (cuenta andreslale1). Dominio `reserveos.app` y
-  `www.reserveos.app` (comprado y configurado en Vercel). Deploy: `cd web && vercel deploy --prod`.
-- **Base de datos:** una sola base Supabase que hoy es staging y producción a la vez (política en README:
-  separar producción antes de operar datos reales de VIM). Cambios por migración:
-  `supabase db push --linked` (necesita `SUPABASE_ACCESS_TOKEN` de la organización ReserveOS).
-- **Git:** repo local, sin remoto en GitHub todavía (no hay respaldo en la nube del código).
-- **Pruebas:** `npm test` en la raíz (25 pruebas); `npm run build` en `web/`.
+## 6. Despliegue y pruebas
+- **Hosting**: Vercel (`reserveos`), dominios `reserveos.app` y `www`. Deploy: `cd web && vercel deploy --prod`.
+- **Base**: Supabase (única, hoy staging y producción). `supabase db push --linked` con `SUPABASE_ACCESS_TOKEN` de la organización ReserveOS.
+- **Código**: GitHub `andreslale1/ReserveOS` (privado), rama `main`.
+- **Pruebas**: `npm test` (45) · `SUPABASE_ACCESS_TOKEN=… npm run test:escenarios` (15 escenarios + concurrencia + lista blanca + sin residuos) · `GUION_PRUEBAS.md` para pruebas humanas.
 
 ---
 
-## 7. Estado: qué está listo y qué falta
+## 7. Qué NO está conectado (por decisión) y qué falta
 
-**Listo:** núcleo de reservas, membresías, caja, finanzas, tienda, descuentos, CRM básico, auditoría,
-sedes, marca, panel por rol, página pública por estudio, pipeline y cobros del operador, dominio propio.
+**Interfaces listas, sin proveedor conectado**: pasarela de pago (webhook firmado + eventos), correo/WhatsApp/push (cola con reintentos, `cola_tomar`/`cola_resultado`), certificador FEL (`fiscal_tomar`/`fiscal_resultado`; mientras tanto el estudio emite fuera y registra serie/número).
 
-**No conectado (por decisión):** pasarela de pago, WhatsApp, email, push, factura electrónica (FEL);
-campañas masivas (P42). El esquema ya existe.
-
-**Pendiente / riesgos:**
-- Dominio propio por estudio (`reservas.suestudio.com`).
-- Soporte excepcional con aprobación y plazo (P03) y facturación automática de ReserveOS (P02).
-- Repositorio sin respaldo remoto; sin ambiente de producción separado.
-- Matriz de permisos sin aprobar por VIM; delegaciones (\*) no implementadas.
-- Pantallas nuevas probadas por compilación y pruebas de seguridad, no aún con uso real de punta a punta.
-- Token de Supabase expuesto en el chat: revocar.
+**Pendiente real**:
+- Probar las pantallas con uso humano real (ver `GUION_PRUEBAS.md`): lo automático verifica la base, no el aspecto ni la comodidad.
+- Separar base de producción de la de pruebas antes de operar con datos reales de VIM.
+- Conectar un proveedor por cada integración cuando decidas cuál.
+- Que VIM apruebe la matriz de permisos; términos de uso y política de privacidad.
+- Facturación automática de ReserveOS a los estudios (hoy es manual) y acceso excepcional de soporte (P03) con aprobación.
+- App nativa de marca (la PWA cubre móvil por ahora).

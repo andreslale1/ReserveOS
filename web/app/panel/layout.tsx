@@ -4,6 +4,7 @@ import { getPanelContext, ROLE_LABEL, puedeVer, rutaHabilitada } from "@/lib/pan
 const ALL_LINKS = [
   { href: "/panel/hoy", label: "Hoy" },
   { href: "/panel/calendario", label: "Calendario" },
+  { href: "/panel/checkin", label: "Check-in" },
   { href: "/panel/clientes", label: "Clientas" },
   { href: "/panel/pagos-pendientes", label: "Pagos pendientes" },
   { href: "/panel/paquetes", label: "Paquetes" },
