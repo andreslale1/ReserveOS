@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCuenta } from "@/lib/cuenta-context";
+import RegistrarSw from "./registrar-sw";
 
 const TABS = [
   { href: "/cuenta", label: "Inicio" },
@@ -24,6 +25,7 @@ export default async function CuentaLayout({ children }: { children: React.React
   }
   return (
     <div className="min-h-screen bg-cream pb-20">
+      <RegistrarSw />
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-black/10 bg-cream/95 px-5 py-3 backdrop-blur">
         <span className="font-serif text-lg text-ink">{actual.estudio}</span>
         <span className="flex items-center gap-4 text-xs text-ink/55">
