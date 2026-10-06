@@ -47,7 +47,7 @@ export default function Navbar() {
             Entrar
           </Link>
           <a
-            href="#contacto"
+            href="/contacto"
             className="press-spring rounded-full bg-lime px-5 py-2 text-sm font-semibold text-void shadow-[0_0_24px_-4px_rgba(198,255,58,0.7)] transition-colors duration-200 hover:bg-lime/85"
           >
             Hablemos →

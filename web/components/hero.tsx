@@ -27,7 +27,7 @@ export default function Hero() {
 
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <a
-              href="#contacto"
+              href="/contacto"
               className="press-spring group inline-flex items-center gap-3 rounded-full bg-lime py-2 pl-7 pr-2 text-sm font-bold uppercase tracking-wide text-void shadow-[0_0_40px_-8px_rgba(198,255,58,0.8)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_0_50px_-4px_rgba(198,255,58,0.9)]"
             >
               Agendar una demo

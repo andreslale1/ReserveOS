@@ -5,7 +5,7 @@ type D = {
   tareas_vencidas: number; tareas_hoy: number; sin_proxima_accion: number; valor_pipeline: number; oportunidades_abiertas: number;
   seguimientos_vencidos: { id: string; nombre: string; proximo_paso: string; proximo_paso_fecha: string }[];
   activaciones_en_curso: { id: string; nombre: string; faltan: number }[];
-  cobros_en_mora: number; estudios_en_mora: number; cobros_por_vencer_7d: number;
+  cobros_en_mora: number; estudios_en_mora: number; cobros_por_vencer_7d: number; contratos_por_vencer_60d: number;
   tickets_abiertos: number; tickets_urgentes: number; tickets_sla_vencido: number; incidentes_activos: number;
   estudios_activos: number; estudios_suspendidos: number;
 };
@@ -39,7 +39,8 @@ export default async function DireccionPage() {
       </div>
 
       <h2 className="mt-8 text-xs font-medium uppercase tracking-wide text-white/40">Dinero</h2>
-      <div className="mt-2 grid gap-4 sm:grid-cols-3">
+      <div className="mt-2 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Card href="/owner/contratos" titulo="Contratos por vencer (60 días)" valor={String(d.contratos_por_vencer_60d)} alerta={d.contratos_por_vencer_60d > 0} />
         <Card href="/owner/cobros" titulo="En mora" valor={q(d.cobros_en_mora)} sub={`${d.estudios_en_mora} estudio(s)`} alerta={d.cobros_en_mora > 0} />
         <Card href="/owner/cobros" titulo="Vencen en 7 días" valor={String(d.cobros_por_vencer_7d)} />
         <Card href="/owner" titulo="Estudios activos" valor={String(d.estudios_activos)} sub={`${d.estudios_suspendidos} suspendido(s)`} />

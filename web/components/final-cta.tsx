@@ -19,7 +19,7 @@ export default function FinalCta() {
           siguiente fase.
         </p>
         <a
-          href="mailto:hola@reserveos.app"
+          href="/contacto"
           className="press-spring relative mt-8 inline-flex rounded-full bg-lime px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-void shadow-[0_0_40px_-8px_rgba(198,255,58,0.7)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-[0_0_50px_-4px_rgba(198,255,58,0.85)]"
         >
           Escribinos →

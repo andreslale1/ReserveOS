@@ -3,8 +3,10 @@ import { getOwnerContext } from "@/lib/owner-context";
 
 const TODOS = ["operador", "ventas", "finanzas", "soporte", "implementacion", "ingenieria", "marketing", "auditor"];
 const LINKS = [
-  { href: "/owner/direccion", label: "Dirección", roles: ["operador", "ventas", "finanzas", "soporte", "implementacion", "ingenieria"] },
+  { href: "/owner/direccion", label: "Dirección", roles: ["operador", "ventas", "finanzas", "soporte", "implementacion", "ingenieria", "marketing"] },
   { href: "/owner/pipeline", label: "Pipeline", roles: ["operador", "ventas"] },
+  { href: "/owner/marketing", label: "Marketing", roles: ["operador", "marketing", "ventas"] },
+  { href: "/owner/contratos", label: "Contratos", roles: ["operador", "ventas", "finanzas"] },
   { href: "/owner/tareas", label: "Tareas", roles: ["operador", "ventas", "finanzas", "soporte"] },
   { href: "/owner/activaciones", label: "Activaciones", roles: ["operador", "ventas", "soporte", "implementacion", "ingenieria"] },
   { href: "/owner", label: "Estudios", roles: ["operador", "soporte", "implementacion", "ingenieria"] },
