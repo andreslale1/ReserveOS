@@ -1,5 +1,7 @@
 "use client";
 
+import CampoFecha from "@/lib/campo-fecha";
+import { formatoFecha, hoyGT } from "@/lib/fechas";
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { completarTarea, crearTarea, eliminarContacto, guardarContacto, guardarOportunidad, registrarActividad } from "./actions";
@@ -69,7 +71,7 @@ export default function FichaOportunidad({ d }: { d: Detalle }) {
             <label className="text-xs text-white/50">Probabilidad (%)<input type="number" min={0} max={100} className={input} value={f.probabilidad} onChange={(e) => setF({ ...f, probabilidad: e.target.value })} /></label>
             <label className="text-xs text-white/50">Fuente<input className={input} value={f.fuente} onChange={(e) => setF({ ...f, fuente: e.target.value })} /></label>
             <label className="text-xs text-white/50">Próxima acción<input className={input} value={f.proximoPaso} onChange={(e) => setF({ ...f, proximoPaso: e.target.value })} /></label>
-            <label className="text-xs text-white/50">Fecha<input type="date" className={input} value={f.proximoPasoFecha} onChange={(e) => setF({ ...f, proximoPasoFecha: e.target.value })} /></label>
+            <label className="text-xs text-white/50">Fecha de la acción (dd/mm/aaaa)<CampoFecha className={input} value={f.proximoPasoFecha} onChange={(v) => setF({ ...f, proximoPasoFecha: v })} /></label>
             {f.etapa === "perdido" && (
               <label className="text-xs text-white/50 sm:col-span-2">Motivo por el que se perdió<input className={input} value={f.motivoPerdida} onChange={(e) => setF({ ...f, motivoPerdida: e.target.value })} /></label>
             )}
@@ -120,7 +122,7 @@ export default function FichaOportunidad({ d }: { d: Detalle }) {
           </ul>
           <div className="mt-3 flex flex-wrap gap-2">
             <input className={`${input} flex-1`} placeholder="Nueva tarea" value={tarea.titulo} onChange={(e) => setTarea({ ...tarea, titulo: e.target.value })} />
-            <input type="date" className={`${input} w-40`} value={tarea.vence} onChange={(e) => setTarea({ ...tarea, vence: e.target.value })} />
+            <CampoFecha ariaLabel="Fecha de vencimiento (dd/mm/aaaa)" className={`${input} w-40`} value={tarea.vence} onChange={(v) => setTarea({ ...tarea, vence: v })} />
             <button className="rounded-full border border-white/15 px-4 py-1.5 text-sm disabled:opacity-50" disabled={isPending || !tarea.titulo.trim()}
               onClick={() => correr(() => crearTarea(o.id, tarea.titulo, tarea.vence), "Tarea creada.", () => setTarea({ titulo: "", vence: "" }))}>+ Tarea</button>
           </div>
@@ -138,7 +140,7 @@ export default function FichaOportunidad({ d }: { d: Detalle }) {
             {d.actividades.length === 0 && <li className="text-sm text-white/50">Sin actividad todavía.</li>}
             {d.actividades.map((a) => (
               <li key={a.id} className="text-sm">
-                <span className="text-xs uppercase text-lime">{a.tipo}</span> · <span className="text-white/45">{new Date(a.fecha).toLocaleDateString("es-GT")} {a.autor_nombre ? `· ${a.autor_nombre}` : ""}</span>
+                <span className="text-xs uppercase text-lime">{a.tipo}</span> · <span className="text-white/45">{formatoFecha(hoyGT(new Date(a.fecha)))} {a.autor_nombre ? `· ${a.autor_nombre}` : ""}</span>
                 <p className="text-white/80">{a.resumen}</p>
               </li>
             ))}

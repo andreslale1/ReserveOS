@@ -1,12 +1,12 @@
 import { getOwnerContext } from "@/lib/owner-context";
+import { mesGT, ultimoDiaMes } from "@/lib/fechas";
 import RentabilidadView, { type Rent, type Costo } from "./rentabilidad-view";
 
 export default async function RentabilidadPage({ searchParams }: { searchParams: Promise<{ mes?: string }> }) {
   const { mes } = await searchParams;
-  const base = /^\d{4}-\d{2}$/.test(mes ?? "") ? (mes as string) : new Date().toISOString().slice(0, 7);
-  const [y, m] = base.split("-").map(Number);
+  const base = /^\d{4}-\d{2}$/.test(mes ?? "") ? (mes as string) : mesGT();
   const desde = `${base}-01`;
-  const hasta = new Date(Date.UTC(y, m, 0)).toISOString().slice(0, 10);
+  const hasta = ultimoDiaMes(base);
   const { supabase } = await getOwnerContext();
   const [{ data: rent, error }, { data: costos }, { data: estudios }] = await Promise.all([
     supabase.rpc("plataforma_rentabilidad", { p_desde: desde, p_hasta: hasta }),

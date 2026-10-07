@@ -7,7 +7,7 @@ export async function crearProspecto(i: {
   nombre: string; tipo: string; ciudad: string; sitioWeb: string; fuente: string;
   valor: number; numSedes: number | null; planInteres: string; etapa: string;
   proximoPaso: string; proximoPasoFecha: string;
-  contacto: string; cargo: string; telefono: string; email: string;
+  contacto: string; cargo: string; telefono: string; email: string; excepcion?: string;
 }) {
   const supabase = await createClient();
   const { data: empresaId, error: e1 } = await supabase.rpc("empresa_guardar", {
@@ -27,14 +27,15 @@ export async function crearProspecto(i: {
     p_plan_interes: i.planInteres || null, p_num_sedes: i.numSedes, p_probabilidad: null,
     p_proximo_paso: i.proximoPaso || null, p_proximo_paso_fecha: i.proximoPasoFecha || null,
     p_fuente: i.fuente || null, p_motivo_perdida: null, p_notas: null,
+    p_excepcion: i.excepcion?.trim() || null,
   });
   if (e3) return { error: e3.message };
   revalidatePath("/owner/pipeline");
   return { error: null };
 }
-export async function cambiarEtapa(id: string, etapa: string) {
+export async function cambiarEtapa(id: string, etapa: string, excepcion?: string) {
   const supabase = await createClient();
-  const { error } = await supabase.rpc("lead_cambiar_etapa", { p_id: id, p_etapa: etapa });
+  const { error } = await supabase.rpc("lead_cambiar_etapa", { p_id: id, p_etapa: etapa, p_excepcion: excepcion?.trim() || null });
   if (error) return { error: error.message };
   revalidatePath("/owner/pipeline");
   revalidatePath("/owner/activaciones");

@@ -2,26 +2,32 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { crearEstudio, cambiarEstadoEstudio } from "./actions";
+import { useRouter } from "next/navigation";
+import { crearEstudio } from "./actions";
+import { ESTADOS, ESTADO_LABEL, EstadoModal } from "./estado-modal";
 
 type Tenant = {
   id: string;
   slug: string;
   name: string;
   status: string;
+  tipo: string;
   created_at: string;
   num_sedes: number;
   num_staff: number;
-  num_clientas: number;
+  clientas_registradas: number;
+  clientas_con_acceso: number;
+  estado_motivo: string | null;
 };
 
-const ESTADO_LABEL: Record<string, { label: string; className: string }> = {
-  activo: { label: "Activo", className: "bg-lime/15 text-lime" },
-  suspendido: { label: "Suspendido", className: "bg-yellow-500/15 text-yellow-400" },
-  cancelado: { label: "Cancelado", className: "bg-white/10 text-white/50" },
-};
+const TIPO_LABEL: Record<string, string> = { demo: "Demo", interno: "Interno / prueba" };
 
-export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
+export default function OwnerView({ tenants: todos }: { tenants: Tenant[] }) {
+  const router = useRouter();
+  const [incluirPruebas, setIncluirPruebas] = useState(false);
+  const [cambio, setCambio] = useState<{ id: string; name: string; destino: string } | null>(null);
+  const tenants = incluirPruebas ? todos : todos.filter((t) => (t.tipo ?? "cliente") === "cliente");
+  const ocultos = todos.length - tenants.length;
   const [mostrarForm, setMostrarForm] = useState(false);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -62,12 +68,6 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
     setMostrarForm(false);
   }
 
-  function cambiarEstado(tenantId: string, status: string) {
-    startTransition(() => {
-      cambiarEstadoEstudio(tenantId, status);
-    });
-  }
-
   return (
     <main className="mx-auto max-w-5xl px-6 py-10 md:px-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -79,6 +79,10 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
             {tenants.length} estudio{tenants.length === 1 ? "" : "s"} en la
             plataforma.
           </p>
+          <label className="mt-2 flex items-center gap-2 text-xs text-white/60">
+            <input type="checkbox" checked={incluirPruebas} onChange={(e) => setIncluirPruebas(e.target.checked)} />
+            Incluir pruebas (demo e internos){!incluirPruebas && ocultos > 0 ? ` — ${ocultos} oculto${ocultos === 1 ? "" : "s"}` : ""}
+          </label>
         </div>
         <button
           onClick={() => (mostrarForm ? nuevoEstudio() : setMostrarForm(true))}
@@ -193,6 +197,7 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
       <ul className="mt-8 space-y-2">
         {tenants.map((t) => {
           const estado = ESTADO_LABEL[t.status] ?? ESTADO_LABEL.cancelado;
+          const otros = ESTADOS.filter((e) => e !== t.status);
           return (
             <li
               key={t.id}
@@ -208,32 +213,28 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
                   >
                     {estado.label}
                   </span>
+                  {t.tipo !== "cliente" && (
+                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-white/60">{TIPO_LABEL[t.tipo] ?? t.tipo}</span>
+                  )}
                 </div>
                 <p className="mt-1 text-xs text-white/40">
                   {t.slug} · {t.num_sedes} sede{t.num_sedes === 1 ? "" : "s"} ·{" "}
-                  {t.num_staff} staff · {t.num_clientas} clientas
+                  {t.num_staff} staff · {t.clientas_con_acceso} clientas con acceso · {t.clientas_registradas} registradas
                 </p>
               </Link>
-              <div className="flex items-center gap-2">
-                {t.status !== "activo" && (
-                  <button
-                    disabled={isPending}
-                    onClick={() => cambiarEstado(t.id, "activo")}
-                    className="rounded-full border border-lime/30 px-3 py-1 text-xs text-lime hover:bg-lime/10"
-                  >
-                    Activar
-                  </button>
-                )}
-                {t.status === "activo" && (
-                  <button
-                    disabled={isPending}
-                    onClick={() => cambiarEstado(t.id, "suspendido")}
-                    className="rounded-full border border-white/15 px-3 py-1 text-xs text-white/60 hover:text-white"
-                  >
-                    Suspender
-                  </button>
-                )}
-              </div>
+              <label className="flex items-center gap-2 text-xs text-white/50">
+                Cambiar estado
+                <select
+                  value=""
+                  onChange={(e) => e.target.value && setCambio({ id: t.id, name: t.name, destino: e.target.value })}
+                  className="rounded-full border border-white/15 bg-void px-3 py-1 text-xs text-white/80"
+                >
+                  <option value="">Elegir…</option>
+                  {otros.map((e) => (
+                    <option key={e} value={e}>{ESTADO_LABEL[e].label}</option>
+                  ))}
+                </select>
+              </label>
             </li>
           );
         })}
@@ -243,6 +244,9 @@ export default function OwnerView({ tenants }: { tenants: Tenant[] }) {
           </li>
         )}
       </ul>
+      {cambio && (
+        <EstadoModal tenant={cambio} destino={cambio.destino} onClose={() => setCambio(null)} onDone={() => router.refresh()} />
+      )}
     </main>
   );
 }

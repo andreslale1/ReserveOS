@@ -64,18 +64,19 @@ export async function crearEstudio(input: {
   return { error: null, token: token as string };
 }
 
-export async function cambiarEstadoEstudio(tenantId: string, status: string) {
+export async function cambiarEstadoEstudio(tenantId: string, status: string, motivo: string) {
   const check = await verificarOperador();
   if (!check.ok) {
     return { error: check.error };
   }
   const { error } = await check.supabase.rpc(
     "cambiar_estado_tenant_plataforma",
-    { p_tenant_id: tenantId, p_status: status },
+    { p_tenant_id: tenantId, p_status: status, p_motivo: motivo || null },
   );
   if (error) {
     return { error: error.message };
   }
   revalidatePath("/owner");
+  revalidatePath(`/owner/${tenantId}`);
   return { error: null };
 }

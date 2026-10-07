@@ -1,5 +1,5 @@
 do $$
-declare v_uid uuid; v_e uuid; v_o uuid; v_n int; v_err text; v_dup text;
+declare v_uid uuid; v_e uuid; v_o uuid; v_n int; v_err text; v_dup text; v_sin text; v_abierta text; v_pl text;
 begin
   select user_id into v_uid from public.plataforma_staff where rol='operador' limit 1;
   if v_uid is null then raise exception 'SIN OPERADOR registrado en plataforma_staff'; end if;
@@ -8,11 +8,18 @@ begin
   v_e := public.empresa_guardar(null,'ZZ Gimnasio Prueba','gimnasio','Guatemala',null,2,'web',null);
   begin perform public.empresa_guardar(null,'zz gimnasio prueba','gimnasio',null,null,null,null,null); v_dup:='NO bloqueo duplicado';
   exception when others then v_dup:='bloqueó duplicado OK'; end;
-  v_o := public.oportunidad_guardar(null, v_e, 1500,'prospecto','profesional',2,40,'Llamar',null,'web',null,null);
-  perform public.lead_cambiar_etapa(v_o,'ganado');
+  v_o := public.oportunidad_guardar(null, v_e, 1500,'prospecto','profesional',2,40,'Llamar',current_date+3,'web',null,null);
+  begin perform public.oportunidad_guardar(null, v_e, 1500,'demo','profesional',2,40,null,null,'web',null,null); v_abierta:='NO exigió próxima acción';
+  exception when others then v_abierta:='próxima acción obligatoria OK'; end;
+  begin perform public.lead_cambiar_etapa(v_o,'ganado'); v_sin:='NO bloqueó ganado sin respaldo';
+  exception when others then v_sin:='ganado sin respaldo bloqueado OK'; end;
+  begin perform public.lead_cambiar_etapa(v_o,'ganado','corto'); v_sin:=v_sin||' (aceptó excepción corta)';
+  exception when others then null; end;
+  perform public.lead_cambiar_etapa(v_o,'ganado','Cliente piloto cerrado por acuerdo verbal, contrato en trámite');
+  select (select ganado_excepcion is not null from public.plataforma_leads where id=v_o)::text into v_pl;
   select count(*) into v_n from public.plataforma_proyectos where lead_id=v_o;
   begin perform public.proyecto_publicar((select id from public.plataforma_proyectos where lead_id=v_o)); v_err:='NO bloqueó salida en vivo';
   exception when others then v_err := sqlerrm; end;
   begin perform public.lead_cambiar_etapa(v_o,'perdido'); exception when others then v_err := v_err || ' || perdido sin motivo: ' || sqlerrm; end;
-  raise exception 'RESULTADO: % | proyectos creados=% | publicar: %', v_dup, v_n, left(v_err, 400);
+  raise exception 'RESULTADO: % | % | % | excepción registrada=% | proyectos creados=% | publicar: %', v_dup, v_abierta, v_sin, v_pl, v_n, left(v_err, 400);
 end $$;

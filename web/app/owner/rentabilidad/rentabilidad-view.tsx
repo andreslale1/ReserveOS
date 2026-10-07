@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import CampoFecha from "@/lib/campo-fecha";
+import { formatoFecha, hoyGT } from "@/lib/fechas";
 import { borrarCosto, guardarCosto } from "./actions";
 
 export type Rent = {
@@ -19,7 +21,7 @@ export default function RentabilidadView({ mes, rent, costos, estudios }: { mes:
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
-  const [c, setC] = useState({ fecha: new Date().toISOString().slice(0, 10), categoria: "infraestructura", descripcion: "", monto: "", tenantId: "" });
+  const [c, setC] = useState({ fecha: hoyGT(), categoria: "infraestructura", descripcion: "", monto: "", tenantId: "" });
 
   function correr(fn: () => Promise<{ error: string | null }>, despues?: () => void) {
     setMsg(null);
@@ -33,14 +35,14 @@ export default function RentabilidadView({ mes, rent, costos, estudios }: { mes:
           <h1 className="text-2xl font-semibold">Rentabilidad de ReserveOS</h1>
           <p className="mt-1 text-sm text-white/50">Lo realmente cobrado menos tus costos. La caja de cada estudio no cuenta como ingreso tuyo.</p>
         </div>
-        <input type="month" className={input} value={mes} onChange={(e) => e.target.value && router.push(`/owner/rentabilidad?mes=${e.target.value}`)} />
+        <label className="text-xs text-white/60">Mes<br /><input type="month" className={input} value={mes} onChange={(e) => e.target.value && router.push(`/owner/rentabilidad?mes=${e.target.value}`)} /></label>
       </div>
       {msg && <p className="mt-4 rounded-xl bg-white/10 px-4 py-3 text-sm">{msg}</p>}
 
       <section className="mt-6 grid gap-4 sm:grid-cols-4">
         {[["Ingresos cobrados", q(rent.ingresos), "text-white"], ["Costos", q(rent.costos), "text-white"], ["Margen", q(rent.margen), rent.margen >= 0 ? "text-lime" : "text-red-300"], ["Margen %", rent.margen_pct === null ? "—" : `${rent.margen_pct}%`, "text-white"]].map(([l, v, cl]) => (
           <div key={l} className="rounded-2xl border border-white/10 bg-void-card p-5">
-            <p className="text-xs uppercase tracking-wide text-white/45">{l}</p>
+            <p className="text-xs text-white/60">{l}</p>
             <p className={`mt-1 text-2xl font-semibold ${cl}`}>{v}</p>
           </div>
         ))}
@@ -63,21 +65,21 @@ export default function RentabilidadView({ mes, rent, costos, estudios }: { mes:
         <section className="rounded-2xl border border-white/10 bg-void-card p-5">
           <h2 className="text-base font-semibold">Registrar costo</h2>
           <div className="mt-3 flex flex-wrap items-end gap-2">
-            <input type="date" className={input} value={c.fecha} onChange={(e) => setC({ ...c, fecha: e.target.value })} />
-            <select className={input} value={c.categoria} onChange={(e) => setC({ ...c, categoria: e.target.value })}>{CATS.map((x) => <option key={x}>{x}</option>)}</select>
-            <input className={`${input} w-24`} type="number" placeholder="Q" value={c.monto} onChange={(e) => setC({ ...c, monto: e.target.value })} />
-            <select className={input} value={c.tenantId} onChange={(e) => setC({ ...c, tenantId: e.target.value })}>
-              <option value="">General</option>{estudios.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
-            </select>
-            <input className={`${input} flex-1`} placeholder="Descripción" value={c.descripcion} onChange={(e) => setC({ ...c, descripcion: e.target.value })} />
-            <button className="rounded-full bg-lime px-4 py-1.5 text-sm font-semibold text-void disabled:opacity-50" disabled={isPending || !(Number(c.monto) > 0)}
-              onClick={() => correr(() => guardarCosto(c.fecha, c.categoria, c.descripcion, Number(c.monto), c.tenantId), () => { setC({ ...c, monto: "", descripcion: "" }); router.refresh(); })}>Guardar</button>
+            <label className="text-xs text-white/60">Fecha (dd/mm/aaaa) *<br /><CampoFecha className={`${input} w-32`} value={c.fecha} onChange={(v) => setC({ ...c, fecha: v })} /></label>
+            <label className="text-xs text-white/60">Categoría<br /><select className={input} value={c.categoria} onChange={(e) => setC({ ...c, categoria: e.target.value })}>{CATS.map((x) => <option key={x}>{x}</option>)}</select></label>
+            <label className="text-xs text-white/60">Monto (Q) *<br /><input className={`${input} w-24`} type="number" min={0} value={c.monto} onChange={(e) => setC({ ...c, monto: e.target.value })} /></label>
+            <label className="text-xs text-white/60">Se asigna a<br /><select className={input} value={c.tenantId} onChange={(e) => setC({ ...c, tenantId: e.target.value })}>
+              <option value="">Costo general</option>{estudios.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+            </select></label>
+            <label className="min-w-[160px] flex-1 text-xs text-white/60">Descripción<br /><input className={`${input} w-full`} value={c.descripcion} onChange={(e) => setC({ ...c, descripcion: e.target.value })} /></label>
+            <button className="rounded-full bg-lime px-4 py-1.5 text-sm font-semibold text-void disabled:opacity-50" disabled={isPending || !(Number(c.monto) > 0) || !c.fecha}
+              onClick={() => correr(() => guardarCosto(c.fecha, c.categoria, c.descripcion, Number(c.monto), c.tenantId), () => { setC({ ...c, monto: "", descripcion: "" }); router.refresh(); })}>{isPending ? "Guardando…" : "Guardar"}</button>
           </div>
           <ul className="mt-4 divide-y divide-white/10">
             {costos.length === 0 && <li className="py-2 text-sm text-white/50">Sin costos este mes.</li>}
             {costos.map((k) => (
               <li key={k.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-                <span>{k.fecha} · {k.categoria}{k.estudio ? ` · ${k.estudio}` : ""}<span className="text-white/50">{k.descripcion ? ` · ${k.descripcion}` : ""}</span></span>
+                <span>{formatoFecha(k.fecha)} · {k.categoria}{k.estudio ? ` · ${k.estudio}` : ""}<span className="text-white/50">{k.descripcion ? ` · ${k.descripcion}` : ""}</span></span>
                 <span className="flex items-center gap-3">{q(k.monto)}<button className="text-xs text-white/40 hover:text-white" disabled={isPending} onClick={() => correr(() => borrarCosto(k.id), () => router.refresh())}>Quitar</button></span>
               </li>
             ))}

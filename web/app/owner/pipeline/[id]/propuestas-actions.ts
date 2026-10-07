@@ -21,6 +21,6 @@ export async function guardarPropuesta(leadId: string, p: { plan: string; sedes:
 export async function cambiarEstadoPropuesta(leadId: string, id: string, estado: string) {
   return llamar(leadId, "propuesta_estado", { p_id: id, p_estado: estado });
 }
-export async function crearContrato(leadId: string, propuestaId: string, vigencia: number, renovacionAuto: boolean, documento: string) {
-  return llamar(leadId, "contrato_crear", { p_propuesta_id: propuestaId, p_fecha_firma: null, p_vigencia_meses: vigencia, p_renovacion_auto: renovacionAuto, p_documento_url: documento || null, p_notas: null });
+export async function crearContrato(leadId: string, propuestaId: string, vigencia: number, renovacionAuto: boolean, documento: string, terminos = "") {
+  return llamar(leadId, "contrato_crear", { p_propuesta_id: propuestaId, p_fecha_firma: null, p_vigencia_meses: vigencia, p_renovacion_auto: renovacionAuto, p_documento_url: documento || null, p_notas: null, p_version_terminos: terminos || null, p_firmantes: null });
 }

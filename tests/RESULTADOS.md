@@ -1,16 +1,16 @@
 # Resultados de verificación — ReserveOS
 
-Generado: **6 de octubre de 2026 a las 6:07 p. m.** (hora de Guatemala) · Base verificada: staging `agkqppuhyltirrhngybq`
+Generado: **6 de octubre de 2026 a las 7:17 p. m.** (hora de Guatemala) · Base verificada: staging `agkqppuhyltirrhngybq`
 
 ## Resumen
 
 | Qué | Resultado |
 |---|---|
-| Pruebas por API directa (Vitest) | **113 de 113 pasan** |
+| Pruebas por API directa (Vitest) | **181 de 181 pasan** |
 | Escenarios de punta a punta + concurrencia | todos pasan |
-| Migraciones locales / desplegadas | 79 locales · 79 desplegadas · **coinciden** |
+| Migraciones locales / desplegadas | 87 locales · 87 desplegadas · **coinciden** |
 | Funciones que un visitante sin cuenta puede ejecutar | captar_lead, horarios_publicos, invitacion_clienta_por_token, invitacion_personal_por_token, pago_webhook, tenant_por_dominio, testimonios_publicos |
-| Base | 96 tablas (96 con RLS) · 401 funciones · 99 políticas |
+| Base | 101 tablas (101 con RLS) · 448 funciones · 101 políticas |
 
 ## Pruebas por API directa, con sesión real de cada rol
 
@@ -168,6 +168,125 @@ Generado: **6 de octubre de 2026 a las 6:07 p. m.** (hora de Guatemala) · Base 
 - ✔ las consultas de las pantallas (lista de clientas, ficha, pagos pendientes, tienda, caja) responden para todos los roles de sede
 - ✔ las consultas de cobro de cada sede solo traen las clientas de esa sede
 - ✔ un pedido de otra sede no se puede confirmar ni entregar
+
+### owner_comercial.test.ts
+
+**O-09 · fecha de Guatemala**
+
+- ✔ a las 8:30 p. m. en Guatemala el día sigue siendo el de Guatemala, aunque en UTC ya sea el siguiente
+- ✔ formato dd/mm/aaaa y último día del mes
+- ✔ la base y la consola coinciden en qué día es hoy
+
+**O-03 · planes y suscripciones sin Q0**
+
+- ✔ los planes que estaban en Q0 quedaron en borrador y no se pueden asignar
+- ✔ no se publica un plan en Q0 salvo que sea prueba gratuita explícita
+- ✔ clave única: crear con una clave que ya existe falla, y cambiar precio sube la versión
+- ✔ las suscripciones solo usan planes publicados del catálogo (nada de «estandar» libre)
+- ✔ el impacto de un plan se puede consultar antes de cambiarlo
+
+**O-04 · pipeline → propuesta → contrato con estados**
+
+- ✔ una oportunidad abierta exige próxima acción con fecha
+- ✔ «Ganado» sin propuesta ni contrato se rechaza; con excepción de motivo corto también; con motivo suficiente queda registrada
+- ✔ la propuesta exige un plan publicado y precio; aceptada, gana la oportunidad y permite crear el contrato (en borrador)
+- ✔ estados del contrato: no se salta pasos, firmar exige firmantes, solo vigente se aplica o da de alta
+
+**O-04 · alta guiada desde el contrato**
+
+- ✔ solo implementación/operador da de alta; ventas no
+- ✔ detecta duplicados: un enlace existente bloquea; un nombre repetido pide confirmación
+- ✔ crea el estudio en borrador con sede, suscripción en pausa ligada al contrato, módulos del plan y dueña invitada
+- ✔ es reanudable: repetirlo no duplica nada y devuelve el mismo estudio
+
+**O-03/O-04 · puertas para salir en vivo y estados por módulo**
+
+- ✔ la puerta lista qué falta y bloquea la salida
+- ✔ estados del módulo: contratado → habilitado → configurado → probado (con evidencia) → en producción, sin saltos
+- ✔ sin dueña no sale en vivo: hace falta una excepción con motivo, que queda registrada; entonces la suscripción se activa
+
+**O-04 · alta manual excepcional**
+
+- ✔ exige motivo, no admite enlaces repetidos y deja la excepción registrada en el proyecto
+
+**Cobros · vista previa y generación segura**
+
+- ✔ la vista previa lista lo que se generará, sin generar nada, y separa excepciones
+- ✔ un estudio suspendido sale como excepción y no se cobra
+- ✔ generar usa el mes de Guatemala por defecto, no duplica y rechaza períodos lejanos
+- ✔ solo finanzas/operador generan cobros
+
+### owner_estudios.test.ts
+
+**O-01 · estados reales con bloqueo en la base**
+
+- ✔ solo el operador cambia el estado; ventas es rechazada
+- ✔ estado inválido, mismo estado y falta de motivo se rechazan
+- ✔ pausado: bloquea altas nuevas pero deja configurar y leer
+- ✔ suspendido: bloquea configuración y altas; la dueña sigue leyendo; el operador sí puede operar
+- ✔ un visitante sin cuenta tampoco puede dar de alta clientas en un estudio suspendido
+- ✔ reactivar con motivo restablece la operación y todo queda en historial y auditoría
+- ✔ un estudio suspendido sigue sin afectar a otro estudio
+
+**O-02 · la ficha no expone datos de clientas ni finanzas**
+
+- ✔ el operador ve metadatos y métricas pero no clientas, teléfonos, ingresos ni gastos
+- ✔ ventas no puede abrir la ficha; la dueña de un estudio tampoco
+- ✔ sin acceso excepcional las lecturas sensibles fallan, incluso para el operador
+- ✔ otorgar exige rol, ticket abierto del mismo estudio, motivo, alcance y plazo válidos
+- ✔ con acceso vigente solo se lee el alcance concedido, con paginación acotada, y cada lectura se registra
+- ✔ el acceso caduca solo
+- ✔ un visitante sin sesión no puede ejecutar ninguna de las funciones nuevas
+
+**O-06 y O-11 · pruebas fuera de los conteos y métricas rotuladas**
+
+- ✔ la lista trae tipo y las dos métricas de clientas, consistentes con la base
+- ✔ estudios activos del resumen y de Dirección cuentan solo clientes reales
+- ✔ el MRR no suma suscripciones de estudios demo o internos
+
+### owner_gobierno.test.ts
+
+**permisos por rol de plataforma, en la base**
+
+- ✔ ventas no entra a equipo, auditoría, salud ni dominios
+- ✔ auditor lee equipo y auditoría, pero no invita, no ve salud ni dominios
+- ✔ soporte ve salud y dominios, pero no equipo ni auditoría, y no activa dominios
+- ✔ un visitante sin sesión no puede ejecutar ninguna de las funciones nuevas
+
+**equipo e invitaciones (O-12)**
+
+- ✔ el operador invita a alguien sin cuenta previa: queda pendiente con vencimiento a 7 días
+- ✔ rechaza correo inválido, rol inexistente y a alguien que ya es del equipo
+- ✔ un correo distinto no puede aceptar ni ver el detalle de la invitación
+- ✔ una invitación vencida no se puede aceptar
+- ✔ la persona invitada acepta con su correo y entra al equipo con el rol invitado
+- ✔ una invitación pendiente se puede revocar y deja de servir
+- ✔ solo el operador cambia roles y quita gente; nadie puede quitarse a sí mismo
+- ✔ la base nunca deja sin operador: ni borrando ni degradando al último
+
+**auditoría accionable (O-13)**
+
+- ✔ registra al actor y el diff antes/después de un cambio de rol, con filtros por módulo, actor y acción
+- ✔ agrupa un cambio de módulos en lote y muestra cada uno con antes y después
+- ✔ el período se interpreta en hora de Guatemala y la paginación respeta límite y desplazamiento
+- ✔ oculta secretos y datos personales en el diff, y nunca expone el token de una invitación
+- ✔ la lista de estudios para filtrar está disponible para el auditor
+
+**salud honesta (O-14)**
+
+- ✔ cada tarea, servicio y estudio trae un estado de los cuatro permitidos, con motivo
+- ✔ sin datos no es sano: una tarea que nunca corrió y un estudio sin reservas recientes son «sin evidencia»
+- ✔ un error sin resolver o un incidente crítico degradan o tumban al estudio; resolverlo lo recupera
+- ✔ una tarea atrasada según su calendario se marca caída; el cálculo del intervalo entiende los calendarios usados
+- ✔ «Verificar ahora» guarda la verificación con su autor y queda en el historial
+
+**dominios verificables (O-15)**
+
+- ✔ un dominio nuevo nace pendiente, con su token de propiedad
+- ✔ no se publica sin comprobar DNS y HTTPS, ni con una comprobación con error
+- ✔ quien no tiene permiso no registra comprobaciones
+- ✔ con DNS y HTTPS correctos el operador lo publica, el visitante lo resuelve, y al despublicar deja de resolver
+- ✔ una comprobación vieja (más de 24 horas) ya no alcanza para publicar
 
 ### superficie_funciones.test.ts
 

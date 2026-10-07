@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getOwnerContext } from "@/lib/owner-context";
+import { hoyGT } from "@/lib/fechas";
 
 function esc(v: string | number | null) {
   const s = v === null || v === undefined ? "" : String(v);
@@ -16,6 +17,6 @@ export async function GET() {
     filas.push([c.estudio, String(c.periodo).slice(0, 7), c.concepto, c.plan_snapshot, c.monto, c.descuento, c.pagado, c.saldo, c.estado, c.fecha_vencimiento, c.fecha_pago, c.metodo, c.referencia]);
   }
   return new NextResponse("﻿" + filas.map((f) => f.map(esc).join(",")).join("\n"), {
-    headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="cobros-reserveos-${new Date().toISOString().slice(0, 10)}.csv"` },
+    headers: { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="cobros-reserveos-${hoyGT()}.csv"` },
   });
 }

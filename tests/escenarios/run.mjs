@@ -14,8 +14,8 @@ if (!TOKEN) { console.error("Falta SUPABASE_ACCESS_TOKEN (genera uno en supabase
 const dir = dirname(fileURLToPath(import.meta.url));
 
 const ESPERADO = {
-  crm: ["bloqueó duplicado OK", "proyectos creados=1", "Vincula primero el estudio", "perdido sin motivo"],
-  bill: ["1a vez creó 2 cobros, 2a vez 0", "sobrepago: El pago", "tras 600 más: pagado"],
+  crm: ["bloqueó duplicado OK", "próxima acción obligatoria OK", "ganado sin respaldo bloqueado OK", "excepción registrada=true", "proyectos creados=1", "Vincula primero el estudio", "perdido sin motivo"],
+  bill: ["plan Q0 bloqueado OK", "vista previa: 2 cobros, Q1500", "1a vez creó 2 cobros, 2a vez 0", "sobrepago: El pago", "tras 600 más: pagado"],
   sup: ["SLA urgente=4", "Indica la causa", "listado equipo=1", "mensajes visibles a la dueña=2"],
   st: ["La instructora ya tiene otra clase", "Esa sala ya está ocupada", "feriado canceló 1 reservas", "La sede está cerrada", "Teléfono repetido en el archivo", "Falta el nombre"],
   del: ["[3] permitido con delegación", "[4] bloqueado tras revocar", "[6] recepción con delegación por rol: OK", "Esta acción requiere una delegación"],

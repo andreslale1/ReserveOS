@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getOwnerContext } from "@/lib/owner-context";
 import PlanModulos from "./plan-modulos";
+import AccesoExcepcional from "./acceso-excepcional";
+import { ESTADO_LABEL } from "../estado-modal";
 
 const DIAS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 
@@ -9,15 +11,14 @@ function fmt(n: number) {
 }
 
 type Detalle = {
-  tenant: { id: string; slug: string; name: string; status: string; created_at: string };
+  tenant: { id: string; slug: string; name: string; status: string; tipo: string; estado_motivo: string | null; estado_cambiado_at: string | null; created_at: string };
   sedes: { id: string; name: string; timezone: string; status: string }[];
-  personal: { id: string; nombre: string | null; role: string; email: string }[];
-  clientas: { id: string; nombre: string; telefono: string; email: string | null; tiene_acceso: boolean }[];
+  personal: { id: string; nombre: string | null; role: string; email: string | null }[];
   paquetes: { id: string; nombre: string; precio: number; num_clases: number | null; activo: boolean }[];
   proximas_clases: { id: string; nombre_clase: string; dia_semana: number; hora_inicio: string; cupo_maximo: number; sede: string }[];
-  pagos_pendientes: { id: string; cliente_nombre: string; metodo_pago: string; referencia_pago: string | null; created_at: string }[];
-  ingreso_mes: number;
-  gastos_mes: number;
+  contrato: { estado: string; fecha_firma: string | null; vigencia_meses: number | null; mensualidad: number | null } | null;
+  suscripcion: { plan: string | null; precio_mensual: number | null; estado: string | null } | null;
+  metricas: { clientas_registradas: number; clientas_con_acceso: number; pagos_pendientes: number; reservas_7d: number; ultima_reserva: string | null; errores_24h: number; tickets_abiertos: number };
 };
 
 export default async function OwnerTenantPage({
@@ -26,12 +27,17 @@ export default async function OwnerTenantPage({
   params: Promise<{ tenantId: string }>;
 }) {
   const { tenantId } = await params;
-  const { supabase } = await getOwnerContext();
+  const { supabase, operador } = await getOwnerContext();
 
   const { data, error } = await supabase.rpc("owner_tenant_detalle", {
     p_tenant_id: tenantId,
   });
 
+  const [{ data: accesos }, { data: tickets }, { data: historial }] = await Promise.all([
+    supabase.rpc("acceso_excepcional_listar", { p_tenant_id: tenantId }),
+    supabase.rpc("acceso_excepcional_tickets", { p_tenant_id: tenantId }),
+    supabase.rpc("tenant_estado_historial_listar", { p_tenant_id: tenantId }),
+  ]);
   const [{ data: modulos }, { data: planes }, { data: sus }] = await Promise.all([
     supabase.rpc("modulos_tenant", { p_tenant_id: tenantId }),
     supabase.rpc("planes_listar"),
@@ -49,6 +55,9 @@ export default async function OwnerTenantPage({
   }
 
   const d = data as Detalle;
+  const m = d.metricas;
+  const est = ESTADO_LABEL[d.tenant.status] ?? ESTADO_LABEL.cancelado;
+  const puedeOtorgar = ["operador", "soporte"].includes(operador.rol);
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10 md:px-10">
@@ -62,43 +71,37 @@ export default async function OwnerTenantPage({
             {d.tenant.name}
           </h1>
           <p className="mt-1 text-sm text-white/50">
-            {d.tenant.slug} · {d.tenant.status} · creado{" "}
+            {d.tenant.slug} · {est.label}{d.tenant.tipo !== "cliente" ? ` · ${d.tenant.tipo}` : ""} · creado{" "}
             {new Date(d.tenant.created_at).toLocaleDateString("es-GT")}
           </p>
         </div>
       </div>
 
+      {d.tenant.estado_motivo && d.tenant.status !== "activo" && (
+        <p className="mt-3 text-xs text-white/50">Motivo del estado: {d.tenant.estado_motivo}</p>
+      )}
+
       <div className="mt-8 grid gap-4 sm:grid-cols-4">
-        <div className="rounded-2xl border border-white/10 bg-void-card p-5">
-          <p className="text-xs uppercase tracking-wide text-white/40">
-            Ingreso del mes
+        {[
+          ["Clientas con acceso", m.clientas_con_acceso],
+          ["Clientas registradas", m.clientas_registradas],
+          ["Reservas (7 días)", m.reservas_7d],
+          ["Pagos pendientes", m.pagos_pendientes],
+          ["Errores (24 h)", m.errores_24h],
+          ["Tickets abiertos", m.tickets_abiertos],
+        ].map(([t, v]) => (
+          <div key={String(t)} className="rounded-2xl border border-white/10 bg-void-card p-5">
+            <p className="text-xs uppercase tracking-wide text-white/40">{t}</p>
+            <p className="mt-2 text-2xl font-bold text-white">{v}</p>
+          </div>
+        ))}
+        <div className="rounded-2xl border border-white/10 bg-void-card p-5 sm:col-span-2">
+          <p className="text-xs uppercase tracking-wide text-white/40">Contrato y suscripción</p>
+          <p className="mt-2 text-sm text-white">
+            {d.contrato ? `Contrato ${d.contrato.estado}${d.contrato.mensualidad != null ? ` · ${fmt(d.contrato.mensualidad)}/mes` : ""}` : "Sin contrato vinculado"}
           </p>
-          <p className="mt-2 text-2xl font-bold text-white">
-            {fmt(d.ingreso_mes)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-void-card p-5">
-          <p className="text-xs uppercase tracking-wide text-white/40">
-            Gastos del mes
-          </p>
-          <p className="mt-2 text-2xl font-bold text-white">
-            {fmt(d.gastos_mes)}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-void-card p-5">
-          <p className="text-xs uppercase tracking-wide text-white/40">
-            Clientas
-          </p>
-          <p className="mt-2 text-2xl font-bold text-white">
-            {d.clientas.length}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-void-card p-5">
-          <p className="text-xs uppercase tracking-wide text-white/40">
-            Pagos pendientes
-          </p>
-          <p className="mt-2 text-2xl font-bold text-white">
-            {d.pagos_pendientes.length}
+          <p className="mt-1 text-xs text-white/50">
+            {d.suscripcion ? `Plan ${d.suscripcion.plan ?? "—"} · ${d.suscripcion.estado ?? "—"}` : "Sin suscripción"}
           </p>
         </div>
       </div>
@@ -197,26 +200,21 @@ export default async function OwnerTenantPage({
         )}
       </ul>
 
-      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-white/40">
-        Clientas ({d.clientas.length})
-      </h2>
+      <AccesoExcepcional
+        tenantId={tenantId}
+        accesos={(accesos ?? []) as never}
+        tickets={(tickets ?? []) as never}
+        puedeOtorgar={puedeOtorgar}
+      />
+
+      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-white/40">Historial de estado</h2>
       <ul className="mt-3 space-y-1.5">
-        {d.clientas.map((c) => (
-          <li
-            key={c.id}
-            className="flex items-center justify-between rounded-lg border border-white/5 bg-void-card/60 px-4 py-2 text-xs"
-          >
-            <span className="text-white">
-              {c.nombre} <span className="text-white/40">{c.telefono}</span>
-            </span>
-            <span className="text-white/50">
-              {c.tiene_acceso ? "con acceso" : "sin acceso"}
-            </span>
+        {((historial ?? []) as { created_at: string; estado_anterior: string; estado_nuevo: string; motivo: string; actor: string }[]).map((h) => (
+          <li key={h.created_at + h.estado_nuevo} className="rounded-lg border border-white/5 bg-void-card/60 px-4 py-2 text-xs text-white/70">
+            {new Date(h.created_at).toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "short", timeStyle: "short" })} · {h.actor}: {h.estado_anterior} → {h.estado_nuevo} — {h.motivo}
           </li>
         ))}
-        {d.clientas.length === 0 && (
-          <li className="text-xs text-white/40">Sin clientas todavía.</li>
-        )}
+        {(historial ?? []).length === 0 && <li className="text-xs text-white/40">Sin cambios de estado registrados.</li>}
       </ul>
     </main>
   );
