@@ -40,14 +40,10 @@ export default async function CalendarioPage() {
 
   const horarioIds = (horarios ?? []).map((h) => h.id);
 
-  const { data: reservas } = horarioIds.length
-    ? await supabase
-        .from("reservas")
-        .select("horario_id, clientes(nombre)")
-        .in("horario_id", horarioIds)
-        .eq("fecha", fecha)
-        .eq("estado", "confirmada")
+  const { data: roster } = horarioIds.length
+    ? await supabase.rpc("roster_horarios", { p_horario_ids: horarioIds, p_fecha: fecha })
     : { data: [] };
+  const reservas = (roster ?? []) as { horario_id: string; nombre: string }[];
 
   // Cada instructora/horario recurrente actúa como "recurso" — columna del
   // calendario, igual que reformers/salas en el mockup del manual.
@@ -71,7 +67,7 @@ export default async function CalendarioPage() {
     nombre: h.nombre_clase,
     clientas: (reservas ?? [])
       .filter((r) => r.horario_id === h.id)
-      .map((r) => (r.clientes as unknown as { nombre: string } | null)?.nombre)
+      .map((r) => r.nombre)
       .filter(Boolean) as string[],
     cupoMaximo: h.cupo_maximo,
   }));

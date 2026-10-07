@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "test:escenarios": "node tests/escenarios/run.mjs"
+    "test:escenarios": "node tests/escenarios/run.mjs",
+    "verificar": "node tests/verificar.mjs",
+    "test:fixtures": "node tests/fixtures/sembrar.mjs"
   },
   "devDependencies": {
     "dotenv": "^16.4.5",

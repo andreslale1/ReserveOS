@@ -20,14 +20,8 @@ export default async function FinanzasPage() {
     .toISOString()
     .slice(0, 10);
 
-  const [{ data: membresias }, { data: gastos }, { data: meta }] =
+  const [{ data: gastos }, { data: meta }] =
     await Promise.all([
-      supabase
-        .from("membresias")
-        .select("precio_final, confirmado_at, created_at")
-        .eq("tenant_id", membership.tenant_id)
-        .eq("pagada", true)
-        .gte("created_at", inicioMes),
       supabase
         .from("gastos")
         .select("categoria, descripcion, monto, fecha, tipo")
@@ -46,10 +40,9 @@ export default async function FinanzasPage() {
 
   const { data: atribucion } = await supabase.rpc("finanzas_atribucion", { p_tenant_id: membership.tenant_id, p_desde: inicioMes, p_hasta: finMes });
 
-  const ingresos = (membresias ?? []).reduce(
-    (acc, m) => acc + Number(m.precio_final ?? 0),
-    0,
-  );
+  // Ingresos NETOS: cobros confirmados en el mes menos devoluciones, atribuidos por sede (misma cifra que la tabla de abajo).
+  const atr = atribucion as { sedes: { neto: number }[]; consolidado: number | null } | null;
+  const ingresos = atr ? Number(atr.consolidado ?? atr.sedes.reduce((a, x) => a + Number(x.neto), 0)) : 0;
   const totalGastos = (gastos ?? []).reduce(
     (acc, g) => acc + Number(g.monto ?? 0),
     0,

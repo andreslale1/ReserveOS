@@ -26,19 +26,8 @@ export default async function ClasePage({
 
   const [{ data: reservas }, { data: espera }, { data: cancelada }, { data: clientas }, { data: salas }] =
     await Promise.all([
-      supabase
-        .from("reservas")
-        .select("id, asistio, tipo, clientes(nombre, telefono, cuidados_especiales)")
-        .eq("horario_id", horarioId)
-        .eq("fecha", fecha)
-        .eq("estado", "confirmada")
-        .order("created_at"),
-      supabase
-        .from("lista_espera")
-        .select("id, created_at, clientes(nombre)")
-        .eq("horario_id", horarioId)
-        .eq("fecha", fecha)
-        .order("created_at"),
+      supabase.rpc("roster_horarios", { p_horario_ids: [horarioId], p_fecha: fecha }),
+      supabase.rpc("espera_horario", { p_horario_id: horarioId, p_fecha: fecha }),
       supabase
         .from("horario_cancelaciones")
         .select("id")
@@ -53,7 +42,6 @@ export default async function ClasePage({
       supabase.from("salas").select("id, nombre").eq("sede_id", h.sede_id).eq("activa", true).order("nombre"),
     ]);
 
-  type C = { nombre: string; telefono: string; cuidados_especiales: string | null } | null;
   const rol = membership.role;
   const tz = sedes.find((s) => s.id === h.sede_id)?.timezone ?? "America/Guatemala";
   const hoy = new Intl.DateTimeFormat("en-CA", {
@@ -81,22 +69,15 @@ export default async function ClasePage({
       salaId={h.sala_id ?? ""}
       salas={salas ?? []}
       cancelada={cancelada !== null}
-      asistentes={(reservas ?? []).map((r) => {
-        const c = r.clientes as unknown as C;
-        return {
-          id: r.id,
-          nombre: c?.nombre ?? "—",
-          telefono: c?.telefono ?? "",
-          cuidados: c?.cuidados_especiales ?? "",
-          tipo: r.tipo,
-          asistio: r.asistio,
-        };
-      })}
-      espera={(espera ?? []).map((e) => ({
-        id: e.id,
-        nombre:
-          (e.clientes as unknown as { nombre: string } | null)?.nombre ?? "—",
+      asistentes={((reservas ?? []) as { reserva_id: string; nombre: string; telefono: string | null; cuidados: string | null; tipo: string; asistio: boolean | null }[]).map((r) => ({
+        id: r.reserva_id,
+        nombre: r.nombre ?? "—",
+        telefono: r.telefono ?? "",
+        cuidados: r.cuidados ?? "",
+        tipo: r.tipo,
+        asistio: r.asistio,
       }))}
+      espera={((espera ?? []) as { id: string; nombre: string }[]).map((e) => ({ id: e.id, nombre: e.nombre ?? "—" }))}
       clientas={clientas ?? []}
       puedeGestionar={["duena", "gerente_general", "admin_sede", "recepcion"].includes(rol)}
       puedeAdminClase={["duena", "gerente_general", "admin_sede"].includes(rol)}

@@ -1,5 +1,8 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+
+export const COOKIE_PANEL = "rs_panel";
 
 export const ROLE_LABEL: Record<string, string> = {
   duena: "Dueña",
@@ -145,12 +148,17 @@ export async function getPanelContext() {
     redirect("/login");
   }
 
-  const { data: membership } = await supabase
+  // Una misma persona puede trabajar en más de un estudio: el estudio activo se elige de forma explícita (cookie validada
+  // contra sus membresías reales). Si trabaja en varios y no ha elegido, se le pregunta; nunca se toma uno al azar.
+  const { data: todas } = await supabase
     .from("tenant_memberships")
     .select("id, tenant_id, role, nombre, tenants(name)")
-    .eq("user_id", user.id)
-    .limit(1)
-    .maybeSingle();
+    .eq("user_id", user.id);
+  const guardado = (await cookies()).get(COOKIE_PANEL)?.value;
+  let membership = (todas ?? []).find((m) => m.tenant_id === guardado) ?? null;
+  if (!membership && (todas ?? []).length === 1) membership = todas![0];
+  if (!membership && (todas ?? []).length > 1) redirect("/elegir-panel");
+  const variosEstudios = (todas ?? []).length > 1;
 
   if (!membership) {
     return {
@@ -160,6 +168,7 @@ export async function getPanelContext() {
       sedes: [] as Sede[],
       tenantName: "",
       modulos: [] as string[],
+      variosEstudios: false,
     };
   }
 
@@ -194,6 +203,7 @@ export async function getPanelContext() {
     membership,
     sedes,
     modulos,
+    variosEstudios,
     tenantName:
       (membership.tenants as unknown as { name: string } | null)?.name ?? "",
   };

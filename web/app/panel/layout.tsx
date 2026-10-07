@@ -37,7 +37,7 @@ const ALL_LINKS = [
 export default async function PanelLayout({
   children,
 }: LayoutProps<"/panel">) {
-  const { supabase, membership, tenantName, modulos } = await getPanelContext();
+  const { supabase, membership, tenantName, modulos, variosEstudios } = await getPanelContext();
   const { data: incidentes } = membership
     ? await supabase.rpc("incidentes_activos", { p_tenant_id: membership.tenant_id })
     : { data: [] };
@@ -86,6 +86,9 @@ export default async function PanelLayout({
           <p className="text-xs text-ink-soft">
             {membership ? ROLE_LABEL[membership.role] : ""} · {tenantName}
           </p>
+          {variosEstudios && (
+            <Link href="/elegir-panel" className="mt-1 block text-xs text-ink/50 underline">Cambiar de estudio</Link>
+          )}
         </div>
       </aside>
 

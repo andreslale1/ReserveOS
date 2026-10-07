@@ -3,14 +3,15 @@
 import { useState, useTransition } from "react";
 import { canjearCodigo, solicitarPaquete } from "./actions";
 
-export type Paquete = { id: string; nombre: string; descripcion: string | null; num_clases: number | null; precio: number; vigencia_dias: number; cobertura: string; sedes: string | null };
+export type Paquete = { sede_ids: string[]; id: string; nombre: string; descripcion: string | null; num_clases: number | null; precio: number; vigencia_dias: number; cobertura: string; sedes: string | null };
 export type Transferencia = { banco: string; tipo_cuenta: string; numero_cuenta: string; titular: string };
 type Mio = { id: string; paquete: string; estado: string; totales: number | null; usadas: number; vence: string; congelada: boolean; sedes: string | null };
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
 const input = "mt-1 w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-ink outline-none focus:border-ink/40";
 
-export default function PaquetesView({ tenantId, catalogo, transferencia, mios }: { tenantId: string; catalogo: Paquete[]; transferencia: Transferencia | null; mios: Mio[] }) {
+export default function PaquetesView({ sedes, tenantId, catalogo, transferencia, mios }: { sedes: { id: string; name: string }[]; tenantId: string; catalogo: Paquete[]; transferencia: Transferencia | null; mios: Mio[] }) {
   const [regalo, setRegalo] = useState("");
+  const [sedeSel, setSedeSel] = useState("");
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
   const [elegido, setElegido] = useState<string | null>(null);
@@ -75,10 +76,22 @@ export default function PaquetesView({ tenantId, catalogo, transferencia, mios }
                 ) : (
                   <p className="rounded-xl bg-peach-tint p-3 text-sm text-ink">Este estudio aún no publicó sus datos de transferencia. Pregunta en recepción cómo pagar.</p>
                 )}
+                {(() => {
+                  const permitidas = p.cobertura === "sedes" ? sedes.filter((x) => p.sede_ids.includes(x.id)) : sedes;
+                  if (p.cobertura === "todas" || permitidas.length <= 1) return null;
+                  return (
+                    <label className="mt-3 block text-sm text-ink/70">¿En qué sede usarás este paquete?
+                      <select className={input} value={sedeSel} onChange={(e) => setSedeSel(e.target.value)}>
+                        <option value="">Elige una sede…</option>
+                        {permitidas.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
+                      </select>
+                    </label>
+                  );
+                })()}
                 <label className="mt-3 block text-sm text-ink/70">2. Número de referencia o boleta de la transferencia<input className={input} value={ref} onChange={(e) => setRef(e.target.value)} /></label>
                 <label className="mt-3 block text-sm text-ink/70">Código de descuento (si tienes)<input className={input} value={codigo} onChange={(e) => setCodigo(e.target.value)} /></label>
-                <button className="mt-4 w-full rounded-full bg-ink px-4 py-3 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending || ref.trim().length < 3}
-                  onClick={() => { setMsg(null); startTransition(async () => { const r = await solicitarPaquete(p.id, ref, codigo); if (r.error) setMsg({ ok: false, texto: r.error }); else { setMsg({ ok: true, texto: "¡Recibimos tu solicitud! El estudio confirmará tu pago y te avisaremos." }); setElegido(null); setRef(""); setCodigo(""); } }); }}>
+                <button className="mt-4 w-full rounded-full bg-ink px-4 py-3 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending || ref.trim().length < 3 || (p.cobertura !== "todas" && (p.cobertura === "sedes" ? sedes.filter((x) => p.sede_ids.includes(x.id)).length : sedes.length) > 1 && !sedeSel)}
+                  onClick={() => { setMsg(null); startTransition(async () => { const r = await solicitarPaquete(p.id, ref, codigo, sedeSel || null); if (r.error) setMsg({ ok: false, texto: r.error }); else { setMsg({ ok: true, texto: "¡Recibimos tu solicitud! El estudio confirmará tu pago y te avisaremos." }); setElegido(null); setRef(""); setCodigo(""); setSedeSel(""); } }); }}>
                   Ya pagué, enviar solicitud
                 </button>
               </div>

@@ -29,6 +29,7 @@ const ESPERADO = {
   com: ["[sin consentimiento: encolados=0", "[con consentimiento: encolados=1]", "reintento en ~2 min", "Máximo 3 campañas"],
   qr: ["Código no reconocido", "ya_registrada=false clase=ZZ Clase Ahora", "[2º escaneo: ya_registrada=true]", "asistencias marcadas=1"],
   cat: ["la clienta ve el producto=1", "módulo tienda en mis_modulos=1"],
+  espera: ["[reserva propia: vínculo ok=t, créditos 0->1]", "[cancela: crédito de la clienta 1 de vuelta=t]", "vínculo ok=t, créditos 0->1]", "[la promovida cancela: créditos de vuelta=t]", "Necesitas comprar un paquete"],
 };
 
 let fallos = 0;

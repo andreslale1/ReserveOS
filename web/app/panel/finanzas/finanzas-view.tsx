@@ -24,7 +24,8 @@ export default function FinanzasView({
   meta: number | null;
   listaGastos: Gasto[];
   atribucion: {
-    sedes: { sede_id: string; sede: string; paquetes: number; tienda: number; otros: number; total: number; clases_asistidas: number; clases_reservadas: number }[];
+    sedes: { sede_id: string; sede: string; paquetes: number; tienda: number; otros: number; devoluciones: number; neto: number; clases_asistidas: number; clases_reservadas: number }[];
+    bruto: number | null; devoluciones: number | null;
     consolidado: number | null; suma_de_sedes: number | null; sin_sede: number | null; cuadra: boolean | null;
   } | null;
 }) {
@@ -118,17 +119,17 @@ export default function FinanzasView({
         {atribucion && atribucion.sedes.length > 0 && (
           <section className="mt-8 rounded-2xl border border-white/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Ingresos por sede</h2>
-            <p className="mt-1 text-xs text-ink/55">Cada cobro se atribuye a la sede donde se hizo. Si una clienta compra en una sede y toma clases en otra, el ingreso se cuenta una sola vez.</p>
+            <p className="mt-1 text-xs text-ink/55">Cobros confirmados menos devoluciones, atribuidos a la sede donde se cobró. Si una clienta compra en una sede y toma clases en otra, el ingreso se cuenta una sola vez.</p>
             <div className="mt-3 overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="text-left text-xs text-ink/50"><tr><th className="py-2">Sede</th><th className="text-right">Paquetes</th><th className="text-right">Tienda</th><th className="text-right">Otros</th><th className="text-right">Total</th><th className="text-right">Clases asistidas</th></tr></thead>
+                <thead className="text-left text-xs text-ink/50"><tr><th className="py-2">Sede</th><th className="text-right">Paquetes</th><th className="text-right">Tienda</th><th className="text-right">Otros</th><th className="text-right">Devoluciones</th><th className="text-right">Neto</th><th className="text-right">Clases asistidas</th></tr></thead>
                 <tbody className="divide-y divide-white/10">
                   {atribucion.sedes.map((s) => (
-                    <tr key={s.sede_id}><td className="py-2 text-ink">{s.sede}</td><td className="text-right">{fmt(s.paquetes)}</td><td className="text-right">{fmt(s.tienda)}</td><td className="text-right">{fmt(s.otros)}</td><td className="text-right font-semibold text-ink">{fmt(s.total)}</td><td className="text-right text-ink/70">{s.clases_asistidas}/{s.clases_reservadas}</td></tr>
+                    <tr key={s.sede_id}><td className="py-2 text-ink">{s.sede}</td><td className="text-right">{fmt(s.paquetes)}</td><td className="text-right">{fmt(s.tienda)}</td><td className="text-right">{fmt(s.otros)}</td><td className="text-right text-ink/60">{s.devoluciones > 0 ? `−${fmt(s.devoluciones)}` : fmt(0)}</td><td className="text-right font-semibold text-ink">{fmt(s.neto)}</td><td className="text-right text-ink/70">{s.clases_asistidas}/{s.clases_reservadas}</td></tr>
                   ))}
                 </tbody>
                 {atribucion.consolidado !== null && (
-                  <tfoot><tr className="border-t border-white/20"><td className="py-2 font-semibold text-ink">Consolidado</td><td colSpan={3} className="text-right text-xs text-ink/55">{atribucion.cuadra ? "✓ La suma de las sedes cuadra" : "⚠ La suma no cuadra: revisa cobros sin sede"}</td><td className="text-right font-semibold text-ink">{fmt(atribucion.consolidado)}</td><td /></tr></tfoot>
+                  <tfoot><tr className="border-t border-white/20"><td className="py-2 font-semibold text-ink">Consolidado</td><td colSpan={4} className="text-right text-xs text-ink/55">{atribucion.cuadra ? "✓ La suma de las sedes cuadra" : "⚠ La suma no cuadra: revisa cobros sin sede"}</td><td className="text-right font-semibold text-ink">{fmt(atribucion.consolidado)}</td><td /></tr></tfoot>
                 )}
               </table>
             </div>

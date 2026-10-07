@@ -37,14 +37,13 @@ export default async function HoyPage() {
 
   const horarioIds = (horarios ?? []).map((h) => h.id);
 
-  const { data: reservas } = horarioIds.length
-    ? await supabase
-        .from("reservas")
-        .select("horario_id, cliente_id, clientes(nombre)")
-        .in("horario_id", horarioIds)
-        .eq("fecha", fecha)
-        .eq("estado", "confirmada")
-    : { data: [] };
+  // Nombres: roster con alcance (la instructora solo ve sus clases). Ocupación: conteo agregado, sin identidades.
+  const [{ data: roster }, { data: ocupacion }] = await Promise.all([
+    horarioIds.length ? supabase.rpc("roster_horarios", { p_horario_ids: horarioIds, p_fecha: fecha }) : Promise.resolve({ data: [] }),
+    horarioIds.length ? supabase.rpc("ocupacion_horarios", { p_horario_ids: horarioIds, p_fecha_inicio: fecha, p_fecha_fin: fecha }) : Promise.resolve({ data: [] }),
+  ]);
+  const reservas = (roster ?? []) as { horario_id: string; nombre: string }[];
+  const ocup = (ocupacion ?? []) as { horario_id: string; ocupados: number }[];
 
   const clases = (horarios ?? []).map((h) => {
     const ocupantes = (reservas ?? []).filter((r) => r.horario_id === h.id);
@@ -58,10 +57,8 @@ export default async function HoyPage() {
       instructora:
         (h.tenant_memberships as unknown as { nombre: string } | null)
           ?.nombre ?? "Sin asignar",
-      ocupados: ocupantes.length,
-      clientas: ocupantes.map(
-        (o) => (o.clientes as unknown as { nombre: string } | null)?.nombre,
-      ),
+      ocupados: Number(ocup.find((o) => o.horario_id === h.id)?.ocupados ?? ocupantes.length),
+      clientas: ocupantes.map((o) => o.nombre),
     };
   });
 

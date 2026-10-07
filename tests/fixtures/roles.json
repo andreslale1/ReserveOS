@@ -1,0 +1,29 @@
+{
+  "password": "FixtureVIM2026!",
+  "dominio": "vim-prueba.test",
+  "tenants": {
+    "vim":  { "slug": "vim-prueba",       "nombre": "VIM Prueba (fixture, 3 sedes)", "sedes": ["Centro", "Norte", "Sur"] },
+    "una":  { "slug": "unasede-prueba",   "nombre": "Estudio Una Sede (fixture)",    "sedes": ["Unica"] }
+  },
+  "usuarios": [
+    { "alias": "duena",       "tenant": "vim", "rol": "duena",            "sedes": [] },
+    { "alias": "regional",    "tenant": "vim", "rol": "gerente_regional", "sedes": ["Centro", "Norte"] },
+    { "alias": "admin1",      "tenant": "vim", "rol": "admin_sede",       "sedes": ["Centro"] },
+    { "alias": "admin2",      "tenant": "vim", "rol": "admin_sede",       "sedes": ["Norte"] },
+    { "alias": "recep1",      "tenant": "vim", "rol": "recepcion",        "sedes": ["Centro"] },
+    { "alias": "recep3",      "tenant": "vim", "rol": "recepcion",        "sedes": ["Sur"] },
+    { "alias": "instr12",     "tenant": "vim", "rol": "instructora",      "sedes": ["Centro", "Norte"] },
+    { "alias": "instr3",      "tenant": "vim", "rol": "instructora",      "sedes": ["Sur"] },
+    { "alias": "contadora",   "tenant": "vim", "rol": "contadora",        "sedes": [] },
+    { "alias": "marketing",   "tenant": "vim", "rol": "marketing",        "sedes": [] },
+    { "alias": "duena-una",   "tenant": "una", "rol": "duena",            "sedes": [] },
+    { "alias": "recep-una",   "tenant": "una", "rol": "recepcion",        "sedes": ["Unica"] },
+    { "alias": "multi",       "tenant": "vim", "rol": "recepcion",        "sedes": ["Centro"], "tambien": { "tenant": "una", "rol": "recepcion", "sedes": ["Unica"] } }
+  ],
+  "clientas": [
+    { "alias": "cli1", "nombre": "FX Clienta Centro",  "habitual": "Centro", "tel": "5560010001", "usuario": true },
+    { "alias": "cli2", "nombre": "FX Clienta Norte",   "habitual": "Norte",  "tel": "5560010002", "usuario": true },
+    { "alias": "cli3", "nombre": "FX Clienta Sur",     "habitual": "Sur",    "tel": "5560010003", "usuario": false },
+    { "alias": "cli4", "nombre": "FX Clienta Visita",  "habitual": null,     "tel": "5560010004", "usuario": false }
+  ]
+}

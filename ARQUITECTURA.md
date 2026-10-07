@@ -85,7 +85,23 @@ ReserveOS/
 - Tablas de plataforma sin políticas: solo accesibles por RPC con rol interno (operador, ventas, finanzas, soporte, implementación, ingeniería, marketing, auditor).
 - **Hallazgo corregido el 6 oct**: 334 funciones eran ejecutables sin cuenta (algunas activaban paquetes sin pagar). Ahora: lista blanca de 7 + disparador que cierra las nuevas + pruebas permanentes.
 
-### 3.3 Tareas automáticas (pg_cron)
+### 3.3 Alcance de lectura por rol y sede (hecho cumplir en la base)
+| Rol | Clientas | Reservas | Paquetes, pagos, caja, pedidos |
+|---|---|---|---|
+| Dueña, gerencia general | todas | todas | todo |
+| Contabilidad | ninguna (solo por RPC) | ninguna | todo el estudio |
+| Admin de sede, gerencia regional, recepción | las que atienden: sede habitual, o con reservas/compras/pedidos en sus sedes, o que ellas dieron de alta | las de sus sedes | los de sus sedes |
+| Instructora | ninguna; roster mínimo por `roster_horarios` (sin teléfono) | solo sus clases | nada |
+| Marketing | ninguna; solo segmentos con consentimiento | nada | nada |
+Las pantallas, las funciones (RPC), las acciones del servidor y las exportaciones usan los mismos permisos de quien llama, así que el alcance no depende del menú.
+
+### 3.4 Personal, paquetes y crédito
+- Invitar/asignar sedes: jerarquía de roles y solo dentro de las sedes propias; nadie amplía su propio alcance; las sedes deben ser del estudio.
+- La instructora de una clase debe estar asignada a esa sede; clases incompatibles (misma instructora o sala) se bloquean aunque sean en sedes distintas.
+- Cada membresía fija su cobertura al comprarse (`membresia_sedes`) y registra la sede elegida. Cada reserva guarda la membresía cuyo crédito consumió (`reservas.membresia_id`) y al cancelar se devuelve exactamente ahí, una sola vez.
+- Ingresos netos por sede = cobros confirmados − devoluciones, con verificación de que las sedes sumen el consolidado.
+
+### 3.5 Tareas automáticas (pg_cron)
 `liberar_cupos_no_confirmados` (10 min) · `lista_espera_vencida` (15 min) · `encolar_recordatorios` (diario: paquetes que vencen en 3 días).
 
 ---
@@ -123,7 +139,7 @@ ReserveOS: operador, ventas, finanzas, soporte, implementación, ingeniería, ma
 - **Hosting**: Vercel (`reserveos`), dominios `reserveos.app` y `www`. Deploy: `cd web && vercel deploy --prod`.
 - **Base**: Supabase (única, hoy staging y producción). `supabase db push --linked` con `SUPABASE_ACCESS_TOKEN` de la organización ReserveOS.
 - **Código**: GitHub `andreslale1/ReserveOS` (privado), rama `main`.
-- **Pruebas**: `npm test` (45) · `SUPABASE_ACCESS_TOKEN=… npm run test:escenarios` (15 escenarios + concurrencia + lista blanca + sin residuos) · `GUION_PRUEBAS.md` para pruebas humanas.
+- **Pruebas**: `npm run verificar` (siembra fixtures de VIM de 3 sedes, un estudio de una sede y uno ajeno; corre 109+ pruebas por API con sesión de cada rol y los escenarios; compara migraciones y **guarda `tests/RESULTADOS.md`**) · `npm test` · `SUPABASE_ACCESS_TOKEN=… npm run test:escenarios` (15 escenarios + concurrencia + lista blanca + sin residuos) · `GUION_PRUEBAS.md` para pruebas humanas.
 
 ---
 

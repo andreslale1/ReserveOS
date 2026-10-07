@@ -18,7 +18,7 @@ begin
   select count(*) into n from cola_mensajes where campana_id = (r2->>'campana_id')::uuid and destino='cliente.prueba@example.com' and cuerpo like 'Hola %' and cuerpo not like '%{{%';
   log := log || format('[mensaje personalizado ok=%s] ', n);
   -- el proveedor toma, falla, y se reintenta con espera
-  select count(*) into tomados from public.cola_tomar(10);
+  select count(*) into tomados from public.cola_tomar(200);
   select id into mid from cola_mensajes where campana_id = (r2->>'campana_id')::uuid limit 1;
   perform public.cola_resultado(mid, false, 'timeout');
   select c.estado, c.intentos, c.proximo_intento into est, v_int, prox from cola_mensajes c where c.id = mid;
