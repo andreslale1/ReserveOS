@@ -14,8 +14,8 @@ async function llamar(fn: string, args: Record<string, unknown>) {
   refrescar();
   return { error: null };
 }
-export async function marcarEtapa(id: string, key: string, hecha: boolean) {
-  return llamar("proyecto_etapa", { p_id: id, p_key: key, p_hecha: hecha });
+export async function marcarEtapa(id: string, key: string, hecha: boolean, evidencia?: string) {
+  return llamar("proyecto_etapa", { p_id: id, p_key: key, p_hecha: hecha, p_evidencia: evidencia?.trim() || null });
 }
 export async function vincularEstudio(id: string, tenantId: string) {
   return llamar("proyecto_vincular_estudio", { p_id: id, p_tenant_id: tenantId });

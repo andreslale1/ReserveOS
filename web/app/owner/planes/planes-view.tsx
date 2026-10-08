@@ -19,7 +19,7 @@ const ESTADOS: Record<string, { texto: string; clase: string }> = {
 };
 const simbolo = (m?: string) => (m === "USD" ? "US$" : "Q");
 
-export default function PlanesView({ planes, modulos }: { planes: Plan[]; modulos: ModuloCat[] }) {
+export default function PlanesView({ planes, modulos, soloLectura = false }: { planes: Plan[]; modulos: ModuloCat[]; soloLectura?: boolean }) {
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
   const [f, setF] = useState(vacio);
@@ -60,7 +60,7 @@ export default function PlanesView({ planes, modulos }: { planes: Plan[]; modulo
           <h1 className="text-2xl font-semibold">Planes</h1>
           <p className="mt-1 text-sm text-white/60">Catálogo de lo que se vende: precio, límites y módulos. Solo los planes <strong>publicados</strong> se pueden ofrecer en propuestas y asignar a un estudio. Un plan en Q0 queda en borrador, salvo prueba gratuita explícita.</p>
         </div>
-        <button className="rounded-full bg-lime px-4 py-2 text-sm font-semibold text-void" onClick={() => { setF(vacio); setEsNuevo(true); setImpacto(null); setMsg(null); setEditando(true); }}>+ Nuevo plan</button>
+        {soloLectura ? <p className="text-xs text-white/60">Solo lectura: crear o editar planes requiere el rol operador.</p> : <button className="rounded-full bg-lime px-4 py-2 text-sm font-semibold text-void" onClick={() => { setF(vacio); setEsNuevo(true); setImpacto(null); setMsg(null); setEditando(true); }}>+ Nuevo plan</button>}
       </div>
       {msg && <p role="status" className="mt-4 rounded-xl bg-white/10 px-4 py-3 text-sm">{msg}</p>}
 
@@ -133,7 +133,7 @@ export default function PlanesView({ planes, modulos }: { planes: Plan[]; modulo
                   <h2 className="text-lg font-semibold">{p.nombre}</h2>
                   <p className="text-xs text-white/55">{p.key} · versión {p.version ?? 1}</p>
                 </div>
-                <button className="text-xs text-white/60 hover:text-white" onClick={() => editar(p)} aria-label={`Editar plan ${p.nombre}`}>Editar</button>
+                {!soloLectura && <button className="text-xs text-white/60 hover:text-white" onClick={() => editar(p)} aria-label={`Editar plan ${p.nombre}`}>Editar</button>}
               </div>
               <p className={`mt-2 text-xs ${est.clase}`}>{est.texto}</p>
               <p className="mt-3 text-2xl font-semibold text-lime">{simbolo(p.moneda)}{Number(p.precio_mensual).toLocaleString("es-GT")}<span className="text-sm font-normal text-white/55"> / mes</span></p>

@@ -3,8 +3,8 @@ export type Grupo = { titulo: string; enlaces: Enlace[] };
 
 export const GRUPOS: Grupo[] = [
   { titulo: "Dirección", enlaces: [
-    { href: "/owner/direccion", label: "Dirección", roles: ["operador", "ventas", "finanzas", "soporte", "implementacion", "ingenieria", "marketing"] },
-    { href: "/owner/tareas", label: "Tareas", roles: ["operador", "ventas", "finanzas", "soporte"] },
+    { href: "/owner/direccion", label: "Dirección", roles: ["operador", "ventas", "finanzas", "soporte", "implementacion", "ingenieria"] },
+    { href: "/owner/tareas", label: "Tareas", roles: ["operador", "ventas", "finanzas", "soporte", "implementacion", "ingenieria"] },
   ] },
   { titulo: "Crecimiento", enlaces: [
     { href: "/owner/pipeline", label: "Pipeline", roles: ["operador", "ventas"] },
@@ -17,7 +17,7 @@ export const GRUPOS: Grupo[] = [
     { href: "/owner/dominios", label: "Dominios", roles: ["operador", "soporte", "implementacion", "ingenieria"] },
   ] },
   { titulo: "Finanzas", enlaces: [
-    { href: "/owner/planes", label: "Planes", roles: ["operador", "finanzas", "ventas", "soporte"] },
+    { href: "/owner/planes", label: "Planes", roles: ["operador", "finanzas", "ventas", "soporte", "implementacion", "ingenieria"] },
     { href: "/owner/cobros", label: "Cobros", roles: ["operador", "finanzas"] },
     { href: "/owner/rentabilidad", label: "Rentabilidad", roles: ["operador", "finanzas"] },
   ] },

@@ -13,9 +13,14 @@ export default function CampoFecha({ value, onChange, className, id, requerido, 
   const invalido = texto.trim() !== "" && parseFecha(texto) === "";
   return (
     <input
-      id={id} inputMode="numeric" placeholder="dd/mm/aaaa" maxLength={10} required={requerido} aria-label={ariaLabel}
+      id={id} inputMode="numeric" placeholder="dd/mm/aaaa" maxLength={10} autoComplete="off" required={requerido} aria-label={ariaLabel}
       aria-invalid={invalido || undefined} className={`${className ?? ""} ${invalido ? "border-red-400/70" : ""}`} value={texto}
-      onChange={(e) => { setTexto(e.target.value); onChange(parseFecha(e.target.value)); }}
+      onChange={(e) => {
+        // Mientras se escribe solo con números, se ponen las barras solas: 0810 → 08/10/…
+        let v = e.target.value;
+        if (/^\d+$/.test(v) && v.length > 2) v = v.length <= 4 ? `${v.slice(0, 2)}/${v.slice(2)}` : `${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4, 8)}`;
+        setTexto(v); onChange(parseFecha(v));
+      }}
     />
   );
 }

@@ -151,10 +151,10 @@ describe("O-04 · pipeline → propuesta → contrato con estados", () => {
   it("estados del contrato: no se salta pasos, firmar exige firmantes, solo vigente se aplica o da de alta", async () => {
     const salto = await rpc(tok.ventas, "contrato_estado", { p_id: CONTRATO, p_estado: "vigente" }); expect(salto.status).toBe(400); expect(msg(salto)).toMatch(/no puede pasar/);
     expect((await rpc(tok.ventas, "contrato_estado", { p_id: CONTRATO, p_estado: "enviado" })).status).toBe(204);
-    const sinFirma = await rpc(tok.ventas, "contrato_estado", { p_id: CONTRATO, p_estado: "firmado" }); expect(sinFirma.status).toBe(400); expect(msg(sinFirma)).toMatch(/firmantes/);
+    const sinFirma = await rpc(tok.ventas, "contrato_estado", { p_id: CONTRATO, p_estado: "firmado", p_motivo: "Excepción de prueba: documento en trámite" }); expect(sinFirma.status).toBe(400); expect(msg(sinFirma)).toMatch(/firmantes/);
     const temprano = await rpc(tok.operador, "alta_estudio_desde_contrato", { p_contrato_id: CONTRATO, p_slug: SLUG, p_name: `OC Estudio ${run}`, p_sede_nombre: "Central" });
     expect(temprano.status).toBe(400); expect(msg(temprano)).toMatch(/vigente/);
-    expect((await rpc(tok.ventas, "contrato_estado", { p_id: CONTRATO, p_estado: "firmado", p_firmantes: "Dueña del estudio y Andrés López" })).status).toBe(204);
+    expect((await rpc(tok.ventas, "contrato_estado", { p_id: CONTRATO, p_estado: "firmado", p_motivo: "Excepción de prueba: documento en trámite", p_firmantes: "Dueña del estudio y Andrés López" })).status).toBe(204);
     expect((await rpc(tok.ventas, "contrato_estado", { p_id: CONTRATO, p_estado: "vigente" })).status).toBe(204);
     const l = await rpc(tok.ventas, "contratos_listar"); expect(l.status).toBe(200);
     expect((l.body as any[]).find((x) => x.id === CONTRATO)).toMatchObject({ estado: "vigente", plan_key: PLAN, firmantes: "Dueña del estudio y Andrés López" });

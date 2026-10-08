@@ -1,16 +1,16 @@
 # Resultados de verificación — ReserveOS
 
-Generado: **6 de octubre de 2026 a las 7:17 p. m.** (hora de Guatemala) · Base verificada: staging `agkqppuhyltirrhngybq`
+Generado: **8 de octubre de 2026 a las 10:29 a. m.** (hora de Guatemala) · Base verificada: staging `agkqppuhyltirrhngybq`
 
 ## Resumen
 
 | Qué | Resultado |
 |---|---|
-| Pruebas por API directa (Vitest) | **181 de 181 pasan** |
+| Pruebas por API directa (Vitest) | **196 de 196 pasan** |
 | Escenarios de punta a punta + concurrencia | todos pasan |
-| Migraciones locales / desplegadas | 87 locales · 87 desplegadas · **coinciden** |
+| Migraciones locales / desplegadas | 89 locales · 89 desplegadas · **coinciden** |
 | Funciones que un visitante sin cuenta puede ejecutar | captar_lead, horarios_publicos, invitacion_clienta_por_token, invitacion_personal_por_token, pago_webhook, tenant_por_dominio, testimonios_publicos |
-| Base | 101 tablas (101 con RLS) · 448 funciones · 101 políticas |
+| Base | 101 tablas (101 con RLS) · 449 funciones · 101 políticas |
 
 ## Pruebas por API directa, con sesión real de cada rol
 
@@ -287,6 +287,29 @@ Generado: **6 de octubre de 2026 a las 7:17 p. m.** (hora de Guatemala) · Base 
 - ✔ quien no tiene permiso no registra comprobaciones
 - ✔ con DNS y HTTPS correctos el operador lo publica, el visitante lo resuelve, y al despublicar deja de resolver
 - ✔ una comprobación vieja (más de 24 horas) ya no alcanza para publicar
+
+### owner_matriz_roles.test.ts
+
+**matriz ruta → consultas → rol, con sesión real**
+
+- ✔ operador: cada ruta del menú carga todas sus consultas y las ocultas se niegan en el servidor
+- ✔ ventas: cada ruta del menú carga todas sus consultas y las ocultas se niegan en el servidor
+- ✔ marketing: cada ruta del menú carga todas sus consultas y las ocultas se niegan en el servidor
+- ✔ finanzas: cada ruta del menú carga todas sus consultas y las ocultas se niegan en el servidor
+- ✔ soporte: cada ruta del menú carga todas sus consultas y las ocultas se niegan en el servidor
+- ✔ implementacion: cada ruta del menú carga todas sus consultas y las ocultas se niegan en el servidor
+- ✔ ingenieria: cada ruta del menú carga todas sus consultas y las ocultas se niegan en el servidor
+- ✔ auditor: cada ruta del menú carga todas sus consultas y las ocultas se niegan en el servidor
+
+**Dirección entrega a cada rol solo su parte (F-12)**
+
+- ✔ ventas ve pipeline y no dinero ni servicio
+- ✔ finanzas ve dinero y no pipeline ni servicio
+- ✔ soporte ve servicio y no pipeline ni dinero
+- ✔ implementacion ve servicio y no pipeline ni dinero
+- ✔ ingenieria ve servicio y no pipeline ni dinero
+- ✔ la cola de acciones también se filtra por rol
+- ✔ marketing ya no ve el enlace de Dirección
 
 ### superficie_funciones.test.ts
 

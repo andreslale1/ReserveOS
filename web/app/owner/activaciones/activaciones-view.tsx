@@ -20,7 +20,7 @@ const input = "mt-1 rounded-lg border border-white/15 bg-void px-2 py-1.5 text-s
 const ETIQ_ESTADO: Record<string, string> = { no_contratado: "No contratado", contratado: "Contratado", habilitado: "Habilitado", configurado: "Configurado", probado: "Probado", en_produccion: "En producción" };
 const PASOS: [keyof ModuloEstado, string][] = [["contratado", "Contratado"], ["habilitado", "Habilitado"], ["configurado", "Configurado"], ["probado", "Probado"], ["produccion", "En producción"]];
 
-export default function ActivacionesView({ proyectos, tenants, gates, modulos }: { proyectos: Proyecto[]; tenants: { id: string; name: string }[]; gates: Record<string, Gate[]>; modulos: Record<string, ModuloEstado[]> }) {
+export default function ActivacionesView({ proyectos, tenants, gates, modulos, soloLectura = false }: { soloLectura?: boolean; proyectos: Proyecto[]; tenants: { id: string; name: string }[]; gates: Record<string, Gate[]>; modulos: Record<string, ModuloEstado[]> }) {
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
   const [sel, setSel] = useState<Record<string, string>>({});
@@ -111,11 +111,11 @@ export default function ActivacionesView({ proyectos, tenants, gates, modulos }:
                   <div className="flex flex-wrap items-center gap-2">
                     {!p.tenant_id && (
                       <>
-                        <select aria-label="Estudio a vincular" className={input} value={sel[p.id] ?? ""} onChange={(e) => setSel({ ...sel, [p.id]: e.target.value })}>
+                        <select disabled={soloLectura} aria-label="Estudio a vincular" className={input} value={sel[p.id] ?? ""} onChange={(e) => setSel({ ...sel, [p.id]: e.target.value })}>
                           <option value="">Vincular estudio creado…</option>
                           {tenants.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                         </select>
-                        <button className="rounded-full border border-white/15 px-3 py-1.5 text-xs disabled:opacity-50" disabled={isPending || !(sel[p.id])} onClick={() => correr(() => vincularEstudio(p.id, sel[p.id]), "Estudio vinculado.")}>Vincular</button>
+                        <button className="rounded-full border border-white/15 px-3 py-1.5 text-xs disabled:opacity-50" disabled={isPending || soloLectura || !(sel[p.id])} onClick={() => correr(() => vincularEstudio(p.id, sel[p.id]), "Estudio vinculado.")}>Vincular</button>
                       </>
                     )}
                     {!p.tenant_id && <span className="text-xs text-white/55">o crea el estudio desde <Link href="/owner/contratos" className="text-lime underline">su contrato</Link></span>}
@@ -136,7 +136,7 @@ export default function ActivacionesView({ proyectos, tenants, gates, modulos }:
                   </ul>
                   <div className="mt-3 flex flex-wrap items-end gap-2">
                     {bloqueos.length === 0 ? (
-                      <button className="rounded-full bg-lime px-4 py-1.5 text-xs font-semibold text-void disabled:opacity-50" disabled={isPending} onClick={() => correr(() => publicarProyecto(p.id), "¡Estudio en vivo! Su suscripción quedó activa.")}>
+                      <button className="rounded-full bg-lime px-4 py-1.5 text-xs font-semibold text-void disabled:opacity-50" disabled={isPending || soloLectura} onClick={() => correr(() => publicarProyecto(p.id), "¡Estudio en vivo! Su suscripción quedó activa.")}>
                         {isPending ? "Publicando…" : "Salir en vivo"}
                       </button>
                     ) : (
@@ -144,7 +144,7 @@ export default function ActivacionesView({ proyectos, tenants, gates, modulos }:
                         <label className="text-xs text-white/60">Excepción: por qué sale en vivo sin cumplir las puertas * (mínimo 10 caracteres)
                           <input className={`${input} block w-96 max-w-full`} value={excepcion[p.id] ?? ""} onChange={(e) => setExcepcion({ ...excepcion, [p.id]: e.target.value })} />
                         </label>
-                        <button className="rounded-full border border-yellow-300/50 px-3 py-1.5 text-xs text-yellow-200 disabled:opacity-50" disabled={isPending || (excepcion[p.id] ?? "").trim().length < 10}
+                        <button className="rounded-full border border-yellow-300/50 px-3 py-1.5 text-xs text-yellow-200 disabled:opacity-50" disabled={isPending || soloLectura || (excepcion[p.id] ?? "").trim().length < 10}
                           onClick={() => correr(() => publicarProyecto(p.id, excepcion[p.id]), "Estudio en vivo con excepción registrada.")}>
                           {isPending ? "Publicando…" : "Salir en vivo con excepción"}
                         </button>
@@ -194,7 +194,13 @@ export default function ActivacionesView({ proyectos, tenants, gates, modulos }:
               <ul className="mt-2 grid gap-1 sm:grid-cols-2">
                 {p.etapas.map((e) => (
                   <li key={e.key} className="flex items-center gap-2 text-sm">
-                    <input id={`${p.id}-${e.key}`} type="checkbox" checked={e.hecha} disabled={isPending || !enCurso} onChange={(x) => correr(() => marcarEtapa(p.id, e.key, x.target.checked))} />
+                    <input id={`${p.id}-${e.key}`} type="checkbox" checked={e.hecha} disabled={isPending || !enCurso} onChange={(x) => {
+                      // Las etapas que el sistema puede comprobar solas (contrato, estudio, plan, sedes, catálogo) no piden nada; las demás exigen evidencia escrita.
+                      const auto = ["contrato", "estudio", "plan", "sedes", "catalogo"].includes(e.key);
+                      const ev = x.target.checked && !auto ? window.prompt(`Evidencia de «${e.nombre}» (qué se hizo y dónde se ve, mínimo 10 caracteres):`) : null;
+                      if (x.target.checked && !auto && ev === null) return;
+                      correr(() => marcarEtapa(p.id, e.key, x.target.checked, ev ?? undefined));
+                    }} />
                     <label htmlFor={`${p.id}-${e.key}`} className={e.hecha ? "text-white/50 line-through" : ""}>{e.nombre}{!e.obligatoria && <span className="text-xs text-white/50"> (opcional)</span>}</label>
                   </li>
                 ))}

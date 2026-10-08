@@ -2,7 +2,7 @@ import { getOwnerContext } from "@/lib/owner-context";
 import ActivacionesView, { type Gate, type ModuloEstado, type Proyecto } from "./activaciones-view";
 
 export default async function ActivacionesPage() {
-  const { supabase } = await getOwnerContext();
+  const { supabase, operador } = await getOwnerContext();
   const [{ data, error }, { data: tenants }] = await Promise.all([
     supabase.rpc("proyectos_listar"),
     supabase.rpc("listar_tenants_plataforma"),
@@ -22,6 +22,7 @@ export default async function ActivacionesPage() {
   }));
   return (
     <ActivacionesView
+      soloLectura={operador.rol !== "operador"}
       proyectos={proyectos}
       gates={gates}
       modulos={modulos}

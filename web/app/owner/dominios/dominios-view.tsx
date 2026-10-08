@@ -18,7 +18,7 @@ const Paso = ({ nombre, estado, detalle }: { nombre: string; estado: string; det
   </li>
 );
 
-export default function DominiosView({ dominios }: { dominios: Dominio[] }) {
+export default function DominiosView({ dominios, soloLectura = false }: { dominios: Dominio[]; soloLectura?: boolean }) {
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
   const [copiado, setCopiado] = useState<string | null>(null);
@@ -52,11 +52,11 @@ export default function DominiosView({ dominios }: { dominios: Dominio[] }) {
                 <div className="flex flex-wrap gap-2">
                   <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs disabled:opacity-50" disabled={isPending} onClick={() => correr(async () => { const r = await comprobarDominio(d.id); return { error: r.error }; }, "Comprobación guardada.")}>{isPending ? "Comprobando…" : d.dns_comprobado_at ? "Comprobar de nuevo" : "Comprobar DNS y HTTPS"}</button>
                   {!d.verified ? (
-                    <button className="rounded-full bg-lime px-3 py-1.5 text-xs font-semibold text-void disabled:opacity-40" disabled={isPending || !listo} title={listo ? "" : "Comprueba primero el DNS y el HTTPS"} onClick={() => correr(() => activarDominio(d.id, true), "Dominio publicado.")}>Publicar</button>
+                    <button className="rounded-full bg-lime px-3 py-1.5 text-xs font-semibold text-void disabled:opacity-40" disabled={isPending || soloLectura || !listo} title={listo ? "" : "Comprueba primero el DNS y el HTTPS"} onClick={() => correr(() => activarDominio(d.id, true), "Dominio publicado.")}>Publicar</button>
                   ) : (
-                    <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs" disabled={isPending} onClick={() => correr(() => activarDominio(d.id, false), "Dominio despublicado.")}>Despublicar</button>
+                    <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs" disabled={isPending || soloLectura} onClick={() => correr(() => activarDominio(d.id, false), "Dominio despublicado.")}>Despublicar</button>
                   )}
-                  <button className="text-xs text-white/55 underline hover:text-white" disabled={isPending} onClick={() => { if (window.confirm(`¿Dar de baja ${d.domain}? El estudio perderá este dominio.`)) correr(() => bajaDominio(d.id), "Dominio dado de baja."); }}>Dar de baja</button>
+                  <button className="text-xs text-white/55 underline hover:text-white" disabled={isPending || soloLectura} onClick={() => { if (window.confirm(`¿Dar de baja ${d.domain}? El estudio perderá este dominio.`)) correr(() => bajaDominio(d.id), "Dominio dado de baja."); }}>Dar de baja</button>
                 </div>
               </div>
 

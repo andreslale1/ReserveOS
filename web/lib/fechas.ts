@@ -41,7 +41,10 @@ export function formatoFechaHora(iso: string | null | undefined): string {
 }
 /** "07/10/2026" o "7/10/26" → "2026-10-07"; devuelve "" si no es una fecha válida. */
 export function parseFecha(texto: string): string {
-  const m = /^\s*(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})\s*$/.exec(texto);
+  // Acepta 07/10/2026, 7-10-26, 7.10.2026 y 07102026 (sin separadores).
+  let t = texto.trim();
+  if (/^\d{6}$|^\d{8}$/.test(t)) t = `${t.slice(0, 2)}/${t.slice(2, 4)}/${t.slice(4)}`;
+  const m = /^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2}|\d{4})$/.exec(t);
   if (!m) return "";
   const dd = Number(m[1]), mm = Number(m[2]), yy = m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3]);
   const f = new Date(Date.UTC(yy, mm - 1, dd));
