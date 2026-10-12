@@ -21,6 +21,7 @@ export async function registrarGasto(i: {
   monto: number;
   tipo: string;
   metodo: string;
+  etapa?: string;
 }) {
   return llamar("registrar_gasto", {
     p_tenant_id: i.tenantId,
@@ -31,6 +32,7 @@ export async function registrarGasto(i: {
     p_monto: i.monto,
     p_tipo: i.tipo,
     p_metodo_pago: i.metodo || null,
+    p_etapa: i.etapa || "operativo",
   });
 }
 export async function eliminarGasto(id: string) {

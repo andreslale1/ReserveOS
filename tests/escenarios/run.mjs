@@ -29,7 +29,8 @@ const ESPERADO = {
   com: ["[sin consentimiento: encolados=0", "[con consentimiento: encolados=1]", "reintento en ~2 min", "Máximo 3 campañas"],
   qr: ["Código no reconocido", "ya_registrada=false clase=ZZ Clase Ahora", "[2º escaneo: ya_registrada=true]", "asistencias marcadas=1"],
   cat: ["la clienta ve el producto=1", "módulo tienda en mis_modulos=1"],
-  espera: ["[reserva propia: vínculo ok=t, créditos 0->1]", "[cancela: crédito de la clienta 1 de vuelta=t]", "vínculo ok=t, créditos 0->1]", "[la promovida cancela: créditos de vuelta=t]", "Necesitas comprar un paquete"],
+  auto: ["[rec1h nuevos>0=t, en cola=2, repetir=0, solo-1-reserva=t]", "[agendada nuevos>0=t, repetir=0, marca=t]", "[confirmar pedido=t, ultimo=t, repetir=0]", "[inasistencia nuevos>0=t, repetir=0, solo-c1=t]", "[asistencia nuevos>0=t, repetir=0, marca=t]", "[operativos nuevos=2, repetir=0, fin=t, inicio=t]", "[fijo nuevos>0=t, repetir=0]", "[apagada=0, sin-marca=t]", "[sin-consentimiento=0]", "[salud 9am sin correr=t]", "[salud 8am: aviso a dueña>0=t, repetir=0, cupos=1, fila=1]", "[vence nuevos>0=t, repetir=0]", "[inactivas 10am nuevos>0=t, repetir=0, c1-no=t]", "[sinpass 11am nuevos>0=t, repetir=0, enlace=t]", "[semanal nuevos>0=t, repetir=0, martes-no=t]", "[pagos marcados=1, repetir=0]"],
+  espera: ["[reserva propia: vínculo ok=t", "[cancela: crédito de la clienta 1 de vuelta=t]", "promovida: reserva=t vínculo ok=t", "[la promovida cancela: créditos de vuelta=t]", "Necesitas comprar un paquete"],
 };
 
 let fallos = 0;

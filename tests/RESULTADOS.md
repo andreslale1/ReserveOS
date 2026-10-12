@@ -1,16 +1,16 @@
 # Resultados de verificación — ReserveOS
 
-Generado: **8 de octubre de 2026 a las 10:29 a. m.** (hora de Guatemala) · Base verificada: staging `agkqppuhyltirrhngybq`
+Generado: **8 de octubre de 2026 a las 6:11 p. m.** (hora de Guatemala) · Base verificada: staging `agkqppuhyltirrhngybq`
 
 ## Resumen
 
 | Qué | Resultado |
 |---|---|
-| Pruebas por API directa (Vitest) | **196 de 196 pasan** |
+| Pruebas por API directa (Vitest) | **274 de 274 pasan** |
 | Escenarios de punta a punta + concurrencia | todos pasan |
-| Migraciones locales / desplegadas | 89 locales · 89 desplegadas · **coinciden** |
+| Migraciones locales / desplegadas | 105 locales · 105 desplegadas · **coinciden** |
 | Funciones que un visitante sin cuenta puede ejecutar | captar_lead, horarios_publicos, invitacion_clienta_por_token, invitacion_personal_por_token, pago_webhook, tenant_por_dominio, testimonios_publicos |
-| Base | 101 tablas (101 con RLS) · 449 funciones · 101 políticas |
+| Base | 108 tablas (108 con RLS) · 511 funciones · 103 políticas |
 
 ## Pruebas por API directa, con sesión real de cada rol
 
@@ -63,6 +63,78 @@ Generado: **8 de octubre de 2026 a las 10:29 a. m.** (hora de Guatemala) · Base
 - ✔ paquetes: usuario B solo ve filas de su propio tenant
 - ✔ anon sin sesión recibe 401 (permission denied), no una lista vacía
 - ✔ un tenant nunca aparece en la respuesta del otro (tenants)
+
+### automatizaciones.test.ts
+
+**lógica con hora simulada (miércoles 14/10/2026 09:00 de Guatemala)**
+
+- ✔ las 14 automatizaciones encolan lo correcto, una sola vez, respetando módulos, apagado por estudio, preferencias y la hora de la sede
+- ✔ no deja datos de prueba (el escenario se deshace)
+
+**programación y seguridad**
+
+- ✔ los 15 trabajos están programados y activos, y el antiguo diario en UTC ya no existe
+- ✔ ninguna función de automatización se puede ejecutar desde el navegador (ni sin sesión ni con sesión)
+- ✔ las tablas nuevas tienen RLS y no son legibles directamente
+
+**panel de la dueña, con sesión real**
+
+- ✔ la dueña ve las 15 automatizaciones con su estado
+- ✔ recepción y administración de sede no entran al panel ni apagan nada
+- ✔ la dueña apaga y vuelve a prender una automatización; las de núcleo no se pueden apagar
+- ✔ «Verificar ahora» guarda el chequeo de salud del día
+- ✔ otro estudio no puede consultar ni cambiar el de VIM
+
+### clases_instructoras.test.ts
+
+**historial de reservas: cada rol ve solo lo suyo**
+
+- ✔ la dueña ve las tres sedes: quién reservó y quién asistió
+- ✔ la administradora y la recepción de Centro ven solo Centro; la de Sur, solo Sur; la de Norte, nada de estas clases
+- ✔ la instructora ve solo las clases que da ella
+- ✔ contabilidad, marketing, una clienta, otro estudio y quien no es del estudio quedan fuera
+- ✔ filtra por asistencia, día de la semana, hora, sede, estado e instructora, y reporta el total para paginar
+
+**clases por instructora**
+
+- ✔ cuenta alumnas, asistencia, sin marcar y ocupación de cada clase dada
+- ✔ el resumen por instructora suma sus clases, y cada instructora solo ve el suyo
+- ✔ cambiar la instructora del horario solo vale hacia adelante: lo ya dado no cambia
+
+**corregir quién dio una clase y registrar sustituciones (solo la dueña, con auditoría)**
+
+- ✔ la administradora, la recepción y la instructora no pueden
+- ✔ exige motivo, una clase, y que la persona sea instructora del estudio
+- ✔ la dueña corrige y registra una sustitución en varias clases a la vez; el reporte lo refleja
+- ✔ la sustituta puede marcar asistencia de esa clase y la titular ya no
+
+**corregir una asistencia errónea**
+
+- ✔ otra sede no puede; exige motivo; la recepción de la sede sí
+- ✔ anular y devolver regresa el crédito a la membresía exacta, una sola vez
+
+**cancelar la clase de un día**
+
+- ✔ cancela las reservas, devuelve cada crédito y deja un aviso propio en la cola
+- ✔ después de cancelada, esa fecha ya no admite reservas; las demás fechas siguen igual
+
+**confirmación de asistencia y liberación de cupos**
+
+- ✔ quien no confirma pierde el cupo cuando la clase está llena, y entra la primera de la lista de espera
+
+**reto mensual**
+
+- ✔ la clienta ve su avance real hacia la meta y la dueña configura la meta del estudio
+
+**clases privadas 1 a 1**
+
+- ✔ la agenda respeta el alcance: la sede, la dueña y la instructora de esa clase
+- ✔ sin paquete privado no se reserva; la recepción de otra sede no asigna; la de la sede sí
+- ✔ cancelar a tiempo devuelve el crédito del paquete privado, y se puede volver a reservar con él
+
+**asistencia por QR**
+
+- ✔ el personal de la sede registra la asistencia con el código de la clienta; otra sede no, y repetirlo no duplica
 
 ### matriz_alcance.test.ts
 
@@ -168,6 +240,60 @@ Generado: **8 de octubre de 2026 a las 10:29 a. m.** (hora de Guatemala) · Base
 - ✔ las consultas de las pantallas (lista de clientas, ficha, pagos pendientes, tienda, caja) responden para todos los roles de sede
 - ✔ las consultas de cobro de cada sede solo traen las clientas de esa sede
 - ✔ un pedido de otra sede no se puede confirmar ni entregar
+
+### negocio_finanzas.test.ts
+
+**centro de mando: cada rol ve su parte, por sede**
+
+- ✔ la dueña recibe las siete secciones y las alertas
+- ✔ la dueña puede filtrar por sede y la cifra de la sede es menor o igual al total
+- ✔ la admin de Centro ve solo lo suyo: sin metas, retención, adquisición ni encuestas
+- ✔ la admin de Centro y la gerencia regional no pueden pedir una sede que no es suya
+- ✔ la contadora solo recibe finanzas agregadas, sin datos de clientas
+- ✔ recepción, instructora y marketing no entran; tampoco una dueña de otro estudio
+
+**una sola regla de ingreso confirmado**
+
+- ✔ resumen financiero, IVA, atribución por sede y centro de mando dan la misma cifra
+- ✔ la contadora ve exactamente las mismas cifras que la dueña
+- ✔ la utilidad acumulada del balance es ingreso confirmado menos gastos operativos
+- ✔ los gastos de preinversión no entran en el IVA ni en la utilidad
+- ✔ la serie mensual usa la misma regla y respeta el alcance
+
+**anulación de cobros: sale de todos los reportes y devuelve el código de descuento**
+
+- ✔ anular lo saca del ingreso, devuelve el uso del código y solo la dueña puede
+- ✔ en el reporte «Ingresos confirmados» lo anulado cuenta 0 y la suma de la columna es el ingreso confirmado
+
+**metas con avance real y proyección**
+
+- ✔ la dueña define metas, ve el avance y la proyección; nadie más puede
+
+**retención: lista de clientas para contactar**
+
+- ✔ responde para la dueña y la admin de sede con sus clientas; contadora, instructora y marketing no ven clientas
+
+**ficha de clienta: detalle, acceso, consentimiento y eliminación**
+
+- ✔ el detalle lo ve quien atiende a la clienta, no otra sede
+- ✔ reenviar el acceso y recordar el consentimiento: solo dueña o gerencia general, y no se envía nada real
+- ✔ eliminar la cuenta: solo la dueña, con el nombre exacto, deja auditoría y se frena si hay pagos
+
+**carritos abandonados: recordar solo encola**
+
+- ✔ la dueña recuerda un carrito activo; las demás no; no se duplica el mismo día
+
+**exportaciones: cada rol recibe lo suyo**
+
+- ✔ la dueña ejecuta los reportes del catálogo sin errores
+- ✔ la contadora puede los financieros y no los nominales; recepción e instructora ninguno
+- ✔ la admin de sede recibe cierres y ventas solo de su sede, y los reportes financieros globales no son suyos
+- ✔ un reporte pedido por API directa sin permiso de base de datos tampoco devuelve datos
+- ✔ el CSV neutraliza fórmulas y conserva acentos
+
+**aislamiento entre estudios**
+
+- ✔ la dueña de otro estudio no obtiene nada de este con las funciones nuevas
 
 ### owner_comercial.test.ts
 
@@ -311,6 +437,47 @@ Generado: **8 de octubre de 2026 a las 10:29 a. m.** (hora de Guatemala) · Base
 - ✔ la cola de acciones también se filtra por rol
 - ✔ marketing ya no ve el enlace de Dirección
 
+### publico_registro.test.ts
+
+**página pública: lo que ve un visitante sin cuenta**
+
+- ✔ devuelve horarios, sedes, paquetes con precio y cobertura, y no filtra datos de clientas
+- ✔ un estudio inexistente o no activo responde vacío, no error con datos
+- ✔ cada estudio solo muestra lo suyo (aislamiento entre estudios)
+- ✔ las funciones de gestión nuevas NO están abiertas al visitante sin cuenta
+
+**el estudio edita su página: solo dueña/gerencia, con límites**
+
+- ✔ la dueña guarda título y se ve en la página pública; apagar un bloque queda guardado
+- ✔ recepción, instructora y la dueña de OTRO estudio no pueden editarla
+- ✔ rechaza campos inexistentes, imágenes que no son https y textos gigantes
+- ✔ contacto: valida el número, solo la dueña lo cambia, y aparece en la página
+
+**registro autónomo: ficha de clienta sin pedir datos innecesarios**
+
+- ✔ una persona nueva se registra sin género ni «cómo te enteraste», y queda ligada solo a ESE estudio
+- ✔ si recepción ya había creado su ficha con ese correo, se FUSIONA (no se duplica)
+- ✔ un teléfono ya usado por otra cuenta del mismo estudio se rechaza
+- ✔ el código de referido se guarda y el bono llega a quien invitó al pagarse el primer paquete (con cobertura de sedes)
+- ✔ el código de referido es solo de quien lo pide, y otro estudio no lo obtiene
+
+**clase de prueba: reserva y seguimiento (sin contactar → contactada → convertida)**
+
+- ✔ la persona nueva reserva su clase de prueba y queda como «sin contactar»
+- ✔ la recepción de ESA sede la ve y la marca como contactada; la de otra sede no la ve ni la toca
+- ✔ «convertida» no se pone a mano: la pone sola la primera compra pagada
+- ✔ una clienta no puede hacer una segunda clase de prueba
+
+**comunicados para la clienta**
+
+- ✔ la dueña publica; la clienta del estudio lo ve y lo marca leído; la de otro estudio no lo ve
+- ✔ solo la dueña/gerencia publica, y solo para audiencias válidas; un aviso para instructoras no llega a clientas
+
+**destinos seguros y cabeceras de incrustación**
+
+- ✔ el destino tras entrar/registrarse solo puede ser una ruta interna
+- ✔ solo /e/{slug} se puede incrustar; login, cuenta, panel, consola y API lo prohíben
+
 ### superficie_funciones.test.ts
 
 **superficie de funciones expuestas**
@@ -349,6 +516,7 @@ Generado: **8 de octubre de 2026 a las 10:29 a. m.** (hora de Guatemala) · Base
 - ✔ com    
 - ✔ qr     
 - ✔ cat    
+- ✔ auto   
 - ✔ espera 
 - ✔ Último cupo: dos reservas simultáneas, solo una gana — confirmadas=1; segunda: Failed to run sql query: ERROR:  P0001: Ese horario ya no ti
 - ✔ Gift card: dos canjes simultáneos, solo uno gana — membresías nuevas=0; segundo: Failed to run sql query: ERROR:  P0001: Este códig

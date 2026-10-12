@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getPanelContext, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 import RegistroView from "./registro-view";
+import { primerDiaMesGT } from "@/lib/fechas";
 
 export default async function RegistroPage() {
   const { supabase, membership, sedes, modulos } = await getPanelContext();
@@ -8,7 +9,7 @@ export default async function RegistroPage() {
   if (!puedeVer(membership.role, "/panel/finanzas/registro") || !rutaHabilitada(modulos, "/panel/finanzas/registro")) redirect("/panel/hoy");
 
   const t = membership.tenant_id;
-  const mes = new Date().toISOString().slice(0, 7) + "-01";
+  const mes = primerDiaMesGT();
   const [{ data: gastos }, { data: activos }, { data: pasivos }, { data: meta }] = await Promise.all([
     supabase.from("gastos").select("id, fecha, categoria, descripcion, monto, tipo").eq("tenant_id", t).order("fecha", { ascending: false }).limit(40),
     supabase.from("activos").select("id, descripcion, fecha, monto").eq("tenant_id", t).order("fecha", { ascending: false }),

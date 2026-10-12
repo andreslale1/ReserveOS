@@ -48,7 +48,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   sql(`update tenants set status='activo', tipo='interno' where id='${T}'`);
-  sql(`delete from plataforma_tickets where id='${TICKET_AJENO}' or tenant_id='${T}'; delete from acceso_excepcional_tenant where tenant_id='${T}'; delete from paquetes where tenant_id='${T}'; delete from clientes where tenant_id='${T}'; delete from tenant_memberships where tenant_id='${T}'`);
+  sql(`delete from acceso_excepcional_tenant where tenant_id='${T}' or ticket_id in (select id from plataforma_tickets where id='${TICKET_AJENO}' or tenant_id='${T}'); delete from plataforma_ticket_mensajes where ticket_id in (select id from plataforma_tickets where id='${TICKET_AJENO}' or tenant_id='${T}'); delete from plataforma_tickets where id='${TICKET_AJENO}' or tenant_id='${T}'; delete from paquetes where tenant_id='${T}'; delete from clientes where tenant_id='${T}'; delete from tenant_memberships where tenant_id='${T}'`);
   limpiarUsuarios();
   const quedan = sql(`select (select count(*) from plataforma_staff where nombre like 'TMP oe %')::int s, (select count(*) from auth.users where email like 'tmp-%@owner-prueba.test')::int u`)[0];
   expect(quedan).toEqual({ s: 0, u: 0 });

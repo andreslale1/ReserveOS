@@ -21,7 +21,7 @@ export default async function ElegirPanelPage() {
             <li key={m.tenant_id}>
               <form action={elegirPanel}>
                 <input type="hidden" name="tenant_id" value={m.tenant_id} />
-                <button className="flex w-full items-center justify-between rounded-2xl border border-black/10 bg-white px-5 py-4 text-left shadow-sm transition hover:border-ink/40">
+                <button className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-card px-5 py-4 text-left shadow-sm transition hover:border-ink/40">
                   <span className="text-base font-semibold text-ink">{m.tenants?.name}</span>
                   <span className="text-sm text-ink/50">{ROLE_LABEL[m.role] ?? m.role} →</span>
                 </button>

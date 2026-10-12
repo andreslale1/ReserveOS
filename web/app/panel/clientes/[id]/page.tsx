@@ -94,6 +94,8 @@ export default async function FichaClientaPage({
     }
   }
 
+  const { data: detalle } = await supabase.rpc("cliente_detalle", { p_cliente_id: id });
+
   const { data: otras } = await supabase
     .from("clientes")
     .select("id, nombre")
@@ -153,6 +155,8 @@ export default async function FichaClientaPage({
       puedeVender={["duena", "gerente_general", "admin_sede", "recepcion"].includes(rol)}
       puedeCortesia={["duena", "gerente_general"].includes(rol)}
       puedeEditar={["duena", "gerente_general", "admin_sede", "recepcion"].includes(rol)}
+      detalle={(detalle ?? null) as never}
+      rol={rol}
     />
   );
 }

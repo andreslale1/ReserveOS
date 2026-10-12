@@ -26,22 +26,22 @@ export default function TiendaView({ tenantId, productos, carrito, pedidos }: { 
       {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
       {carrito.length > 0 && (
-        <section className="rounded-2xl border border-black/10 bg-white p-5">
+        <section className="rounded-2xl border border-white/10 bg-card p-5">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mi carrito</h2>
-          <ul className="mt-2 divide-y divide-black/5">
+          <ul className="mt-2 divide-y divide-white/5">
             {carrito.map((i) => (
               <li key={i.item_id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                 <span className="text-ink">{i.producto_nombre ?? i.paquete_nombre}{i.variante_nombre && i.variante_nombre !== "Única" ? ` · ${i.variante_nombre}` : ""}<span className="block text-xs text-ink/50">{q(i.precio_unitario)} c/u</span></span>
                 <span className="flex items-center gap-2">
-                  <button className="h-7 w-7 rounded-full border border-black/15" disabled={isPending} onClick={() => correr(() => i.cantidad <= 1 ? quitarDelCarrito(i.item_id) : cambiarCantidad(i.item_id, i.cantidad - 1), "Carrito actualizado.")}>−</button>
+                  <button className="h-7 w-7 rounded-full border border-white/15" disabled={isPending} onClick={() => correr(() => i.cantidad <= 1 ? quitarDelCarrito(i.item_id) : cambiarCantidad(i.item_id, i.cantidad - 1), "Carrito actualizado.")}>−</button>
                   <span className="w-5 text-center">{i.cantidad}</span>
-                  <button className="h-7 w-7 rounded-full border border-black/15" disabled={isPending || (i.stock_disponible !== null && i.cantidad >= i.stock_disponible)} onClick={() => correr(() => cambiarCantidad(i.item_id, i.cantidad + 1), "Carrito actualizado.")}>+</button>
+                  <button className="h-7 w-7 rounded-full border border-white/15" disabled={isPending || (i.stock_disponible !== null && i.cantidad >= i.stock_disponible)} onClick={() => correr(() => cambiarCantidad(i.item_id, i.cantidad + 1), "Carrito actualizado.")}>+</button>
                 </span>
               </li>
             ))}
           </ul>
-          <div className="mt-3 flex items-center justify-between border-t border-black/10 pt-3 text-sm"><span className="text-ink/60">Total</span><strong className="text-lg text-ink">{q(total)}</strong></div>
-          <input className="mt-3 w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-sm" placeholder="Código de descuento (opcional)" value={codigo} onChange={(e) => setCodigo(e.target.value)} />
+          <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3 text-sm"><span className="text-ink/60">Total</span><strong className="text-lg text-ink">{q(total)}</strong></div>
+          <input className="mt-3 w-full rounded-lg border border-white/15 bg-card px-3 py-2 text-sm" placeholder="Código de descuento (opcional)" value={codigo} onChange={(e) => setCodigo(e.target.value)} />
           <button className="mt-3 w-full rounded-full bg-ink px-4 py-3 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending} onClick={() => correr(() => confirmarPedido(tenantId, codigo), "¡Pedido hecho! Págalo y recógelo en el estudio.")}>Hacer pedido (pago en el estudio)</button>
         </section>
       )}
@@ -52,7 +52,7 @@ export default function TiendaView({ tenantId, productos, carrito, pedidos }: { 
         {productos.map((p) => {
           const v = p.variantes.find((x) => x.id === (sel[p.id] ?? p.variantes[0]?.id));
           return (
-            <div key={p.id} className="flex gap-4 rounded-2xl border border-black/10 bg-white p-4">
+            <div key={p.id} className="flex gap-4 rounded-2xl border border-white/10 bg-card p-4">
               {p.imagen && /^https?:\/\//.test(p.imagen) && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={p.imagen} alt={p.nombre} className="h-20 w-20 shrink-0 rounded-xl object-cover" />
@@ -62,7 +62,7 @@ export default function TiendaView({ tenantId, productos, carrito, pedidos }: { 
                 {p.descripcion && <p className="text-sm text-ink/65">{p.descripcion}</p>}
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   {p.variantes.length > 1 && (
-                    <select className="rounded-lg border border-black/15 bg-white px-2 py-1.5 text-sm" value={v?.id} onChange={(e) => setSel({ ...sel, [p.id]: e.target.value })}>
+                    <select className="rounded-lg border border-white/15 bg-card px-2 py-1.5 text-sm" value={v?.id} onChange={(e) => setSel({ ...sel, [p.id]: e.target.value })}>
                       {p.variantes.map((x) => <option key={x.id} value={x.id}>{x.nombre}{x.stock <= 0 ? " (agotado)" : ""}</option>)}
                     </select>
                   )}
@@ -75,9 +75,9 @@ export default function TiendaView({ tenantId, productos, carrito, pedidos }: { 
       </section>
 
       {pedidos.length > 0 && (
-        <section className="rounded-2xl border border-black/10 bg-white p-5">
+        <section className="rounded-2xl border border-white/10 bg-card p-5">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mis pedidos</h2>
-          <ul className="mt-2 divide-y divide-black/5">
+          <ul className="mt-2 divide-y divide-white/5">
             {pedidos.map((o) => (
               <li key={o.pedido_id} className="py-2.5 text-sm"><div className="flex justify-between"><span className="text-ink">{o.items}</span><span className="text-ink">{q(o.total)}</span></div><p className="text-xs text-ink/50">{EST[o.estado] ?? o.estado} · {new Date(o.created_at).toLocaleDateString("es-GT", { day: "numeric", month: "short" })}</p></li>
             ))}

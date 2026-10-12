@@ -1,13 +1,19 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { login } from "./actions";
+import { destinoSeguro, slugSeguro } from "@/lib/destino";
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; next?: string; e?: string }>;
 }) {
-  const { error, next } = await searchParams;
-  const estudio = decodeURIComponent((await headers()).get("x-tenant-nombre") ?? "");
+  const { error, next, e } = await searchParams;
+  const h = await headers();
+  const estudio = decodeURIComponent(h.get("x-tenant-nombre") ?? "");
+  // El estudio de origen viene del dominio propio o del enlace (?e=slug); sirve para ofrecer «Crear cuenta» sin perder el contexto.
+  const slug = slugSeguro(h.get("x-tenant-slug")) ?? slugSeguro(e);
+  const destino = destinoSeguro(next, "/panel");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-void px-6">
@@ -32,7 +38,8 @@ export default async function LoginPage({
         </p>
 
         <form action={login} className="mt-8 space-y-4">
-          <input type="hidden" name="next" value={next ?? "/panel"} />
+          <input type="hidden" name="next" value={destino} />
+          {slug && <input type="hidden" name="e" value={slug} />}
 
           <div>
             <label
@@ -69,7 +76,7 @@ export default async function LoginPage({
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-300">
+            <p role="alert" className="rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-300">
               {error}
             </p>
           )}
@@ -81,6 +88,16 @@ export default async function LoginPage({
             Entrar
           </button>
         </form>
+
+        <div className="mt-6 space-y-2 text-center text-sm">
+          <Link href="/login/olvide" className="block text-white/60 underline hover:text-white">¿Olvidaste tu contraseña?</Link>
+          {slug && (
+            <p className="text-white/50">
+              ¿Primera vez?{" "}
+              <Link href={`/registro/${slug}?next=${encodeURIComponent(destino === "/panel" ? "/cuenta/clases" : destino)}`} className="font-semibold text-lime underline">Crear mi cuenta</Link>
+            </p>
+          )}
+        </div>
       </div>
     </main>
   );

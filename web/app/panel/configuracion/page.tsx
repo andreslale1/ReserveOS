@@ -7,10 +7,12 @@ export default async function ConfiguracionPage() {
   if (!membership) return null;
   if (!puedeVer(membership.role, "/panel/configuracion")) redirect("/panel/hoy");
 
-  const [{ data: t }, { data: dominios }, { data: reglas }] = await Promise.all([
+  const [{ data: t }, { data: dominios }, { data: reglas }, { data: contenido }, { data: contacto }] = await Promise.all([
     supabase.from("tenants").select("name, slug, branding").eq("id", membership.tenant_id).maybeSingle(),
     supabase.from("tenant_domains").select("id, domain, verified").eq("tenant_id", membership.tenant_id),
     supabase.from("configuracion_reservas").select("horas_minimas_cancelacion, horas_minimas_confirmacion, cancelacion_tardia_devuelve_credito, anticipacion_maxima_dias, max_reservas_dia_por_clienta").eq("tenant_id", membership.tenant_id).maybeSingle(),
+    supabase.from("contenido_sitio").select("*").eq("tenant_id", membership.tenant_id).maybeSingle(),
+    supabase.from("configuracion_contacto").select("whatsapp_numero, instagram_url, facebook_url").eq("tenant_id", membership.tenant_id).maybeSingle(),
   ]);
   const b = (t?.branding ?? {}) as { color_primario?: string; logo_url?: string };
 
@@ -23,6 +25,8 @@ export default async function ConfiguracionPage() {
       color={b.color_primario ?? ""}
       logo={b.logo_url ?? ""}
       dominios={dominios ?? []}
+      contenido={contenido ?? null}
+      contacto={{ whatsapp: contacto?.whatsapp_numero ?? "", instagram: contacto?.instagram_url ?? "", facebook: contacto?.facebook_url ?? "" }}
       puedeIntegrar={membership.role === "duena" && modulos.includes("cobros_online")}
       reglas={{
         horasCancelacion: reglas?.horas_minimas_cancelacion ?? 2,

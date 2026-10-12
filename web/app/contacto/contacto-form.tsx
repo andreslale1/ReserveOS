@@ -3,20 +3,20 @@
 import { useActionState } from "react";
 import { enviarConsulta } from "./actions";
 
-const input = "mt-1 w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-ink outline-none focus:border-ink/40";
+const input = "mt-1 w-full rounded-lg border border-white/15 bg-card px-3 py-2 text-ink outline-none focus:border-ink/40";
 
 export default function ContactoForm({ fuente }: { fuente: string }) {
   const [estado, accion, pendiente] = useActionState(enviarConsulta, null);
   if (estado?.ok) {
     return (
-      <div className="mt-8 rounded-2xl border border-black/10 bg-white p-6">
+      <div className="mt-8 rounded-2xl border border-white/10 bg-card p-6">
         <p className="text-lg font-semibold text-ink">¡Gracias! Recibimos tu solicitud.</p>
         <p className="mt-1 text-sm text-ink/70">Te escribiremos pronto al correo que dejaste.</p>
       </div>
     );
   }
   return (
-    <form action={accion} className="mt-8 grid gap-4 rounded-2xl border border-black/10 bg-white p-6">
+    <form action={accion} className="mt-8 grid gap-4 rounded-2xl border border-white/10 bg-card p-6">
       <input type="hidden" name="fuente" value={fuente} />
       {/* campo trampa para bots: las personas no lo ven */}
       <input type="text" name="sitio" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />

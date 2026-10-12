@@ -15,7 +15,7 @@ export default function ReembolsoForm({ membresiaId, monto }: { membresiaId: str
         <button className="text-xs text-ink/55 underline" onClick={() => setAbierto(true)}>Solicitar reembolso</button>
       ) : (
         <div className="grid gap-2">
-          <input className="rounded-lg border border-black/15 bg-white px-3 py-2 text-sm" placeholder="Cuéntanos el motivo" value={motivo} onChange={(e) => setMotivo(e.target.value)} />
+          <input className="rounded-lg border border-white/15 bg-card px-3 py-2 text-sm" placeholder="Cuéntanos el motivo" value={motivo} onChange={(e) => setMotivo(e.target.value)} />
           <div className="flex items-center gap-3">
             <button className="rounded-full bg-ink px-4 py-1.5 text-xs font-medium text-cream disabled:opacity-50" disabled={isPending || motivo.trim().length < 4}
               onClick={() => startTransition(async () => { const r = await pedirReembolso(membresiaId, monto, motivo); setMsg(r.error ? { ok: false, texto: r.error } : { ok: true, texto: "Solicitud enviada. El estudio te responderá." }); })}>Enviar solicitud</button>

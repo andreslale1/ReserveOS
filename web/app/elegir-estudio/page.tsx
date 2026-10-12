@@ -23,7 +23,7 @@ export default async function ElegirEstudioPage() {
             <li key={c.tenant_id}>
               <form action={elegirEstudio}>
                 <input type="hidden" name="tenant_id" value={c.tenant_id} />
-                <button className="flex w-full items-center justify-between rounded-2xl border border-black/10 bg-white px-5 py-4 text-left shadow-sm transition hover:border-ink/40">
+                <button className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-card px-5 py-4 text-left shadow-sm transition hover:border-ink/40">
                   <span className="text-base font-semibold text-ink">{c.estudio}</span>
                   <span className="text-sm text-ink/50">Entrar como clienta →</span>
                 </button>
@@ -32,7 +32,7 @@ export default async function ElegirEstudioPage() {
           ))}
           {staff.map((c) => (
             <li key={`s-${c.tenant_id}`}>
-              <Link href="/panel" className="flex items-center justify-between rounded-2xl border border-black/10 bg-white/60 px-5 py-4 text-ink">
+              <Link href="/panel" className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/60 px-5 py-4 text-ink">
                 <span className="font-semibold">{c.estudio}</span><span className="text-sm text-ink/50">Entrar al panel ({c.rol_staff}) →</span>
               </Link>
             </li>

@@ -3,8 +3,8 @@
 import { useState, useTransition } from "react";
 import { agregarDependiente, firmarConsentimiento, guardarPerfil, guardarPreferencias, quitarDependiente } from "./actions";
 
-const input = "mt-1 w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-ink outline-none focus:border-ink/40";
-const card = "rounded-2xl border border-black/10 bg-white p-5";
+const input = "mt-1 w-full rounded-lg border border-white/15 bg-card px-3 py-2 text-ink outline-none focus:border-ink/40";
+const card = "rounded-2xl border border-white/10 bg-card p-5";
 
 export default function PerfilView({ preferencias, tenantId, perfil, consentimientoPendiente, dependientes }: {
   preferencias: { marketing_ok: boolean; email_ok: boolean; whatsapp_ok: boolean }; tenantId: string; perfil: { nombre: string; telefono: string; email: string; emergencia: string; cuidados: string };
@@ -41,7 +41,7 @@ export default function PerfilView({ preferencias, tenantId, perfil, consentimie
       <section className={card}>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mi familia</h2>
         <p className="mt-1 text-xs text-ink/55">Hijas, hijos u otras personas a quienes reservas clases con tu cuenta.</p>
-        <ul className="mt-2 divide-y divide-black/5">
+        <ul className="mt-2 divide-y divide-white/5">
           {dependientes.length === 0 && <li className="py-2 text-sm text-ink/60">Sin dependientes.</li>}
           {dependientes.map((x) => (
             <li key={x.id} className="flex items-center justify-between py-2.5 text-sm text-ink">
@@ -53,7 +53,7 @@ export default function PerfilView({ preferencias, tenantId, perfil, consentimie
         <div className="mt-3 grid gap-2 sm:grid-cols-[1fr_160px_auto]">
           <input className={`${input} mt-0`} placeholder="Nombre" value={d.nombre} onChange={(e) => setD({ ...d, nombre: e.target.value })} />
           <input type="date" className={`${input} mt-0`} value={d.nacimiento} onChange={(e) => setD({ ...d, nacimiento: e.target.value })} />
-          <button className="rounded-full border border-black/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending || !d.nombre.trim()} onClick={() => correr(() => agregarDependiente(tenantId, d.nombre, d.nacimiento), "Agregado.", () => setD({ nombre: "", nacimiento: "" }))}>Agregar</button>
+          <button className="rounded-full border border-white/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending || !d.nombre.trim()} onClick={() => correr(() => agregarDependiente(tenantId, d.nombre, d.nacimiento), "Agregado.", () => setD({ nombre: "", nacimiento: "" }))}>Agregar</button>
         </div>
       </section>
 
@@ -63,7 +63,7 @@ export default function PerfilView({ preferencias, tenantId, perfil, consentimie
         <label className="mt-3 flex items-start gap-2 text-sm text-ink"><input type="checkbox" className="mt-1" checked={pref.marketing_ok} onChange={(e) => setPref({ ...pref, marketing_ok: e.target.checked })} /> Quiero recibir promociones y novedades del estudio</label>
         <label className="mt-2 flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={pref.email_ok} onChange={(e) => setPref({ ...pref, email_ok: e.target.checked })} /> Por correo</label>
         <label className="mt-2 flex items-center gap-2 text-sm text-ink"><input type="checkbox" checked={pref.whatsapp_ok} onChange={(e) => setPref({ ...pref, whatsapp_ok: e.target.checked })} /> Por WhatsApp</label>
-        <button className="mt-3 rounded-full border border-black/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending} onClick={() => correr(() => guardarPreferencias(tenantId, pref.marketing_ok, pref.email_ok, pref.whatsapp_ok), "Preferencias guardadas.")}>Guardar preferencias</button>
+        <button className="mt-3 rounded-full border border-white/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending} onClick={() => correr(() => guardarPreferencias(tenantId, pref.marketing_ok, pref.email_ok, pref.whatsapp_ok), "Preferencias guardadas.")}>Guardar preferencias</button>
       </section>
 
       {consentimientoPendiente && (

@@ -46,6 +46,9 @@ const TODAS_LAS_RUTAS = [
   "/panel/campanas",
   "/panel/facturacion",
   "/panel/checkin",
+  "/panel/historial",
+  "/panel/instructoras",
+  "/panel/privadas",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del
@@ -57,6 +60,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
   gerente_general: TODAS_LAS_RUTAS,
   admin_sede: [
     "/panel/hoy",
+    "/panel/negocio",
     "/panel/calendario",
     "/panel/clientes",
     "/panel/pagos-pendientes",
@@ -77,9 +81,13 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/gift-cards",
     "/panel/facturacion",
     "/panel/checkin",
+    "/panel/historial",
+    "/panel/instructoras",
+    "/panel/privadas",
   ],
   gerente_regional: [
     "/panel/hoy",
+    "/panel/negocio",
     "/panel/calendario",
     "/panel/clientes",
     "/panel/pagos-pendientes",
@@ -94,6 +102,9 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/soporte",
     "/panel/cierres",
     "/panel/salas",
+    "/panel/historial",
+    "/panel/instructoras",
+    "/panel/privadas",
   ],
   marketing: ["/panel/hoy", "/panel/seguimiento", "/panel/campanas"],
   recepcion: [
@@ -106,9 +117,11 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/productos",
     "/panel/gift-cards",
     "/panel/checkin",
+    "/panel/historial",
+    "/panel/privadas",
   ],
-  instructora: ["/panel/hoy", "/panel/calendario", "/panel/checkin"],
-  contadora: ["/panel/hoy", "/panel/finanzas", "/panel/finanzas/registro", "/panel/caja", "/panel/pagos", "/panel/facturacion"],
+  instructora: ["/panel/hoy", "/panel/calendario", "/panel/checkin", "/panel/historial", "/panel/instructoras", "/panel/privadas"],
+  contadora: ["/panel/hoy", "/panel/negocio", "/panel/finanzas", "/panel/finanzas/registro", "/panel/reportes", "/panel/caja", "/panel/pagos", "/panel/facturacion"],
 };
 
 // Módulo contratado que habilita cada pantalla (las no listadas son del núcleo).

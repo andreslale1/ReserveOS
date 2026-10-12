@@ -8,6 +8,7 @@ import {
   cambiarCupo,
   asignarSala,
   cancelarClase,
+  corregirAsistencia,
   marcarAsistencia,
   quitarAsistente,
   reabrirClase,
@@ -64,6 +65,9 @@ export default function ClaseView({
   const [cupo, setCupo] = useState(String(clase.cupo));
   const [confirmarCancelar, setConfirmarCancelar] = useState(false);
   const [sala, setSala] = useState(salaId);
+  const [corrigiendo, setCorrigiendo] = useState<string | null>(null);
+  const [accion, setAccion] = useState<"asistio" | "no_vino" | "sin_marcar" | "anular_y_devolver">("asistio");
+  const [motivo, setMotivo] = useState("");
 
   function correr(fn: () => Promise<{ error: string | null }>, ok: string, despues?: () => void) {
     setMsg(null);
@@ -152,6 +156,29 @@ export default function ClaseView({
                         Quitar
                       </button>
                     )}
+                    {puedeGestionar && noEsFutura && (
+                      <button className={botonSec} disabled={isPending} aria-expanded={corrigiendo === a.id}
+                        onClick={() => { setCorrigiendo(corrigiendo === a.id ? null : a.id); setMotivo(""); setAccion("asistio"); }}>
+                        Corregir
+                      </button>
+                    )}
+                  </div>
+                )}
+                {corrigiendo === a.id && (
+                  <div className="mt-2 grid w-full gap-2 rounded-xl bg-white/5 p-3 sm:grid-cols-[1fr_2fr_auto]">
+                    <label className="text-xs text-ink/60">Dejar como
+                      <select value={accion} onChange={(e) => setAccion(e.target.value as typeof accion)} className={input}>
+                        <option value="asistio">Asistió</option><option value="no_vino">No vino</option><option value="sin_marcar">Sin marcar</option>
+                        <option value="anular_y_devolver">Anular la reserva y devolver la clase</option>
+                      </select>
+                    </label>
+                    <label className="text-xs text-ink/60">Motivo (queda registrado)
+                      <input value={motivo} onChange={(e) => setMotivo(e.target.value)} className={input} placeholder="Ej.: se marcó a la persona equivocada" />
+                    </label>
+                    <button className={`${boton} self-end`} disabled={isPending || motivo.trim().length < 5}
+                      onClick={() => correr(() => corregirAsistencia(horarioId, fecha, a.id, accion, motivo), accion === "anular_y_devolver" ? "Reserva anulada y clase devuelta al paquete." : "Asistencia corregida.", () => setCorrigiendo(null))}>
+                      Guardar
+                    </button>
                   </div>
                 )}
               </li>

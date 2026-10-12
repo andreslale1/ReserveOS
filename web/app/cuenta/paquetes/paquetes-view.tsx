@@ -7,7 +7,7 @@ export type Paquete = { sede_ids: string[]; id: string; nombre: string; descripc
 export type Transferencia = { banco: string; tipo_cuenta: string; numero_cuenta: string; titular: string };
 type Mio = { id: string; paquete: string; estado: string; totales: number | null; usadas: number; vence: string; congelada: boolean; sedes: string | null };
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
-const input = "mt-1 w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-ink outline-none focus:border-ink/40";
+const input = "mt-1 w-full rounded-lg border border-white/15 bg-card px-3 py-2 text-ink outline-none focus:border-ink/40";
 
 export default function PaquetesView({ sedes, tenantId, catalogo, transferencia, mios }: { sedes: { id: string; name: string }[]; tenantId: string; catalogo: Paquete[]; transferencia: Transferencia | null; mios: Mio[] }) {
   const [regalo, setRegalo] = useState("");
@@ -25,9 +25,9 @@ export default function PaquetesView({ sedes, tenantId, catalogo, transferencia,
       {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
       {mios.length > 0 && (
-        <section className="rounded-2xl border border-black/10 bg-white p-5">
+        <section className="rounded-2xl border border-white/10 bg-card p-5">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mis paquetes</h2>
-          <ul className="mt-2 divide-y divide-black/5">
+          <ul className="mt-2 divide-y divide-white/5">
             {mios.map((p) => (
               <li key={p.id} className="py-3 text-sm">
                 <p className="font-medium text-ink">{p.paquete} <span className="text-xs font-normal text-ink/50">· {p.estado === "pendiente_pago" ? "pago pendiente de confirmar" : p.congelada ? "congelado" : "activo"}</span></p>
@@ -39,7 +39,7 @@ export default function PaquetesView({ sedes, tenantId, catalogo, transferencia,
         </section>
       )}
 
-      <section className="rounded-2xl border border-black/10 bg-white p-5">
+      <section className="rounded-2xl border border-white/10 bg-card p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Tengo una gift card</h2>
         <div className="mt-2 flex gap-2">
           <input className={`${input} mt-0 flex-1 uppercase`} placeholder="GC-XXXXXX" value={regalo} onChange={(e) => setRegalo(e.target.value)} />
@@ -52,7 +52,7 @@ export default function PaquetesView({ sedes, tenantId, catalogo, transferencia,
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Comprar un paquete</h2>
         {catalogo.length === 0 && <p className="text-sm text-ink/60">El estudio aún no publica paquetes.</p>}
         {catalogo.map((p) => (
-          <div key={p.id} className="rounded-2xl border border-black/10 bg-white p-5">
+          <div key={p.id} className="rounded-2xl border border-white/10 bg-card p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-base font-semibold text-ink">{p.nombre}</p>
@@ -66,7 +66,7 @@ export default function PaquetesView({ sedes, tenantId, catalogo, transferencia,
               </div>
             </div>
             {elegido === p.id && (
-              <div className="mt-4 border-t border-black/10 pt-4">
+              <div className="mt-4 border-t border-white/10 pt-4">
                 {transferencia ? (
                   <div className="rounded-xl bg-cream p-4 text-sm text-ink">
                     <p className="font-medium">1. Haz una transferencia por {q(p.precio)}</p>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Enlaces from "./enlaces";
+import SitioEditor from "./sitio-editor";
 import { generarSecretoWebhook, guardarMarca, guardarReglas, quitarDominio, solicitarDominio } from "./actions";
 
 const input =
@@ -16,6 +18,8 @@ export default function ConfiguracionView({
   dominios,
   reglas,
   puedeIntegrar,
+  contenido,
+  contacto,
 }: {
   tenantId: string;
   nombre: string;
@@ -25,6 +29,8 @@ export default function ConfiguracionView({
   logo: string;
   dominios: { id: string; domain: string; verified: boolean }[];
   puedeIntegrar: boolean;
+  contenido: Record<string, string | boolean | null> | null;
+  contacto: { whatsapp: string; instagram: string; facebook: string };
   reglas: { horasCancelacion: number; horasConfirmacion: number; devuelveCredito: boolean; anticipacionDias: number; maxPorDia: number | null };
 }) {
   const [isPending, startTransition] = useTransition();
@@ -93,15 +99,8 @@ export default function ConfiguracionView({
           <button className="press-spring mt-4 rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending}
             onClick={() => { setMsg(null); startTransition(async () => { const x = await guardarReglas(tenantId, { horasCancelacion: r.horasCancelacion, horasConfirmacion: r.horasConfirmacion, devuelveCredito: r.devuelveCredito, anticipacionDias: r.anticipacionDias, maxPorDia: r.maxPorDia === "" ? null : Number(r.maxPorDia) }); setMsg(x.error ? { ok: false, texto: x.error } : { ok: true, texto: "Reglas guardadas." }); }); }}>Guardar reglas</button>
         </section>
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
-          <h2 className="text-base font-semibold text-ink">Conectar con la web de tu estudio</h2>
-          <p className="mt-2 text-sm text-ink/70">Tu página pública con horarios y botón de reserva:</p>
-          <p className="mt-1 break-all rounded-lg bg-cream px-3 py-2 text-sm text-ink">{baseUrl}/e/{slug}</p>
-          <p className="mt-4 text-sm text-ink/70">Para mostrar el horario dentro de tu web, pega este código:</p>
-          <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<iframe src="${baseUrl}/e/${slug}" width="100%" height="900" style="border:0"></iframe>`}</pre>
-          <p className="mt-4 text-sm text-ink/70">O solo un botón que lleve a tus clientas a reservar:</p>
-          <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<a href="${baseUrl}/login?next=/reservar">Reservar mi clase</a>`}</pre>
-        </section>
+        <Enlaces baseUrl={baseUrl} slug={slug} nombre={nombre} dominioActivo={dominios.find((d) => d.verified)?.domain ?? null} />
+        <SitioEditor tenantId={tenantId} contenido={contenido} contacto={contacto} />
         {puedeIntegrar && (
           <section className="rounded-2xl border border-white/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Pagos en línea</h2>

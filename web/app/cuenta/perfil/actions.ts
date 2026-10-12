@@ -29,3 +29,7 @@ export async function firmarConsentimiento(tenantId: string, c: { emergencia: st
 export async function guardarPreferencias(tenantId: string, marketing: boolean, email: boolean, whatsapp: boolean) {
   return llamar("guardar_mis_preferencias", { p_tenant_id: tenantId, p_marketing: marketing, p_email: email, p_whatsapp: whatsapp });
 }
+
+export async function marcarComunicadoVisto(id: string) {
+  return llamar("comunicado_marcar_visto", { p_comunicado_id: id });
+}

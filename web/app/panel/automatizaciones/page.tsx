@@ -1,51 +1,21 @@
 import { redirect } from "next/navigation";
 import { getPanelContext, puedeVer } from "@/lib/panel-context";
-import AutomatizacionesView from "./automatizaciones-view";
-
-const ACTIVAS = [
-  {
-    nombre: "Liberar cupos no confirmados",
-    frecuencia: "cada 10 minutos",
-    descripcion:
-      "Si una reserva no se confirma a tiempo, libera el cupo para que la lista de espera o otra clienta pueda tomarlo.",
-  },
-  {
-    nombre: "Lista de espera vencida",
-    frecuencia: "cada 15 minutos",
-    descripcion:
-      "Limpia entradas de lista de espera que ya vencieron sin que nadie tomara el cupo liberado.",
-  },
-];
-
-const PENDIENTES = [
-  {
-    nombre: "Recordatorio de vencimiento de membresía",
-    requiere: "WhatsApp o email",
-  },
-  {
-    nombre: "Recordatorio de inactividad",
-    requiere: "WhatsApp o email",
-  },
-  {
-    nombre: "Recordatorio de clase agendada",
-    requiere: "WhatsApp o push",
-  },
-  {
-    nombre: "Recordatorio de contraseña para clientas nuevas",
-    requiere: "Email",
-  },
-  {
-    nombre: "Aviso de clase por comenzar / por terminar",
-    requiere: "Push",
-  },
-];
+import AutomatizacionesView, { type Panel } from "./automatizaciones-view";
 
 export default async function AutomatizacionesPage() {
-  const { membership } = await getPanelContext();
+  const { supabase, membership } = await getPanelContext();
   if (!membership) return null;
   if (!puedeVer(membership.role, "/panel/automatizaciones")) {
     redirect("/panel/hoy");
   }
 
-  return <AutomatizacionesView activas={ACTIVAS} pendientes={PENDIENTES} />;
+  const { data, error } = await supabase.rpc("automatizaciones_panel", { p_tenant_id: membership.tenant_id });
+  if (error || !data) {
+    return (
+      <main className="min-h-screen bg-cream px-6 py-16 text-center text-sm text-ink-soft">
+        Las automatizaciones las administra la dueña del estudio.
+      </main>
+    );
+  }
+  return <AutomatizacionesView tenantId={membership.tenant_id} panel={data as Panel} />;
 }

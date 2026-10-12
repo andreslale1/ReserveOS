@@ -32,22 +32,25 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
 
   return (
     <div className="grid gap-4">
-      <h1 className="font-serif text-2xl text-ink">Clases</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="font-serif text-2xl text-ink">Clases</h1>
+        <Link href="/cuenta/clases/privadas" className="text-sm text-ink underline">Clases privadas 1 a 1</Link>
+      </div>
       <div className="flex flex-wrap gap-3">
         {sedes.length > 1 && (
-          <select className="rounded-lg border border-black/15 bg-white px-3 py-2 text-sm" value={sedeId} onChange={(e) => ir({ sede: e.target.value })}>
+          <select className="rounded-lg border border-white/15 bg-card px-3 py-2 text-sm" value={sedeId} onChange={(e) => ir({ sede: e.target.value })}>
             {sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
           </select>
         )}
         {dependientes.length > 1 && (
-          <select className="rounded-lg border border-black/15 bg-white px-3 py-2 text-sm" value={para} onChange={(e) => ir({ para: e.target.value })}>
+          <select className="rounded-lg border border-white/15 bg-card px-3 py-2 text-sm" value={para} onChange={(e) => ir({ para: e.target.value })}>
             {dependientes.map((d) => <option key={d.id} value={d.id}>Reservar para: {d.nombre}</option>)}
           </select>
         )}
       </div>
       <div className="-mx-1 flex gap-2 overflow-x-auto pb-1">
         {dias.map((d) => (
-          <button key={d.fecha} onClick={() => ir({ dia: d.fecha })} className={`flex w-14 shrink-0 flex-col items-center rounded-2xl border px-2 py-2 text-xs ${d.fecha === dia ? "border-ink bg-ink text-cream" : "border-black/10 bg-white text-ink"}`}>
+          <button key={d.fecha} onClick={() => ir({ dia: d.fecha })} className={`flex w-14 shrink-0 flex-col items-center rounded-2xl border px-2 py-2 text-xs ${d.fecha === dia ? "border-ink bg-ink text-cream" : "border-white/10 bg-card text-ink"}`}>
             <span className="uppercase">{d.label}</span><span className="text-lg font-semibold">{d.num}</span>
           </button>
         ))}
@@ -55,16 +58,16 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
       {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
       <ul className="grid gap-3">
-        {clases.length === 0 && <li className="rounded-2xl border border-black/10 bg-white p-5 text-sm text-ink/60">No hay clases ese día en esta sede.</li>}
+        {clases.length === 0 && <li className="rounded-2xl border border-white/10 bg-card p-5 text-sm text-ink/60">No hay clases ese día en esta sede.</li>}
         {clases.map((c) => (
-          <li key={c.id} className="rounded-2xl border border-black/10 bg-white p-4">
+          <li key={c.id} className="rounded-2xl border border-white/10 bg-card p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-base font-semibold text-ink">{c.inicio} · {c.nombre}</p>
                 <p className="text-xs text-ink/55">{c.inicio}–{c.fin}{c.instructora ? ` · ${c.instructora}` : ""} · {c.lugares === 0 ? "llena" : `${c.lugares} lugar${c.lugares === 1 ? "" : "es"}`}</p>
               </div>
               {c.reservaId ? (
-                <button className="shrink-0 rounded-full border border-black/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending}
+                <button className="shrink-0 rounded-full border border-white/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending}
                   onClick={() => correr(() => cancelar(c.reservaId!), "Reserva cancelada.")}>Cancelar</button>
               ) : c.elig.puede ? (
                 <button className="shrink-0 rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending}
@@ -73,7 +76,7 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
                 <button className="shrink-0 rounded-full border border-ink px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending}
                   onClick={() => correr(() => anotarEspera(c.id, dia, para), "Te anotamos en la lista de espera.")}>Lista de espera</button>
               ) : c.esperaId ? (
-                <button className="shrink-0 rounded-full border border-black/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending}
+                <button className="shrink-0 rounded-full border border-white/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending}
                   onClick={() => correr(() => salirEspera(c.esperaId!), "Saliste de la lista de espera.")}>Salir de espera</button>
               ) : null}
             </div>

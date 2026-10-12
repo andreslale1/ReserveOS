@@ -24,7 +24,8 @@ const TIPO_LABEL: Record<string, string> = { demo: "Demo", interno: "Interno / p
 
 export default function OwnerView({ tenants: todos }: { tenants: Tenant[] }) {
   const router = useRouter();
-  const [incluirPruebas, setIncluirPruebas] = useState(false);
+  // Si todavía no hay ningún estudio cliente, se muestran las pruebas: la primera pantalla del owner no debe estar vacía.
+  const [incluirPruebas, setIncluirPruebas] = useState(() => !todos.some((t) => (t.tipo ?? "cliente") === "cliente"));
   const [cambio, setCambio] = useState<{ id: string; name: string; destino: string } | null>(null);
   const tenants = incluirPruebas ? todos : todos.filter((t) => (t.tipo ?? "cliente") === "cliente");
   const ocultos = todos.length - tenants.length;

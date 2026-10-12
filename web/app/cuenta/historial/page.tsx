@@ -17,9 +17,9 @@ export default async function HistorialPage() {
   return (
     <div className="grid gap-5">
       <h1 className="font-serif text-2xl text-ink">Historial</h1>
-      <section className="rounded-2xl border border-black/10 bg-white p-5">
+      <section className="rounded-2xl border border-white/10 bg-card p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mis clases</h2>
-        <ul className="mt-2 divide-y divide-black/5">
+        <ul className="mt-2 divide-y divide-white/5">
           {(reservas ?? []).length === 0 && <li className="py-3 text-sm text-ink/60">Aún no tienes clases.</li>}
           {(reservas ?? []).map((r) => {
             const h = r.horarios as unknown as { nombre_clase: string; hora_inicio: string } | null;
@@ -33,9 +33,9 @@ export default async function HistorialPage() {
           })}
         </ul>
       </section>
-      <section className="rounded-2xl border border-black/10 bg-white p-5">
+      <section className="rounded-2xl border border-white/10 bg-card p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Compras y recibos</h2>
-        <ul className="mt-2 divide-y divide-black/5">
+        <ul className="mt-2 divide-y divide-white/5">
           {(compras ?? []).length === 0 && <li className="py-3 text-sm text-ink/60">Aún no tienes compras.</li>}
           {(compras ?? []).map((m) => (
             <li key={m.id} className="py-3 text-sm">

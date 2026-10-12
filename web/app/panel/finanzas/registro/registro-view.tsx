@@ -37,7 +37,7 @@ export default function RegistroView({
   const hoy = new Date().toISOString().slice(0, 10);
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
-  const [g, setG] = useState({ sedeId: sedes[0]?.id ?? "", fecha: hoy, categoria: "", descripcion: "", monto: "", tipo: "variable", metodo: "" });
+  const [g, setG] = useState({ sedeId: sedes[0]?.id ?? "", fecha: hoy, categoria: "", descripcion: "", monto: "", tipo: "variable", metodo: "", etapa: "operativo" });
   const [ap, setAp] = useState({ tabla: "activos" as "activos" | "pasivos", descripcion: "", fecha: hoy, monto: "" });
   const [metaIn, setMetaIn] = useState(meta === null ? "" : String(meta));
 
@@ -114,6 +114,13 @@ export default function RegistroView({
               </select>
             </label>
             <label className="text-sm text-ink/60">
+              Etapa
+              <select value={g.etapa} onChange={(e) => setG({ ...g, etapa: e.target.value })} className={input}>
+                <option value="operativo">Operativo</option>
+                <option value="preinversion">Preinversión</option>
+              </select>
+            </label>
+            <label className="text-sm text-ink/60">
               Nota
               <input value={g.descripcion} onChange={(e) => setG({ ...g, descripcion: e.target.value })} className={input} />
             </label>
@@ -123,7 +130,7 @@ export default function RegistroView({
             disabled={isPending || !g.categoria.trim() || !(Number(g.monto) > 0)}
             onClick={() =>
               correr(
-                () => registrarGasto({ tenantId, sedeId: g.sedeId || null, fecha: g.fecha, categoria: g.categoria, descripcion: g.descripcion, monto: Number(g.monto), tipo: g.tipo, metodo: g.metodo }),
+                () => registrarGasto({ tenantId, sedeId: g.sedeId || null, fecha: g.fecha, categoria: g.categoria, descripcion: g.descripcion, monto: Number(g.monto), tipo: g.tipo, metodo: g.metodo, etapa: g.etapa }),
                 "Gasto registrado.",
                 () => setG({ ...g, categoria: "", descripcion: "", monto: "" }),
               )

@@ -99,3 +99,8 @@ export async function reabrirClase(horarioId: string, fecha: string) {
 export async function asignarSala(horarioId: string, fecha: string, salaId: string | null) {
   return llamar(horarioId, fecha, "asignar_sala_horario", { p_horario_id: horarioId, p_sala_id: salaId });
 }
+
+// Corrección de una asistencia errónea (con motivo, auditada). «anular_y_devolver» cancela la reserva y regresa la clase a su paquete, una sola vez.
+export async function corregirAsistencia(horarioId: string, fecha: string, reservaId: string, accion: "asistio" | "no_vino" | "sin_marcar" | "anular_y_devolver", motivo: string) {
+  return llamar(horarioId, fecha, "corregir_asistencia", { p_reserva_id: reservaId, p_accion: accion, p_motivo: motivo });
+}

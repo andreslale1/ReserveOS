@@ -48,3 +48,19 @@ export async function generarSecretoWebhook(tenantId: string, proveedor: string)
   if (error) return { error: error.message, secreto: null as string | null };
   return { error: null, secreto: data as string };
 }
+
+export async function guardarSitio(tenantId: string, datos: Record<string, string | boolean>) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("guardar_contenido_sitio", { p_tenant_id: tenantId, p_datos: datos });
+  if (error) return { error: error.message };
+  revalidatePath("/panel/configuracion");
+  return { error: null };
+}
+
+export async function guardarContacto(tenantId: string, whatsapp: string, instagram: string, facebook: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("guardar_contacto_estudio", { p_tenant_id: tenantId, p_whatsapp: whatsapp, p_instagram: instagram, p_facebook: facebook });
+  if (error) return { error: error.message };
+  revalidatePath("/panel/configuracion");
+  return { error: null };
+}

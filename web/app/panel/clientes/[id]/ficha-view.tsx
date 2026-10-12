@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import CuentaPanel, { type Detalle } from "./cuenta-panel";
 import { useState, useTransition } from "react";
 import {
   ajustarCreditos,
@@ -78,6 +79,8 @@ export default function FichaView({
   puedeVender,
   puedeCortesia,
   puedeEditar,
+  detalle,
+  rol,
 }: {
   cliente: Cliente;
   membresias: Membresia[];
@@ -89,6 +92,8 @@ export default function FichaView({
   puedeVender: boolean;
   puedeCortesia: boolean;
   puedeEditar: boolean;
+  detalle: Detalle | null;
+  rol: string;
 }) {
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
@@ -156,6 +161,8 @@ export default function FichaView({
             {msg.texto}
           </p>
         )}
+
+        <CuentaPanel clienteId={cliente.id} nombre={cliente.nombre} detalle={detalle} esDuena={rol === "duena"} esG={rol === "duena" || rol === "gerente_general"} />
 
         {/* Membresías: saldo y consumo (P27) */}
         <section className="rounded-2xl border border-white/10 bg-card p-5">

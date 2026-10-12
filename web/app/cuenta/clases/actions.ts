@@ -23,3 +23,9 @@ export async function anotarEspera(horarioId: string, fecha: string, clienteId: 
 export async function salirEspera(id: string) {
   return llamar("salir_lista_espera", { p_id: id });
 }
+export async function confirmarReserva(reservaId: string) {
+  return llamar("confirmar_mi_reserva", { p_reserva_id: reservaId });
+}
+export async function reservarPrivada(horarioId: string, fecha: string, clienteId: string) {
+  return llamar("agendar_clase_privada", { p_horario_id: horarioId, p_fecha: fecha, p_cliente_id: clienteId });
+}

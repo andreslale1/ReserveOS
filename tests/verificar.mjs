@@ -10,13 +10,17 @@ import { consulta } from "./escenarios/concurrencia.mjs";
 const dir = dirname(fileURLToPath(import.meta.url)), raiz = join(dir, "..");
 const TOKEN = process.env.SUPABASE_ACCESS_TOKEN, REF = process.env.SUPABASE_PROJECT_REF ?? "agkqppuhyltirrhngybq";
 if (!TOKEN) { console.error("Falta SUPABASE_ACCESS_TOKEN"); process.exit(2); }
+// La API de gestión limita el ritmo: se reintenta hasta tener un arreglo de filas.
+const consultar = (q) => { for (let i = 0; i < 8; i++) { const r = consulta(TOKEN, REF, q); if (Array.isArray(r)) return r; Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 20_000); } return []; };
 const ejecutar = (cmd, args, extra = {}) => spawnSync(cmd, args, { cwd: raiz, encoding: "utf8", maxBuffer: 50_000_000, env: process.env, ...extra });
 
+// Las sesiones guardadas son de la corrida anterior: algunos archivos crean y borran usuarios temporales, así que se empieza limpio.
+try { (await import("node:fs")).rmSync("/tmp/reserveos-test-tokens.json", { force: true }); } catch {}
 console.log("1/5 Sembrando fixtures…");
 const sem = ejecutar("node", ["tests/fixtures/sembrar.mjs"]); if (sem.status !== 0) { console.error(sem.stdout, sem.stderr); process.exit(1); }
 
 console.log("2/5 Pruebas por API directa (Vitest)…");
-const vi = ejecutar("npx", ["vitest", "run", "--reporter=json", "--outputFile=/tmp/vitest-resultados.json"]);
+const vi = ejecutar("npx", ["vitest", "run", "--no-file-parallelism", "--reporter=json", "--outputFile=/tmp/vitest-resultados.json"]);
 let json = { testResults: [], numPassedTests: 0, numFailedTests: 0, numTotalTests: 0 };
 try { json = JSON.parse(readFileSync("/tmp/vitest-resultados.json", "utf8")); } catch { console.error(vi.stdout, vi.stderr); }
 
@@ -29,14 +33,14 @@ for (const q of [
   "delete from invitaciones_personal where email like 'tmp-%@vim-prueba.test'",
   "delete from clientes where nombre like 'TMP %'",
   "delete from horarios where nombre_clase like 'FX tmp%'",
-]) consulta(TOKEN, REF, q);
+]) consultar(q);
 
 console.log("5/5 Comparando migraciones locales con las desplegadas…");
 const locales = readdirSync(join(raiz, "supabase/migrations")).filter((f) => f.endsWith(".sql")).map((f) => f.split("_")[0]).sort();
-const remotas = (consulta(TOKEN, REF, "select version from supabase_migrations.schema_migrations order by 1") ?? []).map((r) => r.version);
+const remotas = consultar("select version from supabase_migrations.schema_migrations order by 1").map((r) => r.version);
 const faltan = locales.filter((v) => !remotas.includes(v));
-const anon = consulta(TOKEN, REF, "select string_agg(proname, ', ' order by proname) n from pg_proc where pronamespace='public'::regnamespace and prokind='f' and has_function_privilege('anon', oid, 'execute')")[0]?.n;
-const stats = consulta(TOKEN, REF, "select (select count(*) from pg_tables where schemaname='public') tablas, (select count(*) from pg_tables where schemaname='public' and rowsecurity) rls, (select count(*) from pg_proc where pronamespace='public'::regnamespace and prokind='f') funciones, (select count(*) from pg_policies where schemaname='public') politicas")[0];
+const anon = consultar("select string_agg(proname, ', ' order by proname) n from pg_proc where pronamespace='public'::regnamespace and prokind='f' and has_function_privilege('anon', oid, 'execute')")[0]?.n;
+const stats = consultar("select (select count(*) from pg_tables where schemaname='public') tablas, (select count(*) from pg_tables where schemaname='public' and rowsecurity) rls, (select count(*) from pg_proc where pronamespace='public'::regnamespace and prokind='f') funciones, (select count(*) from pg_policies where schemaname='public') politicas")[0];
 
 const ahora = new Date().toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "long", timeStyle: "short" });
 let md = `# Resultados de verificación — ReserveOS\n\nGenerado: **${ahora}** (hora de Guatemala) · Base verificada: staging \`${REF}\`\n\n`;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { marcarCarritoPerdido } from "./actions";
+import { marcarCarritoPerdido, recordarCarrito } from "./actions";
 
 type Producto = {
   nombre: string;
@@ -54,6 +54,7 @@ export default function TiendaView({
   const tabs = esDuenaOGerente ? TABS : TABS.slice(0, 2);
   const [tab, setTab] = useState<(typeof TABS)[number]>(tabs[0]);
   const [isPending, startTransition] = useTransition();
+  const [avisoCarrito, setAvisoCarrito] = useState<string | null>(null);
 
   return (
     <main className="min-h-screen bg-cream">
@@ -172,6 +173,8 @@ export default function TiendaView({
               No hay carritos abandonados (más de 2 horas sin actividad).
             </div>
           ) : (
+            <>
+            {avisoCarrito && <p role="status" className="mb-2 text-sm text-ink-soft">{avisoCarrito}</p>}
             <ul className="space-y-2">
               {carritosAbandonados.map((c) => (
                 <li
@@ -194,6 +197,18 @@ export default function TiendaView({
                     <button
                       disabled={isPending}
                       onClick={() =>
+                        startTransition(async () => {
+                          const r = await recordarCarrito(c.carrito_id);
+                          setAvisoCarrito(r.error ?? "Recordatorio en cola: sale con los demás mensajes.");
+                        })
+                      }
+                      className="rounded-full border border-white/15 px-3 py-1 text-xs text-ink hover:bg-white/5"
+                    >
+                      Recordar
+                    </button>
+                    <button
+                      disabled={isPending}
+                      onClick={() =>
                         startTransition(() => {
                           marcarCarritoPerdido(c.carrito_id);
                         })
@@ -206,6 +221,7 @@ export default function TiendaView({
                 </li>
               ))}
             </ul>
+          </>
           ))}
       </div>
     </main>

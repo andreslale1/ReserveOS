@@ -14,3 +14,10 @@ export async function marcarCarritoPerdido(carritoId: string) {
   revalidatePath("/panel/tienda");
   return { error: null };
 }
+
+export async function recordarCarrito(carritoId: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("carrito_recordar", { p_carrito_id: carritoId });
+  if (error) return { error: error.message };
+  return { error: null };
+}

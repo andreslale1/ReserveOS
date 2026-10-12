@@ -12,15 +12,29 @@ if (!SUPABASE_URL || !ANON_KEY) {
 
 export { SUPABASE_URL, ANON_KEY };
 
+// Las sesiones se guardan en disco ~50 min: cientos de inicios de sesión por corrida chocaban con el límite de peticiones de Supabase Auth.
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+const CACHE = "/tmp/reserveos-test-tokens.json";
+const leerCache = (): Record<string, { t: string; exp: number }> => { try { return existsSync(CACHE) ? JSON.parse(readFileSync(CACHE, "utf8")) : {}; } catch { return {}; } };
 export async function login(email: string, password: string): Promise<string> {
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-    method: "POST",
-    headers: { apikey: ANON_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-  const data = await res.json();
-  if (!data.access_token) throw new Error(`Login falló para ${email}: ${JSON.stringify(data)}`);
-  return data.access_token as string;
+  const llave = `${SUPABASE_URL}|${email}|${password}`;
+  const c = leerCache()[llave];
+  if (c && c.exp > Date.now()) return c.t;
+  for (let intento = 0; ; intento++) {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: { apikey: ANON_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (data.access_token) {
+      const todo = leerCache(); todo[llave] = { t: data.access_token as string, exp: Date.now() + 50 * 60_000 };
+      try { writeFileSync(CACHE, JSON.stringify(todo)); } catch { /* sin caché */ }
+      return data.access_token as string;
+    }
+    if (data.error_code === "over_request_rate_limit" && intento < 8) { await new Promise((r) => setTimeout(r, 15_000)); continue; }
+    throw new Error(`Login falló para ${email}: ${JSON.stringify(data)}`);
+  }
 }
 
 export async function rpc(token: string | null, name: string, args: Record<string, unknown> = {}) {
