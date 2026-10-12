@@ -30,13 +30,27 @@ function estadoCupo(ocupados: number, max: number) {
   };
 }
 
+type DiaSemana = { fecha: string; clases: { hora: string; nombre: string; sede: string }[] };
+type CeldaMes = { fecha: string; n: number } | null;
+const DIAS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const sumarDias = (iso: string, d: number) => { const x = new Date(iso + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + d); return x.toISOString().slice(0, 10); };
+const sumarMes = (iso: string, m: number) => { const x = new Date(iso + "T00:00:00Z"); x.setUTCMonth(x.getUTCMonth() + m, 1); return x.toISOString().slice(0, 10); };
+
 export default function TodayView({
+  vista,
+  hoy,
+  semana,
+  mes,
   nombre,
   rol,
   tenantName,
   fecha,
   clases,
 }: {
+  vista: "dia" | "semana" | "mes";
+  hoy: string;
+  semana: DiaSemana[];
+  mes: CeldaMes[];
   nombre: string;
   rol: string;
   tenantName: string;
@@ -68,24 +82,57 @@ export default function TodayView({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden overflow-hidden rounded-full border border-white/15 text-sm sm:flex">
-              {["Día", "Semana", "Mes"].map((v, i) => (
-                <span
-                  key={v}
-                  className={`px-4 py-1.5 ${i === 0 ? "bg-ink text-cream" : "text-ink/50"}`}
-                >
-                  {v}
-                </span>
+            <div className="flex overflow-hidden rounded-full border border-white/15 text-sm" role="tablist" aria-label="Vista">
+              {([["dia", "Día"], ["semana", "Semana"], ["mes", "Mes"]] as const).map(([v, etiqueta]) => (
+                <Link key={v} href={`/panel/hoy?vista=${v}&f=${fecha}`} role="tab" aria-selected={vista === v}
+                  className={`px-4 py-1.5 ${vista === v ? "bg-ink text-cream" : "text-ink/60 hover:text-ink"}`}>{etiqueta}</Link>
               ))}
             </div>
-            <button className="press-spring rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-cream shadow-[0_8px_20px_-6px_rgba(17,17,17,0.35)] transition-colors duration-200 hover:bg-ink/90">
+            <Link href="/panel/calendario" className="press-spring rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-cream shadow-[0_8px_20px_-6px_rgba(17,17,17,0.35)] transition-colors duration-200 hover:bg-ink/90">
               + Nueva reserva
-            </button>
+            </Link>
           </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
+        <div className="mb-4 flex items-center gap-2 text-sm">
+          <Link href={`/panel/hoy?vista=${vista}&f=${vista === "mes" ? sumarMes(fecha, -1) : sumarDias(fecha, vista === "semana" ? -7 : -1)}`} className="rounded-full border border-white/15 px-3 py-1 text-ink/70 hover:text-ink" aria-label="Anterior">←</Link>
+          <Link href={`/panel/hoy?vista=${vista}&f=${hoy}`} className="rounded-full border border-white/15 px-3 py-1 text-ink/70 hover:text-ink">Hoy</Link>
+          <Link href={`/panel/hoy?vista=${vista}&f=${vista === "mes" ? sumarMes(fecha, 1) : sumarDias(fecha, vista === "semana" ? 7 : 1)}`} className="rounded-full border border-white/15 px-3 py-1 text-ink/70 hover:text-ink" aria-label="Siguiente">→</Link>
+        </div>
+
+        {vista === "semana" && (
+          <ul className="grid gap-3">
+            {semana.map((d, i) => (
+              <li key={d.fecha} className="rounded-2xl border border-white/10 bg-card p-4">
+                <div className="flex items-center justify-between">
+                  <Link href={`/panel/hoy?vista=dia&f=${d.fecha}`} className="text-sm font-medium capitalize text-ink hover:underline">{DIAS[i]} {Number(d.fecha.slice(8))}{d.fecha === hoy ? " · hoy" : ""}</Link>
+                  <span className="text-xs text-ink/50">{d.clases.length} {d.clases.length === 1 ? "clase" : "clases"}</span>
+                </div>
+                {d.clases.length > 0 && <p className="mt-2 text-xs text-ink/60">{d.clases.map((c) => `${c.hora} ${c.nombre}${c.sede ? ` (${c.sede})` : ""}`).join(" · ")}</p>}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {vista === "mes" && (
+          <div>
+            <h2 className="mb-3 font-serif text-xl capitalize text-ink">{new Date(fecha + "T00:00:00").toLocaleDateString("es-GT", { month: "long", year: "numeric" })}</h2>
+            <div className="grid grid-cols-7 gap-1 text-center text-xs text-ink/50">{DIAS.map((d) => <span key={d}>{d}</span>)}</div>
+            <div className="mt-1 grid grid-cols-7 gap-1">
+              {mes.map((c, i) => c ? (
+                <Link key={c.fecha} href={`/panel/hoy?vista=dia&f=${c.fecha}`}
+                  className={`flex min-h-16 flex-col rounded-xl border p-2 text-left text-sm hover:border-white/30 ${c.fecha === hoy ? "border-ink" : "border-white/10"} bg-card`}>
+                  <span className="text-ink">{Number(c.fecha.slice(8))}</span>
+                  {c.n > 0 && <span className="mt-auto text-[11px] text-ink/55">{c.n} {c.n === 1 ? "clase" : "clases"}</span>}
+                </Link>
+              ) : <span key={`v${i}`} />)}
+            </div>
+          </div>
+        )}
+
+        {vista === "dia" && (<>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="font-serif text-xl capitalize text-ink">
             {fechaLegible}
@@ -167,6 +214,7 @@ export default function TodayView({
             })}
           </ul>
         )}
+        </>)}
       </div>
     </main>
   );

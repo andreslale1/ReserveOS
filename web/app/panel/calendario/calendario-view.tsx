@@ -108,14 +108,9 @@ export default function CalendarioView({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex overflow-hidden rounded-full border border-white/15 text-sm">
-            {["Día", "Semana", "Mes"].map((v, i) => (
-              <span
-                key={v}
-                className={`px-4 py-1.5 ${i === 0 ? "bg-ink text-cream" : "text-ink/50"}`}
-              >
-                {v}
-              </span>
+          <div className="flex overflow-hidden rounded-full border border-white/15 text-sm" aria-label="Ver clases por">
+            {([["dia", "Día"], ["semana", "Semana"], ["mes", "Mes"]] as const).map(([v, etiqueta]) => (
+              <a key={v} href={`/panel/hoy?vista=${v}`} className="px-4 py-1.5 text-ink/60 hover:text-ink">{etiqueta}</a>
             ))}
           </div>
           {puedeCrear && (

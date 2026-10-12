@@ -220,3 +220,30 @@ describe("altas y consultas que usan las pantallas, con el alcance de cada rol",
     expect(r.status).toBe(400);
   });
 });
+
+describe("cobro en recepción (pantalla Cobrar)", () => {
+  // Se usa una clienta propia de la prueba y se borra al final: así no se alteran los conteos de la matriz ni las clientas de los fixtures.
+  const venta = async (alias: string, sede: string, cliente: string, paquete: string, metodo = "efectivo") =>
+    rpc(tok[alias], "agregar_membresia_manual", { p_cliente_id: cliente, p_paquete_id: paquete, p_sede_venta_id: SEDE[`vim:${sede}`], p_metodo_pago: metodo });
+  let cliente = "", paquete = "";
+  const nombre = `TMP Cobro ${corrida}`;
+  it("la recepción de Centro cobra un paquete en Centro y queda activo y pagado", async () => {
+    const c = await rpc(tok.recep1, "crear_cliente", { p_tenant_id: T.vim, p_nombre: nombre, p_telefono: String(Math.floor(Math.random() * 9e8) + 1e9), p_email: null, p_sede_habitual_id: SEDE["vim:Centro"], p_genero: null, p_como_se_entero: null });
+    expect(c.status, JSON.stringify(c.body)).toBe(200);
+    cliente = ((c.body as { id?: string; cliente_id?: string }).id ?? (c.body as { cliente_id?: string }).cliente_id ?? (c.body as unknown as string)) as string;
+    const p = await selectFrom(tok.duena, "paquetes", `?select=id&tenant_id=eq.${T.vim}&activo=eq.true&cobertura=eq.todas&limit=1`); paquete = (p.body as { id: string }[])[0].id;
+    const r = await venta("recep1", "Centro", cliente, paquete); expect(r.status, JSON.stringify(r.body)).toBe(200);
+    const m = await selectFrom(tok.recep1, "membresias", `?select=pagada,estado&cliente_id=eq.${cliente}`);
+    expect((m.body as { pagada: boolean; estado: string }[])[0]).toMatchObject({ pagada: true, estado: "activa" });
+  });
+  it("la recepción de Sur NO puede cobrar en Centro, y nadie de recepción da cortesías", async () => {
+    expect((await venta("recep3", "Centro", cliente, paquete)).status).toBe(400);
+    expect((await venta("recep1", "Centro", cliente, paquete, "cortesia")).status).toBe(400);
+  });
+  it("limpieza: la dueña anula el cobro y borra la clienta de prueba", async () => {
+    const ms = (await selectFrom(tok.duena, "membresias", `?select=id&cliente_id=eq.${cliente}`)).body as { id: string }[];
+    for (const m of ms) expect(ok((await rpc(tok.duena, "anular_cobro_membresia", { p_membresia_id: m.id, p_motivo: "limpieza de prueba" })).status)).toBe(true);
+    const r = await rpc(tok.duena, "eliminar_cliente", { p_cliente_id: cliente, p_confirmar_nombre: nombre });
+    expect(ok(r.status), JSON.stringify(r.body)).toBe(true);
+  });
+});

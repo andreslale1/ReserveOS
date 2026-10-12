@@ -46,8 +46,10 @@ export default function ConfiguracionView({
   return (
     <main className="min-h-screen bg-cream">
       <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+        <div className="mx-auto max-w-2xl">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Configuración del estudio</h1>
         <p className="mt-1 text-sm text-ink/60">Nombre, marca y dominio</p>
+        </div>
       </header>
       <div className="mx-auto grid max-w-2xl gap-6 px-6 py-8 md:px-10">
         {msg && (

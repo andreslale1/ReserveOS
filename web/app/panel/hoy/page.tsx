@@ -1,7 +1,8 @@
 import { getPanelContext, ROLE_LABEL, fechaYDowEnSede } from "@/lib/panel-context";
 import TodayView from "./today-view";
 
-export default async function HoyPage() {
+export default async function HoyPage({ searchParams }: { searchParams: Promise<{ vista?: string; f?: string }> }) {
+  const sp = await searchParams;
   const { supabase, user, membership, sedes, tenantName } =
     await getPanelContext();
 
@@ -19,23 +20,28 @@ export default async function HoyPage() {
   }
 
   const sedeIds = sedes.map((s) => s.id);
-  const { dow, fecha } = fechaYDowEnSede(
+  const { fecha: hoy } = fechaYDowEnSede(
     sedes[0]?.timezone ?? "America/Guatemala",
   );
+  const vista = sp.vista === "semana" || sp.vista === "mes" ? sp.vista : "dia";
+  const fecha = sp.f && /^\d{4}-\d{2}-\d{2}$/.test(sp.f) ? sp.f : hoy;
+  const dowDe = (iso: string) => new Date(iso + "T00:00:00Z").getUTCDay();
+  const dow = dowDe(fecha);
 
   const { data: horarios } = sedeIds.length
     ? await supabase
         .from("horarios")
         .select(
-          "id, nombre_clase, hora_inicio, hora_fin, cupo_maximo, sede_id, sedes(name), tenant_memberships(nombre)",
+          "id, nombre_clase, hora_inicio, hora_fin, cupo_maximo, sede_id, dia_semana, sedes(name), tenant_memberships(nombre)",
         )
         .in("sede_id", sedeIds)
-        .eq("dia_semana", dow)
         .eq("activo", true)
         .order("hora_inicio")
     : { data: [] };
 
-  const horarioIds = (horarios ?? []).map((h) => h.id);
+  const todos = horarios ?? [];
+  const delDia = todos.filter((h) => h.dia_semana === dow);
+  const horarioIds = delDia.map((h) => h.id);
 
   // Nombres: roster con alcance (la instructora solo ve sus clases). Ocupación: conteo agregado, sin identidades.
   const [{ data: roster }, { data: ocupacion }] = await Promise.all([
@@ -45,7 +51,7 @@ export default async function HoyPage() {
   const reservas = (roster ?? []) as { horario_id: string; nombre: string }[];
   const ocup = (ocupacion ?? []) as { horario_id: string; ocupados: number }[];
 
-  const clases = (horarios ?? []).map((h) => {
+  const clases = delDia.map((h) => {
     const ocupantes = (reservas ?? []).filter((r) => r.horario_id === h.id);
     return {
       id: h.id,
@@ -62,8 +68,29 @@ export default async function HoyPage() {
     };
   });
 
+  // Semana (lunes a domingo de la fecha elegida) y mes: solo qué clases hay cada día; la ocupación se ve al abrir el día.
+  const sumar = (iso: string, d: number) => { const x = new Date(iso + "T00:00:00Z"); x.setUTCDate(x.getUTCDate() + d); return x.toISOString().slice(0, 10); };
+  const lunes = sumar(fecha, -((dow + 6) % 7));
+  const resumenDia = (iso: string) => todos.filter((h) => h.dia_semana === dowDe(iso)).sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+  const semana = Array.from({ length: 7 }, (_, i) => {
+    const d = sumar(lunes, i);
+    return { fecha: d, clases: resumenDia(d).map((h) => ({ hora: h.hora_inicio.slice(0, 5), nombre: h.nombre_clase, sede: (h.sedes as unknown as { name: string } | null)?.name ?? "" })) };
+  });
+  const primero = fecha.slice(0, 8) + "01";
+  const relleno = (dowDe(primero) + 6) % 7;
+  const diasMes = new Date(Number(fecha.slice(0, 4)), Number(fecha.slice(5, 7)), 0).getDate();
+  const mes = Array.from({ length: relleno + diasMes }, (_, i) => {
+    if (i < relleno) return null;
+    const d = sumar(primero, i - relleno);
+    return { fecha: d, n: resumenDia(d).length };
+  });
+
   return (
     <TodayView
+      vista={vista}
+      hoy={hoy}
+      semana={semana}
+      mes={mes}
       nombre={membership.nombre ?? user.email ?? ""}
       rol={ROLE_LABEL[membership.role] ?? membership.role}
       tenantName={tenantName}

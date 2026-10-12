@@ -1,14 +1,14 @@
 # Resultados de verificación — ReserveOS
 
-Generado: **8 de octubre de 2026 a las 6:11 p. m.** (hora de Guatemala) · Base verificada: staging `agkqppuhyltirrhngybq`
+Generado: **12 de octubre de 2026 a las 3:02 p. m.** (hora de Guatemala) · Base verificada: staging `agkqppuhyltirrhngybq`
 
 ## Resumen
 
 | Qué | Resultado |
 |---|---|
-| Pruebas por API directa (Vitest) | **274 de 274 pasan** |
-| Escenarios de punta a punta + concurrencia | todos pasan |
-| Migraciones locales / desplegadas | 105 locales · 105 desplegadas · **coinciden** |
+| Pruebas por API directa (Vitest) | **271 de 277 pasan** — 3 FALLAN |
+| Escenarios de punta a punta + concurrencia | **FALLAN** |
+| Migraciones locales / desplegadas | 106 locales · 106 desplegadas · **coinciden** |
 | Funciones que un visitante sin cuenta puede ejecutar | captar_lead, horarios_publicos, invitacion_clienta_por_token, invitacion_personal_por_token, pago_webhook, tenant_por_dominio, testimonios_publicos |
 | Base | 108 tablas (108 con RLS) · 511 funciones · 103 políticas |
 
@@ -68,7 +68,7 @@ Generado: **8 de octubre de 2026 a las 6:11 p. m.** (hora de Guatemala) · Base 
 
 **lógica con hora simulada (miércoles 14/10/2026 09:00 de Guatemala)**
 
-- ✔ las 14 automatizaciones encolan lo correcto, una sola vez, respetando módulos, apagado por estudio, preferencias y la hora de la sede
+- ✘ las 14 automatizaciones encolan lo correcto, una sola vez, respetando módulos, apagado por estudio, preferencias y la hora de la sede
 - ✔ no deja datos de prueba (el escenario se deshace)
 
 **programación y seguridad**
@@ -120,7 +120,7 @@ Generado: **8 de octubre de 2026 a las 6:11 p. m.** (hora de Guatemala) · Base 
 
 **confirmación de asistencia y liberación de cupos**
 
-- ✔ quien no confirma pierde el cupo cuando la clase está llena, y entra la primera de la lista de espera
+- ✘ quien no confirma pierde el cupo cuando la clase está llena, y entra la primera de la lista de espera
 
 **reto mensual**
 
@@ -128,13 +128,13 @@ Generado: **8 de octubre de 2026 a las 6:11 p. m.** (hora de Guatemala) · Base 
 
 **clases privadas 1 a 1**
 
-- ✔ la agenda respeta el alcance: la sede, la dueña y la instructora de esa clase
-- ✔ sin paquete privado no se reserva; la recepción de otra sede no asigna; la de la sede sí
-- ✔ cancelar a tiempo devuelve el crédito del paquete privado, y se puede volver a reservar con él
+- ✘ la agenda respeta el alcance: la sede, la dueña y la instructora de esa clase
+- ✘ sin paquete privado no se reserva; la recepción de otra sede no asigna; la de la sede sí
+- ✘ cancelar a tiempo devuelve el crédito del paquete privado, y se puede volver a reservar con él
 
 **asistencia por QR**
 
-- ✔ el personal de la sede registra la asistencia con el código de la clienta; otra sede no, y repetirlo no duplica
+- ✘ el personal de la sede registra la asistencia con el código de la clienta; otra sede no, y repetirlo no duplica
 
 ### matriz_alcance.test.ts
 
@@ -240,6 +240,12 @@ Generado: **8 de octubre de 2026 a las 6:11 p. m.** (hora de Guatemala) · Base 
 - ✔ las consultas de las pantallas (lista de clientas, ficha, pagos pendientes, tienda, caja) responden para todos los roles de sede
 - ✔ las consultas de cobro de cada sede solo traen las clientas de esa sede
 - ✔ un pedido de otra sede no se puede confirmar ni entregar
+
+**cobro en recepción (pantalla Cobrar)**
+
+- ✔ la recepción de Centro cobra un paquete en Centro y queda activo y pagado
+- ✔ la recepción de Sur NO puede cobrar en Centro, y nadie de recepción da cortesías
+- ✔ limpieza: la dueña anula el cobro y borra la clienta de prueba
 
 ### negocio_finanzas.test.ts
 
@@ -516,10 +522,10 @@ Generado: **8 de octubre de 2026 a las 6:11 p. m.** (hora de Guatemala) · Base 
 - ✔ com    
 - ✔ qr     
 - ✔ cat    
-- ✔ auto   
+- ✘ auto   FALTA: [semanal nuevos>0=t, repetir=0, martes-no=t]
 - ✔ espera 
 - ✔ Último cupo: dos reservas simultáneas, solo una gana — confirmadas=1; segunda: Failed to run sql query: ERROR:  P0001: Ese horario ya no ti
 - ✔ Gift card: dos canjes simultáneos, solo uno gana — membresías nuevas=0; segundo: Failed to run sql query: ERROR:  P0001: Este códig
 - ✔ El visitante sin cuenta solo puede ejecutar las 7 funciones públicas
 - ✔ Sin datos de prueba residuales
-- TODOS LOS ESCENARIOS PASARON
+- 1 ESCENARIO(S) FALLARON

@@ -85,9 +85,9 @@ begin
   insert into invitaciones_clienta(cliente_id, token, usado, created_at) values (cs, gen_random_uuid(), false, timestamptz '2026-10-10 12:00:00+00');
   k := public.auto_cuentas_sin_password(timestamptz '2026-10-14 17:00:00+00', t); k2 := public.auto_cuentas_sin_password(timestamptz '2026-10-14 17:00:00+00', t);
   log := log || format('[sinpass 11am nuevos>0=%s, repetir=%s, enlace=%s] ', k > 0, k2, exists(select 1 from cola_mensajes where tenant_id=t and cliente_id=cs and cuerpo like '%/invitar/clienta/%'));
-  -- 14 · análisis semanal: lunes 12/10 07:00 de Guatemala = 13:00 UTC
-  k := public.auto_analisis_semanal(timestamptz '2026-10-12 13:00:00+00', t); k2 := public.auto_analisis_semanal(timestamptz '2026-10-12 13:00:00+00', t);
-  log := log || format('[semanal nuevos>0=%s, repetir=%s, martes-no=%s] ', k > 0, k2, public.auto_analisis_semanal(timestamptz '2026-10-13 13:00:00+00', t) = 0);
+  -- 14 · análisis semanal: lunes 11/01/2027 07:00 de Guatemala (fecha lejana: el cron real ya cubre las semanas de hoy) = 13:00 UTC
+  k := public.auto_analisis_semanal(timestamptz '2027-01-11 13:00:00+00', t); k2 := public.auto_analisis_semanal(timestamptz '2027-01-11 13:00:00+00', t);
+  log := log || format('[semanal nuevos>0=%s, repetir=%s, martes-no=%s] ', k > 0, k2, public.auto_analisis_semanal(timestamptz '2027-01-12 13:00:00+00', t) = 0);
   -- 9 · pagos: un «iniciado» de hace 3 horas pasa a revisión; uno reciente no
   insert into pago_transacciones(tenant_id, cliente_id, paquete_id, tipo, proveedor, monto, estado, created_at) values (t, c1, paq, 'paquete', 'prueba', 100, 'iniciado', ahora - interval '3 hours');
   insert into pago_transacciones(tenant_id, cliente_id, paquete_id, tipo, proveedor, monto, estado, created_at) values (t, c1, paq, 'paquete', 'prueba', 100, 'iniciado', ahora - interval '20 minutes');

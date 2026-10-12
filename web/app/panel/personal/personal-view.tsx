@@ -9,6 +9,7 @@ type Persona = {
   roleLabel: string;
   nombre: string;
   esYo: boolean;
+  editable: boolean;
   sedeIds: string[];
 };
 type Sede = { id: string; name: string };
@@ -40,12 +41,13 @@ export default function PersonalView({
   const [isPending, startTransition] = useTransition();
   const [agregando, setAgregando] = useState<string | null>(null);
 
+  // Cada rol solo crea cuentas por debajo de sí: la administradora de sede, recepción e instructoras de sus sedes; la regional, además administradoras.
   const rolesDisponibles =
     miRole === "admin_sede"
-      ? ROLES_INVITABLES.filter((r) =>
-          ["recepcion", "instructora", "contadora"].includes(r.value),
-        )
-      : ROLES_INVITABLES;
+      ? ROLES_INVITABLES.filter((r) => ["recepcion", "instructora"].includes(r.value))
+      : miRole === "gerente_regional"
+        ? ROLES_INVITABLES.filter((r) => ["admin_sede", "recepcion", "instructora"].includes(r.value))
+        : ROLES_INVITABLES;
 
   const [mostrarInvitar, setMostrarInvitar] = useState(false);
   const [invEmail, setInvEmail] = useState("");
@@ -272,7 +274,7 @@ export default function PersonalView({
                             className="flex items-center gap-1.5 rounded-full bg-neutral-tint px-3 py-1 text-xs text-ink-soft"
                           >
                             {sede?.name ?? sid}
-                            {puedeEditar && (
+                            {puedeEditar && p.editable && (
                               <button
                                 disabled={isPending}
                                 onClick={() => quitar(p.id, sid)}
@@ -286,7 +288,7 @@ export default function PersonalView({
                         );
                       })}
 
-                      {puedeEditar &&
+                      {puedeEditar && p.editable &&
                         sedesLibres.length > 0 &&
                         (agregando === p.id ? (
                           <select

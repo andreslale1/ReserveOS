@@ -35,11 +35,25 @@ export default async function PersonalPage() {
         .in("tenant_membership_id", membershipIds)
     : { data: [] };
 
-  const puedeEditar = ["duena", "gerente_general", "admin_sede"].includes(
+  const puedeEditar = ["duena", "gerente_general", "gerente_regional", "admin_sede"].includes(
     membership.role,
   );
 
-  const personalConSedes = (personal ?? []).map((p) => ({
+  // Jerarquía: dueña y gerencia general gestionan a todos; la regional, a administradoras, recepción e instructoras; la administradora de sede,
+  // solo a recepción e instructoras. Nadie ve ni toca a quien está por encima. (La base lo exige también: esto solo evita botones inútiles.)
+  const GESTIONA: Record<string, string[]> = {
+    duena: ["gerente_general", "gerente_regional", "admin_sede", "recepcion", "instructora", "contadora", "marketing"],
+    gerente_general: ["gerente_regional", "admin_sede", "recepcion", "instructora", "contadora", "marketing"],
+    gerente_regional: ["admin_sede", "recepcion", "instructora"],
+    admin_sede: ["recepcion", "instructora"],
+  };
+  const gestionables = GESTIONA[membership.role] ?? [];
+  const visibles = ["duena", "gerente_general"].includes(membership.role)
+    ? (personal ?? [])
+    : (personal ?? []).filter((p) => p.user_id === user.id || gestionables.includes(p.role));
+
+  const personalConSedes = visibles.map((p) => ({
+    editable: gestionables.includes(p.role),
     id: p.id,
     role: p.role,
     roleLabel: ROLE_LABEL[p.role] ?? p.role,

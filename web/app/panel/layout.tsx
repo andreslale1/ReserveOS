@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { salir } from "@/components/owner/salir";
 import { getPanelContext, ROLE_LABEL, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 
 const ALL_LINKS = [
@@ -9,6 +10,7 @@ const ALL_LINKS = [
   { href: "/panel/instructoras", label: "Clases por instructora" },
   { href: "/panel/privadas", label: "Clases privadas" },
   { href: "/panel/clientes", label: "Clientas" },
+  { href: "/panel/cobrar", label: "Cobrar" },
   { href: "/panel/pagos-pendientes", label: "Pagos pendientes" },
   { href: "/panel/paquetes", label: "Paquetes" },
   { href: "/panel/pagos", label: "Pagos y reembolsos" },
@@ -37,6 +39,16 @@ const ALL_LINKS = [
   { href: "/panel/automatizaciones", label: "Automatizaciones" },
 ];
 
+// Grupos del menú: el panel tenía una lista plana de más de veinte enlaces; así cada persona encuentra por tarea.
+const GRUPO: Record<string, string> = {
+  "/panel/hoy": "Día a día", "/panel/calendario": "Día a día", "/panel/checkin": "Día a día", "/panel/cobrar": "Día a día", "/panel/clientes": "Día a día", "/panel/pagos-pendientes": "Día a día", "/panel/privadas": "Día a día",
+  "/panel/historial": "Clases", "/panel/instructoras": "Clases", "/panel/agenda-personal": "Clases", "/panel/salas": "Clases", "/panel/cierres": "Clases",
+  "/panel/paquetes": "Ventas", "/panel/tienda": "Ventas", "/panel/productos": "Ventas", "/panel/gift-cards": "Ventas", "/panel/descuentos": "Ventas",
+  "/panel/caja": "Dinero", "/panel/pagos": "Dinero", "/panel/finanzas": "Dinero", "/panel/finanzas/registro": "Dinero", "/panel/facturacion": "Dinero",
+  "/panel/negocio": "Negocio", "/panel/reportes": "Negocio", "/panel/seguimiento": "Negocio", "/panel/campanas": "Negocio",
+};
+const ORDEN_GRUPOS = ["Día a día", "Clases", "Ventas", "Dinero", "Negocio", "Configuración"];
+
 export default async function PanelLayout({
   children,
 }: LayoutProps<"/panel">) {
@@ -54,7 +66,7 @@ export default async function PanelLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-cream md:flex-row">
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-white/10 bg-card px-4 py-6 md:flex">
+      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-white/10 bg-card px-4 py-6 md:flex">
         <div className="flex items-center gap-2 px-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-peach">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -70,19 +82,26 @@ export default async function PanelLayout({
           <span className="text-base font-semibold text-ink">ReserveOS</span>
         </div>
 
-        <nav className="mt-8 flex flex-col gap-1">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="rounded-lg px-3 py-2 text-sm text-ink-soft transition-colors duration-200 hover:bg-cream hover:text-ink"
-            >
-              {l.label}
-            </Link>
-          ))}
+        <nav aria-label="Panel del estudio" className="mt-6 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
+          {ORDEN_GRUPOS.map((g) => {
+            const enlaces = links.filter((l) => (GRUPO[l.href] ?? "Configuración") === g);
+            if (enlaces.length === 0) return null;
+            return (
+              <div key={g}>
+                {links.length > 8 && <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink/45">{g}</p>}
+                <div className="mt-1 flex flex-col gap-0.5">
+                  {enlaces.map((l) => (
+                    <Link key={l.href} href={l.href} className="rounded-lg px-3 py-1.5 text-sm text-ink-soft transition-colors duration-200 hover:bg-cream hover:text-ink">
+                      {l.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </nav>
 
-        <div className="mt-auto rounded-xl bg-cream px-3 py-3">
+        <div className="mt-4 shrink-0 rounded-xl bg-cream px-3 py-3">
           <p className="text-xs font-medium text-ink">
             {membership?.nombre ?? "—"}
           </p>
@@ -92,6 +111,7 @@ export default async function PanelLayout({
           {variosEstudios && (
             <Link href="/elegir-panel" className="mt-1 block text-xs text-ink/50 underline">Cambiar de estudio</Link>
           )}
+          <form action={salir}><button className="mt-2 text-xs text-ink/60 underline hover:text-ink">Cerrar sesión</button></form>
         </div>
       </aside>
 
@@ -105,6 +125,7 @@ export default async function PanelLayout({
             {l.label}
           </Link>
         ))}
+        <form action={salir} className="shrink-0"><button className="rounded-full px-3 py-1.5 text-sm text-ink/60">Cerrar sesión</button></form>
       </nav>
 
       <div className="flex-1">
