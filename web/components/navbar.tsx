@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const links = [
   { href: "#formas", label: "Cómo empezar" },
-  { href: "#giros", label: "Giros" },
+  { href: "#dia", label: "Un día en tu gimnasio" },
   { href: "#roles", label: "Equipo y sedes" },
 ];
 

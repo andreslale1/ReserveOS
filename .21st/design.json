@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "project": {
+    "name": "reserveos-tests",
+    "productType": null,
+    "stack": []
+  },
+  "sources": {
+    "tokens": [],
+    "components": [],
+    "assets": [],
+    "instructions": [
+      "PRODUCT.md"
+    ]
+  },
+  "design": {
+    "colorMode": "unknown",
+    "colors": {},
+    "typography": {},
+    "spacing": {},
+    "radius": {},
+    "shadows": {},
+    "motion": {},
+    "density": "unknown"
+  },
+  "components": {
+    "installed": [],
+    "preferredPrimitives": [],
+    "patterns": []
+  },
+  "constraints": {
+    "must": [],
+    "avoid": []
+  },
+  "decisions": [
+    {
+      "surface": "landing",
+      "chosen": "A. El producto como portada",
+      "why": "Tablero interactivo por giro y marca como hero; widget real en vivo; recorrido de un día. Descartadas: B editorial por giros, C recorrido completo."
+    }
+  ],
+  "evidence": [
+    {
+      "fact": "project.instructions",
+      "source": "PRODUCT.md"
+    }
+  ],
+  "generatedAt": "2026-11-18T19:08:56.296Z"
+}

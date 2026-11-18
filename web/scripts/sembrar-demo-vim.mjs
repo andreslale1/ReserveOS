@@ -6,7 +6,8 @@
 import { createClient } from "@supabase/supabase-js";
 
 const rs = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
-const SLUG = "vim-demo", PASS = "DemoVIM2026!", DOM = "vim-demo.test";
+const arg = (n, d) => { const i = process.argv.indexOf(`--${n}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : d; };
+const SLUG = arg("slug", "vim-demo"), NOMBRE = arg("nombre", "VIM Pilates (demo)"), PASS = "DemoVIM2026!", DOM = `${SLUG}.test`;
 const ok = (r, ctx) => { if (r.error) throw new Error(`${ctx}: ${r.error.message}`); return r.data; };
 
 let { data: t } = await rs.from("tenants").select("id").eq("slug", SLUG).maybeSingle();
@@ -20,7 +21,7 @@ if (t) {
   await rs.from("sedes").delete().eq("tenant_id", t.id);
   console.log("Estudio vaciado");
 } else {
-  t = ok(await rs.from("tenants").insert({ slug: SLUG, name: "VIM Pilates (demo)", status: "activo", branding: { color_primario: "#F2A65A" } }).select("id").single(), "tenant");
+  t = ok(await rs.from("tenants").insert({ slug: SLUG, name: NOMBRE, status: "activo", branding: { color_primario: arg("color", "#F2A65A") } }).select("id").single(), "tenant");
 }
 const T = t.id;
 const sedes = ok(await rs.from("sedes").insert(["Centro", "Norte", "Sur"].map((name) => ({ tenant_id: T, name, timezone: "America/Guatemala" }))).select("id,name"), "sedes");
