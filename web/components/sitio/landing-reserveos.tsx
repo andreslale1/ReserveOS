@@ -74,12 +74,12 @@ export default function LandingReserveOS({ acceso = { label: "Entrar", href: "/l
       links={[
         { label: "Reservas", href: "#sessions" },
         { label: "Giros", href: "#rooms" },
-        { label: "Cómo empezar", href: "#membership" },
+        { label: "Formas de usar", href: "#membership" },
         { label: "Preguntas", href: "/contacto" },
       ]}
       hero={{
         title: "Tu gimnasio, reservado.",
-        text: "El sistema de reservas, cobros y equipo para estudios de Pilates, CrossFit y HYROX. Con una o varias sedes y con tu propia marca.",
+        text: "ReserveOS es una plataforma de reservas para estudios de Pilates y gimnasios de CrossFit y HYROX. Tu gimnasio tiene su propio espacio dentro de ReserveOS, con su horario, paquetes, equipo y clientes. Sin programar nada.",
         cta: "Pedir una demo", ctaHref: "/contacto", secondary: "Ver cómo funciona", secondaryHref: "#sessions",
       }}
       heat={{ label: "Ocupación de hoy", base: 64, rise: 9, unit: "%", button: "Abrir las reservas", hint: "O toca cualquier punto del calor.", said: "Se abren las reservas. La ocupación sube a cerca de {n} por ciento." }}
@@ -100,18 +100,20 @@ export default function LandingReserveOS({ acceso = { label: "Entrar", href: "/l
       }}
       ritual={null}
       plans={{
-        title: "Empiezas con lo que ya tienes.",
-        text: "Tres formas de entrega y un solo sistema por dentro: la misma base de clientes, reservas y pagos.",
+        title: "Tres formas de usar ReserveOS.",
+        text: "Las tres usan el mismo sistema por dentro: tus clientes, reservas y pagos en un solo lugar. Elige cuánto quieres que se vea tu marca.",
         items: [
-          { name: "Link de reserva", price: 0, unit: "según tu gimnasio", text: "Montamos tu cuenta y compartes un link.", features: ["Sedes, horarios y paquetes cargados", "Acceso para tu equipo", "Portal para tus clientes", "Código QR para el estudio"], cta: "Pedir una demo", href: "/contacto" },
-          { name: "Widget en tu web", price: 0, unit: "según tu gimnasio", text: "Si ya tienes página, pegas una línea de código.", features: ["Horario y paquetes dentro de tu sitio", "Con tus colores", "Tus clientes quedan en tu base de datos", "Funciona en cualquier web"], cta: "Pedir una demo", href: "/contacto", featured: true, badge: "Para tu web" },
-          { name: "Web completa", price: 0, unit: "según tu gimnasio", text: "Construimos tu sitio con tu manual de marca.", features: ["Diseño con tu marca", "Reservas integradas", "En tu propio dominio", "Sedes, equipo y clientes incluidos"], cta: "Pedir una demo", href: "/contacto" },
+          { name: "Dentro de ReserveOS", price: 0, priceLabel: "La más rápida", unit: "tu gimnasio en nuestra plataforma", text: "Tu gimnasio se suma a ReserveOS. Tiene su espacio con su nombre, y la marca visible es la de ReserveOS.", features: ["Tu espacio en reserveos.app con el nombre de tu gimnasio", "Horarios, paquetes, equipo y clientes cargados por nosotros", "Portal para tus clientes y panel para tu equipo", "Opcional: tu logo, tu color y tu propio dominio"], cta: "Pedir una demo", href: "/contacto", featured: true, badge: "Lo más común" },
+          { name: "Widget en tu web", price: 0, priceLabel: "Si ya tienes página", unit: "reservas dentro de tu sitio", text: "Pegas una línea de código en tu web y aparecen tu horario y el botón de reservar.", features: ["Horario y paquetes dentro de tu sitio", "Con tus colores", "Tus clientes se registran y quedan en tu base de datos", "Funciona en cualquier web"], cta: "Pedir una demo", href: "/contacto" },
+          { name: "Web propia a tu medida", price: 0, priceLabel: "Si no tienes página", unit: "sitio completo con tu marca", text: "Construimos tu página con tu manual de marca y las reservas ya integradas.", features: ["Diseño con tu marca", "Reservas integradas", "En tu propio dominio", "Sedes, equipo y clientes incluidos"], cta: "Pedir una demo", href: "/contacto" },
         ],
       }}
       quotes={null}
       faq={{
         title: "Antes de empezar.",
         items: [
+          { q: "¿Qué es ReserveOS?", a: "Es una plataforma de reservas para estudios de Pilates y gimnasios de CrossFit y HYROX. Cada gimnasio tiene su propio espacio dentro de ReserveOS, con su horario, sus paquetes, su equipo y sus clientes. No necesitas desarrollar nada." },
+          { q: "¿Mi gimnasio aparece con mi nombre?", a: "Sí. Tu espacio lleva el nombre de tu gimnasio y la marca visible es ReserveOS. Si quieres tu logo y tu color, o tu propio dominio, se agrega. Y si prefieres tu propia página web, también la construimos." },
           { q: "¿Se adapta a mi tipo de negocio?", a: "Sí. Cada gimnasio se configura con su giro: estudio de Pilates, gimnasio CrossFit, gimnasio HYROX, o un gimnasio con CrossFit y HYROX. Las pantallas, las palabras y las reservas usan el idioma de tu giro." },
           { q: "¿Necesito tener página web?", a: "No. Podemos darte un link de reserva, un widget para pegar en tu web actual, o construir tu sitio completo con tu marca." },
           { q: "¿Mis clientes reservan desde el celular?", a: "Sí. Tienen un portal para reservar, ver su paquete, su historial y su código QR de entrada." },

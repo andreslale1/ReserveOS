@@ -77,6 +77,8 @@ export type LylPlan = {
   cta: string
   /** Where the button goes. In-page "#…" links scroll; defaults to "#sessions". */
   href?: string
+  /** Texto en lugar del precio (por ejemplo «Pide cotización»). */
+  priceLabel?: string
   /** Called when the plan's button is pressed, e.g. to open checkout. */
   onSelect?: (plan: LylPlan, yearly: boolean) => void
   featured?: boolean
@@ -1702,7 +1704,7 @@ export default function LoylySaunaLanding({
                       {p.featured ? <span>{p.badge || "Más elegido"}</span> : null}
                     </h3>
                     <p className="lyl-pprice">
-                      <b className="lyl-num">{p.price === 0 && p.yearly == null ? "A tu medida" : formatPrice(planPrice(p, yearly), currency)}</b>
+                      <b className="lyl-num">{p.priceLabel ?? (p.price === 0 && p.yearly == null ? "A tu medida" : formatPrice(planPrice(p, yearly), currency))}</b>
                       <span>{planUnit(p, yearly)}</span>
                     </p>
                     <p className="lyl-pnote">{p.text}</p>
