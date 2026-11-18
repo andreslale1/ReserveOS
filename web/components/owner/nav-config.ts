@@ -4,6 +4,7 @@ export type Grupo = { titulo: string; enlaces: Enlace[] };
 export const GRUPOS: Grupo[] = [
   { titulo: "Dirección", enlaces: [
     { href: "/owner/direccion", label: "Dirección", roles: ["operador", "ventas", "finanzas", "soporte", "implementacion", "ingenieria"] },
+    { href: "/owner/atencion", label: "Requieren atención", roles: ["operador", "soporte", "implementacion", "ingenieria", "finanzas"] },
     { href: "/owner/tareas", label: "Tareas", roles: ["operador", "ventas", "finanzas", "soporte", "implementacion", "ingenieria"] },
   ] },
   { titulo: "Crecimiento", enlaces: [
@@ -32,6 +33,6 @@ export const GRUPOS: Grupo[] = [
 ];
 
 export const NOMBRES_RUTA: Record<string, string> = {
-  direccion: "Dirección", tareas: "Tareas", pipeline: "Pipeline", marketing: "Marketing", contratos: "Contratos", activaciones: "Activaciones",
+  direccion: "Dirección", atencion: "Requieren atención", tareas: "Tareas", pipeline: "Pipeline", marketing: "Marketing", contratos: "Contratos", activaciones: "Activaciones",
   dominios: "Dominios", planes: "Planes", cobros: "Cobros", rentabilidad: "Rentabilidad", soporte: "Soporte", salud: "Salud", equipo: "Equipo", auditoria: "Auditoría",
 };

@@ -34,21 +34,23 @@ export default async function InicioPage() {
         <div key={p.id} className="rounded-2xl bg-peach-tint px-5 py-4 text-sm text-ink">Tu pago de <strong>{p.paquete}</strong> está pendiente de confirmación. Te avisamos cuando lo aprueben.</div>
       ))}
 
-      {reto && (
-        <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Reto del mes">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Reto del mes</h2>
-            <p className="text-sm text-ink/70"><strong className="text-ink">{reto.asistidas}</strong> de {reto.meta} clases</p>
-          </div>
-          <div className="mt-3 h-3 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuemin={0} aria-valuemax={reto.meta} aria-valuenow={Math.min(reto.asistidas, reto.meta)} aria-label="Avance del reto mensual">
-            <div className="h-full rounded-full bg-sage" style={{ width: `${reto.porcentaje}%` }} />
-          </div>
-          <p className="mt-2 text-xs text-ink/60">
-            {reto.cumplido ? "¡Reto cumplido este mes! 🎉" : reto.por_asistir > 0 ? `Te faltan ${reto.meta - reto.asistidas} clases · ya tienes ${reto.por_asistir} reservada${reto.por_asistir === 1 ? "" : "s"}.` : `Te faltan ${reto.meta - reto.asistidas} clases para completar el reto.`}
-          </p>
-        </section>
-      )}
-
+      <Link href="/cuenta/clases" className="block rounded-2xl bg-peach px-5 py-4 text-center text-base font-semibold text-void transition-opacity hover:opacity-90">Reservar una clase</Link>
+      <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Próximas reservas</h2>
+          
+        </div>
+        <ul className="mt-2 divide-y divide-white/5">
+          {r.proximas.length === 0 && <li className="py-3 text-sm text-ink/60">No tienes reservas próximas.</li>}
+          {r.proximas.map((x) => (
+            <li key={x.id} className="py-3 text-sm">
+              <p className="font-medium text-ink">{x.clase} · {x.hora.slice(0, 5)}</p>
+              <p className="text-ink/65">{fmt(x.fecha)} · {x.sede}{x.para !== r.nombre ? ` · para ${x.para}` : ""}</p>
+              {x.confirmada ? <p className="mt-1 text-xs text-sage">✓ Confirmaste tu asistencia</p> : <ConfirmarReserva reservaId={x.id} />}
+            </li>
+          ))}
+        </ul>
+      </section>
       <section className="rounded-2xl border border-white/10 bg-card p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mis clases</h2>
         {activos.length === 0 ? (
@@ -66,24 +68,28 @@ export default async function InicioPage() {
         )}
       </section>
 
-      <section className="rounded-2xl border border-white/10 bg-card p-5">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Próximas reservas</h2>
-          <Link href="/cuenta/clases" className="text-sm text-ink underline">Reservar</Link>
+      {reto && (
+        <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Reto del mes">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Reto del mes</h2>
+            <p className="text-sm text-ink/70"><strong className="text-ink">{reto.asistidas}</strong> de {reto.meta} clases</p>
+          </div>
+          <div className="mt-3 h-3 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuemin={0} aria-valuemax={reto.meta} aria-valuenow={Math.min(reto.asistidas, reto.meta)} aria-label="Avance del reto mensual">
+            <div className="h-full rounded-full bg-sage" style={{ width: `${reto.porcentaje}%` }} />
+          </div>
+          <p className="mt-2 text-xs text-ink/60">
+            {reto.cumplido ? "¡Reto cumplido este mes! 🎉" : reto.por_asistir > 0 ? `Te faltan ${reto.meta - reto.asistidas} clases · ya tienes ${reto.por_asistir} reservada${reto.por_asistir === 1 ? "" : "s"}.` : `Te faltan ${reto.meta - reto.asistidas} clases para completar el reto.`}
+          </p>
+        </section>
+      )}
+
+      <details className="rounded-2xl border border-white/10 bg-card p-5">
+        <summary className="cursor-pointer text-sm font-semibold uppercase tracking-wide text-ink/50">Llegué al estudio (check-in y mi QR)</summary>
+        <div className="mt-3">
+          <CheckinButton />
+          {qrImagen && <MiQr tenantId={actual!.tenant_id} imagen={qrImagen} codigo={codigo as string} />}
         </div>
-        <ul className="mt-2 divide-y divide-white/5">
-          {r.proximas.length === 0 && <li className="py-3 text-sm text-ink/60">No tienes reservas próximas.</li>}
-          {r.proximas.map((x) => (
-            <li key={x.id} className="py-3 text-sm">
-              <p className="font-medium text-ink">{x.clase} · {x.hora.slice(0, 5)}</p>
-              <p className="text-ink/65">{fmt(x.fecha)} · {x.sede}{x.para !== r.nombre ? ` · para ${x.para}` : ""}</p>
-              {x.confirmada ? <p className="mt-1 text-xs text-sage">✓ Confirmaste tu asistencia</p> : <ConfirmarReserva reservaId={x.id} />}
-            </li>
-          ))}
-        </ul>
-        <CheckinButton />
-        {qrImagen && <MiQr tenantId={actual!.tenant_id} imagen={qrImagen} codigo={codigo as string} />}
-      </section>
+      </details>
     </div>
   );
 }

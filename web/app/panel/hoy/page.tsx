@@ -1,9 +1,10 @@
 import { getPanelContext, ROLE_LABEL, fechaYDowEnSede } from "@/lib/panel-context";
 import TodayView from "./today-view";
+import QueHagoHoy from "./que-hago-hoy";
 
 export default async function HoyPage({ searchParams }: { searchParams: Promise<{ vista?: string; f?: string }> }) {
   const sp = await searchParams;
-  const { supabase, user, membership, sedes, tenantName } =
+  const { supabase, user, membership, sedes, tenantName, modulos } =
     await getPanelContext();
 
   if (!membership) {
@@ -86,6 +87,8 @@ export default async function HoyPage({ searchParams }: { searchParams: Promise<
   });
 
   return (
+    <>
+    <QueHagoHoy rol={membership.role} modulos={modulos} />
     <TodayView
       vista={vista}
       hoy={hoy}
@@ -97,5 +100,6 @@ export default async function HoyPage({ searchParams }: { searchParams: Promise<
       fecha={fecha}
       clases={clases}
     />
+    </>
   );
 }

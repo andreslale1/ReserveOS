@@ -1,0 +1,4 @@
+{ "crons": [
+  { "path": "/api/cron/enviar-cola", "schedule": "*/5 * * * *" },
+  { "path": "/api/cron/alerta-atencion", "schedule": "0 13 * * *" }
+] }

@@ -50,6 +50,7 @@ const TODAS_LAS_RUTAS = [
   "/panel/historial",
   "/panel/instructoras",
   "/panel/privadas",
+  "/panel/cuentas",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del

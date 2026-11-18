@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { estiloMarca, marcaPorSlug } from "@/lib/marca";
 import { getCuenta } from "@/lib/cuenta-context";
 import RegistrarSw from "./registrar-sw";
 
@@ -25,11 +26,17 @@ export default async function CuentaLayout({ children }: { children: React.React
       </main>
     );
   }
+  const marca = ((mods as string[] | null) ?? []).includes("portal_marca") ? await marcaPorSlug(actual.slug) : null;
   return (
-    <div className="min-h-screen bg-cream pb-20">
+    <div className="min-h-screen bg-cream pb-20" style={estiloMarca(marca?.color)}>
       <RegistrarSw />
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-cream/95 px-5 py-3 backdrop-blur">
-        <span className="font-serif text-lg text-ink">{actual.estudio}</span>
+        {marca?.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={marca.logo} alt={`Logo de ${actual.estudio}`} className="h-8 w-auto max-w-[10rem] object-contain" />
+        ) : (
+          <span className="font-serif text-lg text-ink">{actual.estudio}</span>
+        )}
         <span className="flex items-center gap-4 text-xs text-ink/55">
           {contextos.length > 1 && !dominioEstudio && <Link href="/elegir-estudio" className="underline">Cambiar estudio</Link>}
           {todos.some((c) => c.tenant_id === actual.tenant_id && c.rol_staff) && <Link href="/panel" className="underline">Panel</Link>}

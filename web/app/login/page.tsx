@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { login } from "./actions";
+import { estiloMarca, marcaPorSlug } from "@/lib/marca";
 import { destinoSeguro, slugSeguro } from "@/lib/destino";
 
 export default async function LoginPage({
@@ -14,11 +15,16 @@ export default async function LoginPage({
   // El estudio de origen viene del dominio propio o del enlace (?e=slug); sirve para ofrecer «Crear cuenta» sin perder el contexto.
   const slug = slugSeguro(h.get("x-tenant-slug")) ?? slugSeguro(e);
   const destino = destinoSeguro(next, "/panel");
+  const marca = await marcaPorSlug(slug);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-void px-6">
+    <main className="flex min-h-screen items-center justify-center bg-void px-6" style={estiloMarca(marca?.color)}>
       <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-void-card p-8 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)]">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lime shadow-[0_0_20px_-2px_rgba(198,255,58,0.6)]">
+        {marca?.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={marca.logo} alt={`Logo de ${marca.nombre}`} className="h-10 w-auto max-w-[12rem] object-contain" />
+        ) : (
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lime ">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M2 8.5L6 12.5L14 3.5"
@@ -29,6 +35,7 @@ export default async function LoginPage({
             />
           </svg>
         </span>
+        )}
 
         <h1 className="mt-5 text-2xl font-black uppercase tracking-tight text-white">
           {estudio ? `Entrar a ${estudio}` : "Entrar a ReserveOS"}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { salir } from "@/components/owner/salir";
+import { estiloMarca, marcaPorSlug } from "@/lib/marca";
 import { getPanelContext, ROLE_LABEL, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 
 const ALL_LINKS = [
@@ -28,6 +29,7 @@ const ALL_LINKS = [
   { href: "/panel/suscripcion", label: "Mi suscripción" },
   { href: "/panel/soporte", label: "Soporte" },
   { href: "/panel/personal", label: "Personal" },
+  { href: "/panel/cuentas", label: "Cuentas del equipo" },
   { href: "/panel/agenda-personal", label: "Agenda del personal" },
   { href: "/panel/sedes", label: "Sedes" },
   { href: "/panel/salas", label: "Salas" },
@@ -58,6 +60,10 @@ export default async function PanelLayout({
     : { data: [] };
   const avisos = (incidentes ?? []) as { titulo: string; severidad: string; estado: string }[];
 
+  const { data: slugRow } = membership ? await supabase.from("tenants").select("slug").eq("id", membership.tenant_id).maybeSingle() : { data: null };
+  const conMarca = modulos.includes("portal_marca");
+  const marca = conMarca ? await marcaPorSlug(slugRow?.slug) : null;
+
   const links = membership
     ? ALL_LINKS.filter(
         (l) => puedeVer(membership.role, l.href) && rutaHabilitada(modulos, l.href),
@@ -65,7 +71,7 @@ export default async function PanelLayout({
     : [];
 
   return (
-    <div className="flex min-h-screen flex-col bg-cream md:flex-row">
+    <div className="flex min-h-screen flex-col bg-cream md:flex-row" style={estiloMarca(marca?.color)}>
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-white/10 bg-card px-4 py-6 md:flex">
         <div className="flex items-center gap-2 px-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-peach">
@@ -79,7 +85,12 @@ export default async function PanelLayout({
               />
             </svg>
           </span>
-          <span className="text-base font-semibold text-ink">ReserveOS</span>
+          {marca?.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={marca.logo} alt={`Logo de ${tenantName}`} className="h-8 w-auto max-w-[9rem] object-contain" />
+          ) : (
+            <span className="text-base font-semibold text-ink">{marca ? tenantName : "ReserveOS"}</span>
+          )}
         </div>
 
         <nav aria-label="Panel del estudio" className="mt-6 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
@@ -112,6 +123,7 @@ export default async function PanelLayout({
             <Link href="/elegir-panel" className="mt-1 block text-xs text-ink/50 underline">Cambiar de estudio</Link>
           )}
           <form action={salir}><button className="mt-2 text-xs text-ink/60 underline hover:text-ink">Cerrar sesión</button></form>
+          {marca && <p className="mt-3 text-[10px] text-ink/35">Con tecnología ReserveOS</p>}
         </div>
       </aside>
 
