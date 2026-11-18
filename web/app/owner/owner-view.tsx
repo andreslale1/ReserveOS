@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { crearEstudio } from "./actions";
+import { LISTA_GIROS } from "@/lib/giros";
 import { ESTADOS, ESTADO_LABEL, EstadoModal } from "./estado-modal";
 
 type Tenant = {
@@ -35,6 +36,7 @@ export default function OwnerView({ tenants: todos }: { tenants: Tenant[] }) {
   const [sedeNombre, setSedeNombre] = useState("Sede Principal");
   const [duenaEmail, setDuenaEmail] = useState("");
   const [duenaNombre, setDuenaNombre] = useState("");
+  const [giro, setGiro] = useState("pilates");
   const [isPending, startTransition] = useTransition();
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [invLink, setInvLink] = useState<string | null>(null);
@@ -49,6 +51,7 @@ export default function OwnerView({ tenants: todos }: { tenants: Tenant[] }) {
         timezone: "America/Guatemala",
         duenaEmail,
         duenaNombre,
+        giro,
       });
       if (res.error) {
         setMensaje(`Error: ${res.error}`);
@@ -64,6 +67,7 @@ export default function OwnerView({ tenants: todos }: { tenants: Tenant[] }) {
     setSedeNombre("Sede Principal");
     setDuenaEmail("");
     setDuenaNombre("");
+    setGiro("pilates");
     setInvLink(null);
     setMensaje(null);
     setMostrarForm(false);
@@ -123,6 +127,12 @@ export default function OwnerView({ tenants: todos }: { tenants: Tenant[] }) {
             </div>
           ) : (
             <div className="grid gap-4 sm:grid-cols-3">
+              <label className="text-sm text-ink/60 sm:col-span-3">
+                Giro del negocio
+                <select value={giro} onChange={(e) => setGiro(e.target.value)} className="mt-1 w-full rounded-lg border border-line bg-void px-3 py-2 text-ink">
+                  {LISTA_GIROS.map((x) => <option key={x.id} value={x.id}>{x.nombre}</option>)}
+                </select>
+              </label>
               <label className="text-sm text-ink/60">
                 Nombre del estudio
                 <input

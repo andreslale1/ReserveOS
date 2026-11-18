@@ -29,6 +29,7 @@ export async function crearEstudio(input: {
   timezone: string;
   duenaEmail: string;
   duenaNombre: string;
+  giro?: string;
 }) {
   const check = await verificarOperador();
   if (!check.ok) {
@@ -47,6 +48,9 @@ export async function crearEstudio(input: {
   if (error || !creado?.[0]) {
     return { error: error?.message ?? "No se pudo crear el estudio", token: null };
   }
+
+  // El giro define vocabulario y pantallas del estudio (si la columna aún no existe, no bloquea el alta).
+  if (input.giro) await check.supabase.rpc("fijar_giro_estudio", { p_tenant_id: creado[0].tenant_id, p_giro: input.giro });
 
   const { data: token, error: errorInv } = await check.supabase.rpc(
     "invitar_primera_duena_plataforma",

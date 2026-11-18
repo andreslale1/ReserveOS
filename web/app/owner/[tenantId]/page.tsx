@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getOwnerContext } from "@/lib/owner-context";
 import PlanModulos from "./plan-modulos";
 import AccesoExcepcional from "./acceso-excepcional";
+import GiroEstudio from "./giro-estudio";
 import { ESTADO_LABEL } from "../estado-modal";
 
 const DIAS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
@@ -43,6 +44,7 @@ export default async function OwnerTenantPage({
     supabase.rpc("planes_listar"),
     supabase.rpc("plataforma_estudios_cobro"),
   ]);
+  const { data: filaGiro } = await supabase.from("tenants").select("giro").eq("id", tenantId).maybeSingle();
   const planActual =
     ((sus ?? []) as { tenant_id: string; plan: string | null }[]).find((x) => x.tenant_id === tenantId)?.plan ?? null;
 
@@ -106,6 +108,7 @@ export default async function OwnerTenantPage({
         </div>
       </div>
 
+      <GiroEstudio tenantId={tenantId} actual={(filaGiro as { giro?: string } | null)?.giro ?? null} puede={operador.rol === "operador"} />
       <PlanModulos
         tenantId={tenantId}
         modulos={(modulos ?? []) as { key: string; nombre: string; descripcion: string; depende_de: string[]; activo: boolean }[]}

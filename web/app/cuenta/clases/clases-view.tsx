@@ -10,13 +10,17 @@ export type Clase = {
   elig: { puede: boolean; codigo: string; motivo?: string; puede_espera?: boolean; en_espera?: boolean };
 };
 
-export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, para, clases, horasCancelacion }: {
+export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, para, clases, horasCancelacion, vocab }: {
   sedes: { id: string; name: string }[]; sedeId: string; dias: { fecha: string; label: string; num: number }[]; dia: string;
-  dependientes: { id: string; nombre: string }[]; para: string; clases: Clase[]; horasCancelacion: number;
+  dependientes: { id: string; nombre: string }[]; para: string; clases: Clase[]; horasCancelacion: number; vocab: { clase: string; clases: string; persona: string };
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
+  const indiceDia = Math.max(0, dias.findIndex((d) => d.fecha === dia));
+  const [semana, setSemana] = useState(Math.floor(indiceDia / 7));
+  const visibles = dias.slice(semana * 7, semana * 7 + 7);
+  const rango = visibles.length ? `${visibles[0].num} – ${visibles[visibles.length - 1].num}` : "";
   const ir = (patch: Record<string, string>) => {
     const p = new URLSearchParams({ sede: sedeId, dia, para, ...patch });
     router.push(`/cuenta/clases?${p.toString()}`);
@@ -33,7 +37,7 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
   return (
     <div className="grid gap-4">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="font-serif text-2xl text-ink">Clases</h1>
+        <h1 className="text-3xl text-ink">Reservar {vocab.clase}</h1>
         <Link href="/cuenta/clases/privadas" className="text-sm text-ink underline">Clases privadas 1 a 1</Link>
       </div>
       <div className="flex flex-wrap gap-3">
@@ -48,17 +52,25 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
           </select>
         )}
       </div>
-      <div className="-mx-1 flex gap-2 overflow-x-auto pb-1">
-        {dias.map((d) => (
-          <button key={d.fecha} onClick={() => ir({ dia: d.fecha })} className={`flex w-14 shrink-0 flex-col items-center rounded-2xl border px-2 py-2 text-xs ${d.fecha === dia ? "border-ink bg-ink text-cream" : "border-ink/10 bg-card text-ink"}`}>
-            <span className="uppercase">{d.label}</span><span className="text-lg font-semibold">{d.num}</span>
-          </button>
-        ))}
+      <div>
+        <div className="mb-2 flex items-center justify-between text-xs text-ink/60">
+          <button type="button" disabled={semana === 0} onClick={() => setSemana(semana - 1)} className="press-spring rounded-md px-2 py-1 hover:bg-ink/5 disabled:opacity-30">← Semana anterior</button>
+          <span aria-live="polite">{rango}</span>
+          <button type="button" disabled={(semana + 1) * 7 >= dias.length} onClick={() => setSemana(semana + 1)} className="press-spring rounded-md px-2 py-1 hover:bg-ink/5 disabled:opacity-30">Semana siguiente →</button>
+        </div>
+        <div className="grid grid-cols-7 gap-1.5 sm:gap-2" role="group" aria-label="Días">
+          {visibles.map((d) => (
+            <button key={d.fecha} onClick={() => ir({ dia: d.fecha })} aria-pressed={d.fecha === dia}
+              className={`press-spring flex flex-col items-center rounded-xl border px-1 py-2.5 text-[11px] sm:text-xs ${d.fecha === dia ? "border-ink bg-ink text-cream" : "border-ink/10 bg-card text-ink hover:border-ink/30"}`}>
+              <span className="uppercase tracking-wide opacity-70">{d.label}</span><span className="mt-0.5 text-lg font-semibold">{d.num}</span>
+            </button>
+          ))}
+        </div>
       </div>
       {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
       <ul className="grid gap-3">
-        {clases.length === 0 && <li className="rounded-2xl border border-ink/10 bg-card p-5 text-sm text-ink/60">No hay clases ese día en esta sede.</li>}
+        {clases.length === 0 && <li className="rounded-2xl border border-ink/10 bg-card p-5 text-sm text-ink/60">No hay {vocab.clases} ese día en esta sede.</li>}
         {clases.map((c) => (
           <li key={c.id} className="rounded-2xl border border-ink/10 bg-card p-4">
             <div className="flex items-start justify-between gap-3">

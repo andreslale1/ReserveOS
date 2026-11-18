@@ -139,6 +139,8 @@ export interface LoylySaunaLandingProps {
   /** Show the Night / Paper switch in the nav. */
   /** Acceso a la cuenta (por ejemplo «Entrar»): siempre visible en la barra y en el menú móvil. */
   access?: { label: string; href: string }
+  /** Controles propios sobre el horario (por ejemplo, elegir el giro de la demostración). */
+  sessionsControl?: React.ReactNode
   themeToggle?: boolean
   /** Minimum height of the hero and the page. A definite length, so it survives any host layout. */
   height?: string
@@ -1063,6 +1065,7 @@ const LYL_CSS = `
 .lyl-vgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .lyl-vgrid h3,.lyl-news h3{font-size:13px;font-weight:400;color:var(--lyl-muted);margin-bottom:10px}
 .lyl-vgrid p,.lyl-vgrid li{font-size:16px}
+.lyl-sctl{grid-column:1/-1;margin-top:18px}
 .lyl-access{font-weight:600;margin-right:6px}
 .lyl-hours li{display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid var(--lyl-rule)}
 .lyl-hours li span:last-child{font-variant-numeric:tabular-nums}
@@ -1199,6 +1202,7 @@ export default function LoylySaunaLanding({
   onThrow,
   themeToggle = true,
   access,
+  sessionsControl,
   height = "100svh",
   className,
 }: LoylySaunaLandingProps) {
@@ -1483,6 +1487,7 @@ export default function LoylySaunaLanding({
                   {S.title}
                 </h2>
                 {S.text ? <p className="lyl-intro">{S.text}</p> : null}
+                {sessionsControl ? <div className="lyl-sctl">{sessionsControl}</div> : null}
               </div>
               <div className="lyl-tabs" role="tablist" aria-label="Día">
                 {days.map((d, i) => (

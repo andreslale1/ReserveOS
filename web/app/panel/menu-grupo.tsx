@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 // Menú desplegable agrupado, como el admin de Forma: se abre al tocar y se cierra al tocar fuera o al elegir.
-export default function MenuGrupo({ titulo, enlaces }: { titulo: string; enlaces: { href: string; label: string }[] }) {
+export default function MenuGrupo({ titulo, enlaces, tono = "oscuro" }: { titulo: string; enlaces: { href: string; label: string }[]; tono?: "oscuro" | "claro" }) {
   const [abierto, setAbierto] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function MenuGrupo({ titulo, enlaces }: { titulo: string; enlaces
   }, [abierto]);
   return (
     <div ref={ref} className="relative">
-      <button type="button" aria-expanded={abierto} onClick={() => setAbierto(!abierto)} className="press-spring flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-void/90 hover:bg-void/10 hover:text-void">
+      <button type="button" aria-expanded={abierto} onClick={() => setAbierto(!abierto)} className={"press-spring flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium " + (tono === "claro" ? "text-ink/75 hover:bg-ink/5 hover:text-ink" : "text-void/90 hover:bg-void/10 hover:text-void")}>
         {titulo} <span aria-hidden className="text-[8px]">{abierto ? "▲" : "▼"}</span>
       </button>
       {abierto && (

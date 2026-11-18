@@ -1,5 +1,6 @@
 import { getCuenta } from "@/lib/cuenta-context";
 import ClasesView, { type Clase } from "./clases-view";
+import { vocabularioDe } from "@/lib/marca";
 
 const DIAS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 
@@ -61,7 +62,7 @@ export default async function ClasesPage({ searchParams }: { searchParams: Promi
     <ClasesView
       sedes={listaSedes.map((s) => ({ id: s.id, name: s.name }))} sedeId={sede.id} dias={dias} dia={dia.fecha}
       dependientes={[{ id: actual!.cliente_id!, nombre: "Yo" }, ...dependientes]} para={para}
-      clases={clases} horasCancelacion={cfg?.horas_minimas_cancelacion ?? 2}
+      clases={clases} horasCancelacion={cfg?.horas_minimas_cancelacion ?? 2} vocab={await vocabularioDe(actual!.slug)}
     />
   );
 }

@@ -1,7 +1,8 @@
-import type { CSSProperties } from "react";
+import { cache, type CSSProperties } from "react";
+import { vocab, type Vocabulario } from "@/lib/giros";
 import { createClient } from "@/lib/supabase/server";
 
-export type Marca = { color: string | null; logo: string | null; nombre: string };
+export type Marca = { color: string | null; logo: string | null; nombre: string; giro: string };
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const https = (u: unknown): string | null => (typeof u === "string" && /^https:\/\//i.test(u) ? u : null);
@@ -33,12 +34,18 @@ export function estiloMarca(color: string | null | undefined): CSSProperties | u
   } as CSSProperties;
 }
 
-// Marca pública del estudio por slug (misma función pública que usa la página /e/[slug]).
-export async function marcaPorSlug(slug: string | null | undefined): Promise<Marca | null> {
+// Marca pública del estudio por slug (misma función pública que usa la página /e/[slug]). Cacheada por petición.
+export const marcaPorSlug = cache(async (slug: string | null | undefined): Promise<Marca | null> => {
   if (!slug) return null;
   const supabase = await createClient();
   const { data } = await supabase.rpc("horarios_publicos", { p_slug: slug });
-  const e = data as { nombre?: string; color?: string | null; logo?: string | null } | null;
+  const e = data as { nombre?: string; color?: string | null; logo?: string | null; giro?: string | null } | null;
   if (!e) return null;
-  return { color: HEX.test(e.color ?? "") ? (e.color as string) : null, logo: https(e.logo), nombre: e.nombre ?? "" };
+  return { color: HEX.test(e.color ?? "") ? (e.color as string) : null, logo: https(e.logo), nombre: e.nombre ?? "", giro: e.giro ?? "pilates" };
+});
+
+/** Vocabulario del giro del estudio (atleta/clienta, WOD/clase, coach/instructora). */
+export async function vocabularioDe(slug: string | null | undefined): Promise<Vocabulario> {
+  const m = await marcaPorSlug(slug);
+  return vocab(m?.giro);
 }

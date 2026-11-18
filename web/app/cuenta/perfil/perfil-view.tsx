@@ -38,7 +38,7 @@ export default function PerfilView({ preferencias, tenantId, perfil, consentimie
         <button className="mt-4 rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending} onClick={() => correr(() => guardarPerfil(tenantId, p), "Datos guardados.")}>Guardar</button>
       </section>
 
-      <section className={card}>
+      <section id="familia" className={card}>
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mi familia</h2>
         <p className="mt-1 text-xs text-ink/55">Hijas, hijos u otras personas a quienes reservas clases con tu cuenta.</p>
         <ul className="mt-2 divide-y divide-ink/5">

@@ -2,14 +2,8 @@ import Link from "next/link";
 import { estiloMarca, marcaPorSlug } from "@/lib/marca";
 import { getCuenta } from "@/lib/cuenta-context";
 import RegistrarSw from "./registrar-sw";
-
-const TABS = [
-  { href: "/cuenta", label: "Inicio" },
-  { href: "/cuenta/clases", label: "Reservar" },
-  { href: "/cuenta/historial", label: "Mis clases" },
-  { href: "/cuenta/paquetes", label: "Mi paquete" },
-  { href: "/cuenta/perfil", label: "Mis datos" },
-];
+import MenuGrupo from "../panel/menu-grupo";
+import { vocab } from "@/lib/giros";
 
 export default async function CuentaLayout({ children }: { children: React.ReactNode }) {
   const { supabase, actual, contextos, todos, dominioEstudio } = await getCuenta();
@@ -26,10 +20,16 @@ export default async function CuentaLayout({ children }: { children: React.React
       </main>
     );
   }
-  const marca = ((mods as string[] | null) ?? []).includes("portal_marca") ? await marcaPorSlug(actual.slug) : null;
+  const marcaGiro = await marcaPorSlug(actual.slug);
+  const marca = ((mods as string[] | null) ?? []).includes("portal_marca") ? marcaGiro : null;
   const { data: resumen } = await supabase.rpc("mi_resumen", { p_tenant_id: actual.tenant_id });
   const pendiente = ((resumen as { paquetes?: { estado: string; paquete: string }[] } | null)?.paquetes ?? []).find((p) => p.estado === "pendiente_pago");
-  const enlaces = [...TABS.slice(0, 4), ...(conTienda ? [{ href: "/cuenta/tienda", label: "Tienda" }] : []), TABS[4]];
+  const v = vocab(marcaGiro?.giro);
+  const grupos = [
+    { titulo: "Clases", enlaces: [{ href: "/cuenta/clases", label: "Reservar" }, { href: "/cuenta/historial", label: `Mis ${v.clases}` }, { href: "/cuenta/clases/privadas", label: "Sesiones privadas 1 a 1" }] },
+    { titulo: "Comprar", enlaces: [{ href: "/cuenta/paquetes", label: `Mi ${v.paquete}` }, ...(conTienda ? [{ href: "/cuenta/tienda", label: "Tienda" }] : [])] },
+    { titulo: "Mi cuenta", enlaces: [{ href: "/cuenta/perfil", label: "Mis datos" }, { href: "/cuenta/perfil#familia", label: "Mi familia" }, { href: "/cuenta/perfil#inv-t", label: "Invitar y ganar" }, { href: "/cuenta/perfil#avisos-t", label: "Avisos del estudio" }] },
+  ];
   return (
     <div className="tema-estudio min-h-screen bg-cream" style={estiloMarca(marca?.color)}>
       <RegistrarSw />
@@ -48,10 +48,9 @@ export default async function CuentaLayout({ children }: { children: React.React
             {todos.some((c) => c.tenant_id === actual.tenant_id && c.rol_staff) && <Link href="/panel" className="border-b border-ink/20 pb-0.5 hover:text-ink">Panel</Link>}
           </span>
         </div>
-        <nav aria-label="Mi cuenta" className="mx-auto flex max-w-4xl gap-1 overflow-x-auto px-3">
-          {enlaces.map((t) => (
-            <Link key={t.href} href={t.href} className="shrink-0 border-b-2 border-transparent px-3 py-3 text-sm font-medium text-ink/65 transition-colors duration-150 hover:border-ink hover:text-ink">{t.label}</Link>
-          ))}
+        <nav aria-label="Mi cuenta" className="mx-auto flex max-w-4xl flex-wrap items-center gap-1 px-3 pb-2">
+          <Link href="/cuenta" className="press-spring rounded-md px-3 py-2 text-sm font-medium text-ink/75 hover:bg-ink/5 hover:text-ink">Inicio</Link>
+          {grupos.map((g) => <MenuGrupo key={g.titulo} titulo={g.titulo} enlaces={g.enlaces} tono="claro" />)}
         </nav>
       </header>
       {pendiente && (

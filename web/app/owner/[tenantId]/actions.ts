@@ -45,3 +45,11 @@ export async function leerDatosSensibles(tenantId: string, alcance: "clientas" |
   if (error) return { error: error.message, data: null };
   return { error: null, data };
 }
+
+export async function fijarGiro(tenantId: string, giro: string) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("fijar_giro_estudio", { p_tenant_id: tenantId, p_giro: giro });
+  if (error) return { error: error.message };
+  revalidatePath(`/owner/${tenantId}`);
+  return { error: null };
+}

@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 import CheckinButton from "./checkin-button";
 import MiQr from "./mi-qr";
 import ConfirmarReserva from "./confirmar-reserva";
+import { vocabularioDe } from "@/lib/marca";
 
 type Resumen = {
   nombre: string; consentimiento_pendiente: boolean;
@@ -20,6 +21,7 @@ export default async function InicioPage() {
   const reto = retoData as { meta: number; asistidas: number; por_asistir: number; porcentaje: number; cumplido: boolean } | null;
   const { data: codigo } = await supabase.rpc("mi_codigo_checkin", { p_tenant_id: actual!.tenant_id, p_renovar: false });
   const qrImagen = codigo ? await QRCode.toDataURL(`RSCK:${codigo}`, { margin: 1, width: 440 }) : null;
+  const v = await vocabularioDe(actual!.slug);
   const activos = r.paquetes.filter((p) => p.estado === "activa");
   const fmt = (f: string) => new Date(f + "T00:00:00").toLocaleDateString("es-GT", { weekday: "short", day: "numeric", month: "short" });
 
@@ -35,25 +37,25 @@ export default async function InicioPage() {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Link href="/cuenta/clases" className="rounded-2xl border border-ink/10 bg-card p-5 transition-colors hover:border-peach">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Clases disponibles</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">{v.clases.charAt(0).toUpperCase() + v.clases.slice(1)} disponibles</p>
           <p className="mt-2 font-serif text-5xl text-ink">{activos[0] ? (activos[0].totales === null ? "∞" : activos[0].totales - activos[0].usadas) : 0}</p>
           <p className="mt-1 text-sm text-ink/65">{activos[0] ? "De tu paquete activo — reservar" : "Compra un paquete para seguir"}</p>
         </Link>
         <Link href="/cuenta/paquetes" className="rounded-2xl border border-ink/10 bg-card p-5 transition-colors hover:border-peach">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Tu paquete</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Tu {v.paquete}</p>
           <p className="mt-2 font-serif text-2xl text-ink">{activos[0]?.paquete ?? "Sin paquete activo"}</p>
           <p className="mt-1 text-sm text-ink/65">{activos[0] ? `Vence ${fmt(activos[0].vence)}` : "Comprar paquete"}</p>
           {activos[0]?.sedes && <p className="mt-1 text-xs text-ink/50">Válido en: {activos[0].sedes}</p>}
         </Link>
         <Link href="/cuenta/historial" className="rounded-2xl border border-ink/10 bg-card p-5 transition-colors hover:border-peach">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Próxima clase</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Próxima {v.clase}</p>
           <p className="mt-2 font-serif text-2xl text-ink">{r.proximas[0] ? fmt(r.proximas[0].fecha) : "—"}</p>
           <p className="mt-1 text-sm text-ink/65">{r.proximas[0] ? `${r.proximas[0].clase} · ${r.proximas[0].hora.slice(0, 5)}` : "Sin reservas"}</p>
           {r.proximas[0] && <p className="mt-1 text-xs text-ink/50">Sede {r.proximas[0].sede}{r.proximas[0].para !== r.nombre ? ` · para ${r.proximas[0].para}` : ""}</p>}
         </Link>
       </div>
       <div className="flex flex-wrap gap-3">
-        <Link href="/cuenta/clases" className="rounded-full bg-peach px-6 py-3 text-sm font-semibold text-void transition-opacity hover:opacity-90">Reservar clase</Link>
+        <Link href="/cuenta/clases" className="rounded-full bg-peach px-6 py-3 text-sm font-semibold text-void transition-opacity hover:opacity-90">Reservar {v.clase}</Link>
         <Link href="/cuenta/paquetes" className="rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink hover:border-peach">Mi paquete</Link>
         <Link href="/cuenta/perfil" className="rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink hover:border-peach">Mis datos</Link>
       </div>
