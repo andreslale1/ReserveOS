@@ -137,6 +137,8 @@ export interface LoylySaunaLandingProps {
   /** Called each time water is thrown on the stones. */
   onThrow?: () => void
   /** Show the Night / Paper switch in the nav. */
+  /** Acceso a la cuenta (por ejemplo «Entrar»): siempre visible en la barra y en el menú móvil. */
+  access?: { label: string; href: string }
   themeToggle?: boolean
   /** Minimum height of the hero and the page. A definite length, so it survives any host layout. */
   height?: string
@@ -1061,6 +1063,7 @@ const LYL_CSS = `
 .lyl-vgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .lyl-vgrid h3,.lyl-news h3{font-size:13px;font-weight:400;color:var(--lyl-muted);margin-bottom:10px}
 .lyl-vgrid p,.lyl-vgrid li{font-size:16px}
+.lyl-access{font-weight:600;margin-right:6px}
 .lyl-hours li{display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid var(--lyl-rule)}
 .lyl-hours li span:last-child{font-variant-numeric:tabular-nums}
 .lyl-contact a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;transition:text-decoration-color .2s}
@@ -1195,6 +1198,7 @@ export default function LoylySaunaLanding({
   onSubscribe,
   onThrow,
   themeToggle = true,
+  access,
   height = "100svh",
   className,
 }: LoylySaunaLandingProps) {
@@ -1385,6 +1389,11 @@ export default function LoylySaunaLanding({
               {dark ? "Claro" : "Oscuro"}
             </button>
           ) : null}
+          {access ? (
+            <a className="lyl-link lyl-access" href={access.href}>
+              {access.label}
+            </a>
+          ) : null}
           <a className="lyl-btn lyl-solid lyl-sm" href={H.ctaHref} onClick={go(H.ctaHref)}>
             {H.cta}
           </a>
@@ -1409,6 +1418,11 @@ export default function LoylySaunaLanding({
               </a>
             ))}
           </nav>
+          {access ? (
+            <a className="lyl-btn lyl-line" href={access.href}>
+              {access.label}
+            </a>
+          ) : null}
           <a className="lyl-btn lyl-solid" href={H.ctaHref} onClick={go(H.ctaHref)}>
             {H.cta} <span className="lyl-arr" aria-hidden="true">{"→"}</span>
           </a>

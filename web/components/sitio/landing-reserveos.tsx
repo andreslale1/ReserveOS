@@ -19,7 +19,7 @@ const days: LylDay[] = DIAS.map(([label, full], d) => ({
   label, full, sessions: FRANJAS.map((f, i) => ({ ...f, id: `demo${d}${i}`, booked: OCUPADOS[d][i] })),
 }))
 
-export default function LandingReserveOS() {
+export default function LandingReserveOS({ acceso = { label: "Entrar", href: "/login" } }: { acceso?: { label: string; href: string } }) {
   return (
     <LandingEstudio
       brand="ReserveOS"
@@ -27,6 +27,7 @@ export default function LandingReserveOS() {
       ink={{ accent: "#2f5d8c", onAccent: "#ffffff" }}
       theme="light"
       themeToggle={false}
+      access={acceso}
       currency="Q"
       links={[
         { label: "Reservas", href: "#sessions" },
