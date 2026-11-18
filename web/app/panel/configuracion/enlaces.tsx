@@ -57,8 +57,11 @@ export default function Enlaces({ baseUrl, slug, nombre, dominioActivo }: { base
         <p className="font-medium text-ink">En tu web actual</p>
         <p className="mt-1">Un botón que lleve a tus clientas a tu estudio (sin perder el contexto):</p>
         <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<a href="${reservar}">Reservar mi clase</a>`}</pre>
+        <p className="mt-3">Widget con tu horario y paquetes dentro de tu web (recomendado). Pega esta línea donde quieras que aparezca:</p>
+        <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<script src="${baseUrl}/widget.js" data-estudio="${slug}" async></script>`}</pre>
+        <p className="mt-1 text-xs text-ink/60">Para un botón flotante, agrega <code>data-modo=&quot;boton&quot;</code>.</p>
         <p className="mt-3">Para mostrar tus horarios y paquetes dentro de tu web (los botones abren el registro y el login en la ventana completa):</p>
-        <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<iframe src="${baseUrl}/e/${slug}" title="Reservas ${nombre}" width="100%" height="1000" style="border:0" loading="lazy"></iframe>`}</pre>
+        <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<iframe src="${baseUrl}/e/${slug}/embed" title="Reservas ${nombre}" width="100%" height="1000" style="border:0" loading="lazy"></iframe>`}</pre>
         <p className="mt-2 text-xs text-ink/55">Solo esta página se puede incrustar; el login, la cuenta y el panel están protegidos contra incrustación.</p>
       </div>
     </section>
