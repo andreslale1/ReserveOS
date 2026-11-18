@@ -24,11 +24,11 @@ type Asistente = {
 };
 
 const input =
-  "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+  "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 const boton =
   "press-spring rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50";
 const botonSec =
-  "rounded-full border border-white/15 px-3 py-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-50";
+  "rounded-full border border-ink/15 px-3 py-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-50";
 
 export default function ClaseView({
   horarioId,
@@ -90,7 +90,7 @@ export default function ClaseView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <Link href="/panel/hoy" className="text-sm text-ink/60 hover:text-ink">
           ← Hoy
         </Link>
@@ -111,9 +111,9 @@ export default function ClaseView({
           </p>
         )}
 
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Lista de la clase</h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {asistentes.length === 0 && <li className="py-3 text-sm text-ink/50">Nadie reservada.</li>}
             {asistentes.map((a) => (
               <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 py-3">
@@ -165,7 +165,7 @@ export default function ClaseView({
                   </div>
                 )}
                 {corrigiendo === a.id && (
-                  <div className="mt-2 grid w-full gap-2 rounded-xl bg-white/5 p-3 sm:grid-cols-[1fr_2fr_auto]">
+                  <div className="mt-2 grid w-full gap-2 rounded-xl bg-ink/5 p-3 sm:grid-cols-[1fr_2fr_auto]">
                     <label className="text-xs text-ink/60">Dejar como
                       <select value={accion} onChange={(e) => setAccion(e.target.value as typeof accion)} className={input}>
                         <option value="asistio">Asistió</option><option value="no_vino">No vino</option><option value="sin_marcar">Sin marcar</option>
@@ -214,7 +214,7 @@ export default function ClaseView({
           {llena && <p className="mt-2 text-xs text-ink/50">Clase llena: puedes anotarla en lista de espera. Entra sola si alguien cancela.</p>}
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Lista de espera</h2>
           <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-ink">
             {espera.length === 0 && <li className="list-none text-ink/50">Nadie en espera.</li>}
@@ -225,7 +225,7 @@ export default function ClaseView({
         </section>
 
         {puedeAdminClase && esFuturaOHoy && (
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Administrar la clase</h2>
             <div className="mt-3 flex flex-wrap items-end gap-3">
               <label className="text-sm text-ink/60">
@@ -251,7 +251,7 @@ export default function ClaseView({
                 <button className={boton} disabled={isPending || sala === salaId} onClick={() => correr(() => asignarSala(horarioId, fecha, sala || null), "Sala actualizada.")}>Guardar sala</button>
               </div>
             )}
-            <div className="mt-5 border-t border-white/10 pt-4">
+            <div className="mt-5 border-t border-ink/10 pt-4">
               {cancelada ? (
                 <button className={botonSec} disabled={isPending} onClick={() => correr(() => reabrirClase(horarioId, fecha), "Clase reabierta.")}>
                   Reabrir esta clase

@@ -27,7 +27,7 @@ export default function Enlaces({ baseUrl, slug, nombre, dominioActivo }: { base
   useEffect(() => { QRCode.toDataURL(publico, { width: 512, margin: 2 }).then(setQr).catch(() => setQr("")); }, [publico]);
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-card p-5" aria-labelledby="enl-t">
+    <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-labelledby="enl-t">
       <h2 id="enl-t" className="text-base font-semibold text-ink">Enlaces para compartir</h2>
       <p className="mt-1 text-sm text-ink/65">Tu página pública con horarios, paquetes y botón de reserva. Úsala en WhatsApp, Instagram, Google y tu web.</p>
 
@@ -42,7 +42,7 @@ export default function Enlaces({ baseUrl, slug, nombre, dominioActivo }: { base
         <div>
           {qr ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={qr} alt={`Código QR de ${publico}`} width={160} height={160} className="rounded-lg bg-white p-2" />
+            <img src={qr} alt={`Código QR de ${publico}`} width={160} height={160} className="rounded-lg bg-ink p-2" />
           ) : <div className="h-40 w-40 rounded-lg bg-cream" aria-hidden />}
           {qr && <a href={qr} download={`qr-${slug}.png`} className="mt-1 block text-xs text-ink/60 underline hover:text-ink">Descargar QR (PNG)</a>}
         </div>
@@ -53,7 +53,7 @@ export default function Enlaces({ baseUrl, slug, nombre, dominioActivo }: { base
         </div>
       </div>
 
-      <div className="mt-5 border-t border-white/10 pt-4 text-sm text-ink/70">
+      <div className="mt-5 border-t border-ink/10 pt-4 text-sm text-ink/70">
         <p className="font-medium text-ink">En tu web actual</p>
         <p className="mt-1">Un botón que lleve a tus clientas a tu estudio (sin perder el contexto):</p>
         <pre className="mt-1 overflow-x-auto rounded-lg bg-cream px-3 py-2 text-xs text-ink">{`<a href="${reservar}">Reservar mi clase</a>`}</pre>

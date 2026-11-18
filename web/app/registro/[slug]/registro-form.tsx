@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-const campo = "mt-1 w-full rounded-xl border border-white/10 bg-void px-4 py-2.5 text-sm text-white outline-none focus:border-lime aria-[invalid=true]:border-red-400";
+const campo = "mt-1 w-full rounded-xl border border-ink/10 bg-void px-4 py-2.5 text-sm text-ink outline-none focus:border-lime aria-[invalid=true]:border-[#e6b8ae]";
 
 export default function RegistroForm({ tenantId, slug, nombre, color, next, referido }: { tenantId: string; slug: string; nombre: string; color: string; next: string; referido: string }) {
   const router = useRouter();
@@ -56,10 +56,10 @@ export default function RegistroForm({ tenantId, slug, nombre, color, next, refe
   if (revisaCorreo) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-void px-6">
-        <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-void-card p-8 text-sm text-white/70" role="status">
-          <h1 className="text-2xl font-black uppercase tracking-tight text-white">Revisa tu correo</h1>
-          <p className="mt-4">Te enviamos un enlace a <strong className="text-white">{f.email}</strong> para confirmar tu cuenta en {nombre}. Al abrirlo, seguimos donde ibas.</p>
-          <p className="mt-3 text-xs text-white/50">Si no llega en unos minutos, revisa spam. Si ya tenías cuenta, entra con tu contraseña.</p>
+        <div className="w-full max-w-sm rounded-[2rem] border border-ink/10 bg-void-card p-8 text-sm text-ink/70" role="status">
+          <h1 className="text-2xl font-black uppercase tracking-tight text-ink">Revisa tu correo</h1>
+          <p className="mt-4">Te enviamos un enlace a <strong className="text-ink">{f.email}</strong> para confirmar tu cuenta en {nombre}. Al abrirlo, seguimos donde ibas.</p>
+          <p className="mt-3 text-xs text-ink/50">Si no llega en unos minutos, revisa spam. Si ya tenías cuenta, entra con tu contraseña.</p>
           <Link href={`/login?e=${slug}&next=${encodeURIComponent(next)}`} className="mt-5 inline-block text-lime underline">Ya confirmé: entrar</Link>
         </div>
       </main>
@@ -68,60 +68,60 @@ export default function RegistroForm({ tenantId, slug, nombre, color, next, refe
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-void px-6 py-10">
-      <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-void-card p-8">
+      <div className="w-full max-w-md rounded-[2rem] border border-ink/10 bg-void-card p-8">
         <span className="inline-block h-2 w-12 rounded-full" style={{ backgroundColor: color }} aria-hidden />
-        <h1 className="mt-4 text-2xl font-black uppercase tracking-tight text-white">Crear mi cuenta</h1>
-        <p className="mt-1 text-sm text-white/55">{nombre} · reserva clases, compra paquetes y sigue tu cuenta.</p>
+        <h1 className="mt-4 text-2xl font-black uppercase tracking-tight text-ink">Crear mi cuenta</h1>
+        <p className="mt-1 text-sm text-ink/55">{nombre} · reserva clases, compra paquetes y sigue tu cuenta.</p>
         <form ref={formRef} onSubmit={enviar} noValidate className="mt-6 space-y-4">
           <div>
-            <label htmlFor="nombre" className="text-xs font-medium text-white/60">Nombre completo</label>
+            <label htmlFor="nombre" className="text-xs font-medium text-ink/60">Nombre completo</label>
             <input id="nombre" autoComplete="name" value={f.nombre} onChange={(e) => setF({ ...f, nombre: e.target.value })} aria-invalid={!!errores.nombre} aria-describedby={errores.nombre ? "e-nombre" : undefined} className={campo} />
-            {errores.nombre && <p id="e-nombre" role="alert" className="mt-1 text-xs text-red-300">{errores.nombre}</p>}
+            {errores.nombre && <p id="e-nombre" role="alert" className="mt-1 text-xs text-[#8f2f1f]">{errores.nombre}</p>}
           </div>
           <div>
-            <label htmlFor="telefono" className="text-xs font-medium text-white/60">Teléfono / WhatsApp</label>
+            <label htmlFor="telefono" className="text-xs font-medium text-ink/60">Teléfono / WhatsApp</label>
             <input id="telefono" type="tel" inputMode="tel" autoComplete="tel" value={f.telefono} onChange={(e) => setF({ ...f, telefono: e.target.value })} aria-invalid={!!errores.telefono} aria-describedby={errores.telefono ? "e-tel" : undefined} className={campo} />
-            {errores.telefono && <p id="e-tel" role="alert" className="mt-1 text-xs text-red-300">{errores.telefono}</p>}
+            {errores.telefono && <p id="e-tel" role="alert" className="mt-1 text-xs text-[#8f2f1f]">{errores.telefono}</p>}
           </div>
           <div>
-            <label htmlFor="email" className="text-xs font-medium text-white/60">Correo</label>
+            <label htmlFor="email" className="text-xs font-medium text-ink/60">Correo</label>
             <input id="email" type="email" autoComplete="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} aria-invalid={!!errores.email} aria-describedby={errores.email ? "e-email" : undefined} className={campo} />
-            {errores.email && <p id="e-email" role="alert" className="mt-1 text-xs text-red-300">{errores.email}</p>}
+            {errores.email && <p id="e-email" role="alert" className="mt-1 text-xs text-[#8f2f1f]">{errores.email}</p>}
           </div>
           <div>
-            <label htmlFor="password" className="text-xs font-medium text-white/60">Contraseña (mínimo 8 caracteres)</label>
+            <label htmlFor="password" className="text-xs font-medium text-ink/60">Contraseña (mínimo 8 caracteres)</label>
             <input id="password" type="password" autoComplete="new-password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} aria-invalid={!!errores.password} aria-describedby={errores.password ? "e-pass" : undefined} className={campo} />
-            {errores.password && <p id="e-pass" role="alert" className="mt-1 text-xs text-red-300">{errores.password}</p>}
+            {errores.password && <p id="e-pass" role="alert" className="mt-1 text-xs text-[#8f2f1f]">{errores.password}</p>}
           </div>
-          <details className="rounded-xl border border-white/10 px-4 py-3 text-sm text-white/70">
-            <summary className="cursor-pointer text-xs font-medium text-white/60">Cuéntanos más (opcional)</summary>
+          <details className="rounded-xl border border-ink/10 px-4 py-3 text-sm text-ink/70">
+            <summary className="cursor-pointer text-xs font-medium text-ink/60">Cuéntanos más (opcional)</summary>
             <div className="mt-3 grid gap-3">
-              <label className="text-xs text-white/60">Género
+              <label className="text-xs text-ink/60">Género
                 <select value={f.genero} onChange={(e) => setF({ ...f, genero: e.target.value })} className={campo}>
                   <option value="">Prefiero no decirlo</option><option value="femenino">Femenino</option><option value="masculino">Masculino</option><option value="otro">Otro</option>
                 </select></label>
-              <label className="text-xs text-white/60">¿Cómo te enteraste de nosotras?
+              <label className="text-xs text-ink/60">¿Cómo te enteraste de nosotras?
                 <select value={f.como} onChange={(e) => setF({ ...f, como: e.target.value })} className={campo}>
                   <option value="">—</option><option value="instagram">Instagram</option><option value="whatsapp">WhatsApp</option><option value="amiga">Una amiga</option><option value="google">Google</option><option value="otro">Otro</option>
                 </select></label>
             </div>
           </details>
           <div>
-            <label className="flex items-start gap-2 text-xs text-white/70">
+            <label className="flex items-start gap-2 text-xs text-ink/70">
               <input type="checkbox" checked={f.acepto} onChange={(e) => setF({ ...f, acepto: e.target.checked })} aria-invalid={!!errores.acepto} aria-describedby={errores.acepto ? "e-acepto" : undefined} className="mt-0.5" />
               <span>Acepto que {nombre} guarde mis datos para gestionar mis reservas y mi cuenta, y las condiciones de uso del servicio.</span>
             </label>
-            {errores.acepto && <p id="e-acepto" role="alert" className="mt-1 text-xs text-red-300">{errores.acepto}</p>}
+            {errores.acepto && <p id="e-acepto" role="alert" className="mt-1 text-xs text-[#8f2f1f]">{errores.acepto}</p>}
           </div>
-          <label className="flex items-start gap-2 text-xs text-white/55">
+          <label className="flex items-start gap-2 text-xs text-ink/55">
             <input type="checkbox" checked={f.marketing} onChange={(e) => setF({ ...f, marketing: e.target.checked })} className="mt-0.5" />
             <span>Quiero recibir novedades y promociones (opcional).</span>
           </label>
-          {error && <p role="alert" className="rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-300">{error}</p>}
+          {error && <p role="alert" className="rounded-lg bg-[#fbe9e5] px-3 py-2 text-xs text-[#8f2f1f]">{error}</p>}
           <button disabled={cargando} className="press-spring w-full rounded-full py-2.5 text-sm font-bold uppercase tracking-wide text-void disabled:opacity-50" style={{ backgroundColor: color }}>
             {cargando ? "Creando…" : "Crear mi cuenta"}
           </button>
-          <p className="text-center text-sm text-white/50">¿Ya tienes cuenta? <Link href={`/login?e=${slug}&next=${encodeURIComponent(next)}`} className="text-lime underline">Entrar</Link></p>
+          <p className="text-center text-sm text-ink/50">¿Ya tienes cuenta? <Link href={`/login?e=${slug}&next=${encodeURIComponent(next)}`} className="text-lime underline">Entrar</Link></p>
         </form>
       </div>
     </main>

@@ -77,7 +77,7 @@ export default function InvitarClientaPage({
 
   if (cargando) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-void text-white/60">
+      <main className="flex min-h-screen items-center justify-center bg-void text-ink/60">
         Cargando…
       </main>
     );
@@ -85,7 +85,7 @@ export default function InvitarClientaPage({
 
   if (!inv) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-void px-6 text-center text-white">
+      <main className="flex min-h-screen items-center justify-center bg-void px-6 text-center text-ink">
         Esta invitación no existe o el link está incompleto.
       </main>
     );
@@ -93,7 +93,7 @@ export default function InvitarClientaPage({
 
   if (!inv.email) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-void px-6 text-center text-white">
+      <main className="flex min-h-screen items-center justify-center bg-void px-6 text-center text-ink">
         Tu ficha no tiene un correo registrado todavía — pedile al estudio
         que lo agregue antes de activar tu acceso.
       </main>
@@ -104,7 +104,7 @@ export default function InvitarClientaPage({
     return (
       <main className="flex min-h-screen items-center justify-center bg-void px-6 text-center">
         <div>
-          <p className="text-white">Este link ya fue usado.</p>
+          <p className="text-ink">Este link ya fue usado.</p>
           <a href="/login" className="mt-4 inline-block text-sm text-lime underline">
             Ir a iniciar sesión
           </a>
@@ -115,7 +115,7 @@ export default function InvitarClientaPage({
 
   if (reclamando) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-void text-white/60">
+      <main className="flex min-h-screen items-center justify-center bg-void text-ink/60">
         Activando tu acceso…
       </main>
     );
@@ -125,10 +125,10 @@ export default function InvitarClientaPage({
     return (
       <main className="flex min-h-screen items-center justify-center bg-void px-6 text-center">
         <div className="max-w-sm">
-          <p className="text-white">
+          <p className="text-ink">
             Te mandamos un correo a <strong>{inv.email}</strong>.
           </p>
-          <p className="mt-2 text-sm text-white/60">
+          <p className="mt-2 text-sm text-ink/60">
             Abrí el link que te llegó para confirmar tu cuenta — al volver
             acá vas a poder reservar tus clases en {inv.tenant_name}.
           </p>
@@ -139,23 +139,23 @@ export default function InvitarClientaPage({
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-void px-6">
-      <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-void-card p-8">
+      <div className="w-full max-w-sm rounded-2xl border border-ink/10 bg-void-card p-8">
         <p className="text-xs font-medium uppercase tracking-wide text-lime">
           {inv.tenant_name}
         </p>
-        <h1 className="mt-2 text-xl font-bold text-white">
+        <h1 className="mt-2 text-xl font-bold text-ink">
           Activá tu acceso, {inv.nombre}
         </h1>
-        <p className="mt-2 text-sm text-white/50">{inv.email}</p>
+        <p className="mt-2 text-sm text-ink/50">{inv.email}</p>
 
-        <label className="mt-6 block text-sm text-white/60">
+        <label className="mt-6 block text-sm text-ink/60">
           Elegí tu contraseña
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             minLength={6}
-            className="mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-white outline-none focus:border-lime/50"
+            className="mt-1 w-full rounded-lg border border-ink/15 bg-void px-3 py-2 text-ink outline-none focus:border-lime/50"
           />
         </label>
 
@@ -166,7 +166,7 @@ export default function InvitarClientaPage({
         >
           Activar mi cuenta
         </button>
-        {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+        {error && <p className="mt-3 text-sm text-[#8f2f1f]">{error}</p>}
       </div>
     </main>
   );

@@ -15,12 +15,12 @@ export default async function AuditoriaPage() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Auditoría</h1>
         <p className="mt-1 text-sm text-ink/60">Últimas 200 acciones administrativas</p>
       </header>
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
-        <div className="overflow-x-auto rounded-2xl border border-white/10 bg-card">
+        <div className="overflow-x-auto rounded-2xl border border-ink/10 bg-card">
           <table className="w-full text-left text-sm">
             <thead className="text-xs uppercase tracking-wide text-ink/45">
               <tr>
@@ -30,7 +30,7 @@ export default async function AuditoriaPage() {
                 <th className="px-4 py-3">Dónde</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/10">
+            <tbody className="divide-y divide-ink/10">
               {(data ?? []).length === 0 && (
                 <tr>
                   <td colSpan={4} className="px-4 py-6 text-ink/50">Sin registros.</td>

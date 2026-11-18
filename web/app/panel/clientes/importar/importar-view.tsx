@@ -48,23 +48,23 @@ export default function ImportarView({ tenantId }: { tenantId: string }) {
   }
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <Link href="/panel/clientes" className="text-sm text-ink/60 hover:text-ink">← Clientas</Link>
         <h1 className="mt-2 font-serif text-2xl text-ink md:text-3xl">Importar clientas</h1>
         <p className="mt-1 text-sm text-ink/60">Sube un CSV con columnas <strong>nombre, teléfono, correo</strong>. Primero se revisa; no se guarda nada hasta que confirmes.</p>
       </header>
       <div className="mx-auto grid max-w-3xl gap-6 px-6 py-8 md:px-10">
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <input type="file" accept=".csv,text/csv" onChange={(e) => cargar(e.target.files?.[0])} className="text-sm text-ink" />
           <p className="mt-2 text-xs text-ink/50">Desde Excel: Archivo → Guardar como → CSV. Los teléfonos con +502, espacios o guiones se reconocen igual para detectar repetidas.</p>
         </section>
         {msg && <p className="rounded-xl bg-peach-tint px-4 py-3 text-sm text-ink">{msg}</p>}
         {res && !hecho && (
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Revisión de {filas.length} filas</h2>
             <p className="mt-2 text-sm text-ink">✔ <strong>{res.validas}</strong> listas para importar · ⚠ <strong>{res.con_error}</strong> con problemas ({res.duplicadas} ya existentes o repetidas, se omiten)</p>
             {res.errores.length > 0 && (
-              <ul className="mt-3 max-h-56 divide-y divide-white/10 overflow-y-auto text-sm">
+              <ul className="mt-3 max-h-56 divide-y divide-ink/10 overflow-y-auto text-sm">
                 {res.errores.slice(0, 100).map((e, i) => <li key={i} className="py-1.5 text-ink/80">Fila {e.fila}{e.nombre ? ` (${e.nombre})` : ""}: {e.motivo}</li>)}
               </ul>
             )}
@@ -75,7 +75,7 @@ export default function ImportarView({ tenantId }: { tenantId: string }) {
           </section>
         )}
         {res && hecho && (
-          <section className="rounded-2xl border border-white/10 bg-sage-tint p-5">
+          <section className="rounded-2xl border border-ink/10 bg-sage-tint p-5">
             <p className="text-base font-semibold text-sage">Listo: {res.importadas} clientas importadas.</p>
             <Link href="/panel/clientes" className="mt-2 inline-block text-sm text-ink underline">Ver clientas</Link>
           </section>

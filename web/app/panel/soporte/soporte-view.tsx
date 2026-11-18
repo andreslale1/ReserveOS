@@ -5,7 +5,7 @@ import { abrirTicket, escribirTicket, verTicket } from "./actions";
 
 type T = { id: string; asunto: string; prioridad: string; estado: string; created_at: string };
 type Det = Awaited<ReturnType<typeof verTicket>>;
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 const ESTADO: Record<string, string> = { abierto: "Abierto", en_curso: "En revisión", esperando: "Esperando tu respuesta", resuelto: "Resuelto", cerrado: "Cerrado" };
 
 export default function SoporteView({ tenantId, tickets }: { tenantId: string; tickets: T[] }) {
@@ -27,13 +27,13 @@ export default function SoporteView({ tenantId, tickets }: { tenantId: string; t
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Soporte</h1>
         <p className="mt-1 text-sm text-ink/60">Escríbele al equipo de ReserveOS. Te respondemos aquí mismo.</p>
       </header>
       <div className="mx-auto grid max-w-3xl gap-6 px-6 py-8 md:px-10">
         {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Nuevo caso</h2>
           <label className="mt-3 block text-sm text-ink/60">Asunto<input className={input} value={f.asunto} onChange={(e) => setF({ ...f, asunto: e.target.value })} /></label>
           <label className="mt-3 block text-sm text-ink/60">Qué pasa<textarea rows={3} className={input} value={f.descripcion} onChange={(e) => setF({ ...f, descripcion: e.target.value })} /></label>
@@ -45,9 +45,9 @@ export default function SoporteView({ tenantId, tickets }: { tenantId: string; t
             onClick={() => correr(() => abrirTicket(tenantId, f.asunto, f.descripcion, f.prioridad), "Caso enviado. Te responderemos aquí.", () => setF({ asunto: "", descripcion: "", prioridad: "normal" }))}>Enviar</button>
           <p className="mt-2 text-xs text-ink/45">No incluyas datos personales de clientas; el equipo no los necesita para ayudarte.</p>
         </section>
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Mis casos</h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {tickets.length === 0 && <li className="py-3 text-sm text-ink/50">Todavía no has abierto casos.</li>}
             {tickets.map((t) => (
               <li key={t.id} className="py-3">

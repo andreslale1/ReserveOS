@@ -10,7 +10,7 @@ export default async function TareasPage({ searchParams }: { searchParams: Promi
     supabase.from("plataforma_leads").select("id, nombre").not("etapa", "in", "(ganado,perdido)").order("nombre").limit(200),
     supabase.rpc("listar_tenants_plataforma"),
   ]);
-  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/70" role="alert">{error.message}</main>;
+  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/70" role="alert">{error.message}</main>;
   return (
     <TareasView
       tareas={(data ?? []) as Tarea[]}

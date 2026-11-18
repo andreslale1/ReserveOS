@@ -29,11 +29,11 @@ export default async function SeguimientoPage() {
   const vencen = (porVencer ?? []) as Record<string, unknown>[];
 
   const Lista = ({ titulo, vacio, children }: { titulo: string; vacio: string; children: React.ReactNode[] }) => (
-    <section className="rounded-2xl border border-white/10 bg-card p-5">
+    <section className="rounded-2xl border border-ink/10 bg-card p-5">
       <h2 className="text-base font-semibold text-ink">
         {titulo} <span className="text-sm font-normal text-ink/50">({children.length})</span>
       </h2>
-      <ul className="mt-3 divide-y divide-white/10">
+      <ul className="mt-3 divide-y divide-ink/10">
         {children.length === 0 && <li className="py-3 text-sm text-ink/50">{vacio}</li>}
         {children}
       </ul>
@@ -42,7 +42,7 @@ export default async function SeguimientoPage() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Seguimiento de clientas</h1>
         <p className="mt-1 text-sm text-ink/60">A quién contactar hoy</p>
       </header>

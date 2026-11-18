@@ -116,7 +116,7 @@ export default function ClientesView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div>
           <h1 className="font-serif text-2xl text-ink md:text-3xl">
             Clientas
@@ -129,13 +129,13 @@ export default function ClientesView({
           {puedeExportar && (
             <a
               href="/panel/clientes/export"
-              className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink/70 hover:text-ink"
+              className="rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/70 hover:text-ink"
             >
               Exportar CSV
             </a>
           )}
           {puedeCrear && (
-            <Link href="/panel/clientes/importar" className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink/70 hover:text-ink">
+            <Link href="/panel/clientes/importar" className="rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/70 hover:text-ink">
               Importar CSV
             </Link>
           )}
@@ -152,14 +152,14 @@ export default function ClientesView({
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
         {mostrarAlta && (
-          <div className="mb-6 grid gap-4 rounded-2xl border border-white/10 bg-card p-5 sm:grid-cols-2">
+          <div className="mb-6 grid gap-4 rounded-2xl border border-ink/10 bg-card p-5 sm:grid-cols-2">
             <label className="text-sm text-ink/60">
               Nombre
               <input
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
               />
             </label>
             <label className="text-sm text-ink/60">
@@ -168,7 +168,7 @@ export default function ClientesView({
                 type="tel"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
               />
             </label>
             <label className="text-sm text-ink/60">
@@ -177,7 +177,7 @@ export default function ClientesView({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
               />
             </label>
             {sedes.length > 0 && (
@@ -186,7 +186,7 @@ export default function ClientesView({
                 <select
                   value={sedeHabitual}
                   onChange={(e) => setSedeHabitual(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
                 >
                   <option value="">Sin preferencia</option>
                   {sedes.map((s) => (
@@ -204,7 +204,7 @@ export default function ClientesView({
                 value={comoSeEntero}
                 onChange={(e) => setComoSeEntero(e.target.value)}
                 placeholder="Instagram, referido, Google..."
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30"
               />
             </label>
             <div className="sm:col-span-2">
@@ -243,7 +243,7 @@ export default function ClientesView({
           ))}
         </div>
 
-        <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 border-b border-white/10 px-4 pb-2 text-xs font-medium uppercase tracking-wide text-ink/40">
+        <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-4 border-b border-ink/10 px-4 pb-2 text-xs font-medium uppercase tracking-wide text-ink/40">
           <span>Clienta</span>
           <span className="w-24 text-right">Visitas</span>
           <span className="w-28 text-right">Última visita</span>
@@ -259,7 +259,7 @@ export default function ClientesView({
               <li key={c.id}>
                 <button
                   onClick={() => abrir(c)}
-                  className="grid w-full grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 rounded-2xl border border-white/10 bg-card p-4 text-left shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]"
+                  className="grid w-full grid-cols-[1fr_auto_auto_auto_auto] items-center gap-4 rounded-2xl border border-ink/10 bg-card p-4 text-left shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]"
                 >
                   <div>
                     <p className="text-sm font-medium text-ink">{c.nombre}</p>
@@ -293,7 +293,7 @@ export default function ClientesView({
             className="fixed inset-0 z-40 bg-ink/20 backdrop-blur-[2px] transition-opacity duration-300"
             onClick={() => setAbierto(null)}
           />
-          <aside className="drawer-in fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto border-l border-white/10 bg-card p-6 shadow-[0_0_60px_rgba(17,17,17,0.2)]">
+          <aside className="drawer-in fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto border-l border-ink/10 bg-card p-6 shadow-[0_0_60px_rgba(17,17,17,0.2)]">
             <button
               onClick={() => setAbierto(null)}
               className="text-sm text-ink/50 hover:text-ink"
@@ -372,7 +372,7 @@ export default function ClientesView({
                       return (
                         <li
                           key={m.id}
-                          className="rounded-xl border border-white/10 bg-cream p-3 text-sm"
+                          className="rounded-xl border border-ink/10 bg-cream p-3 text-sm"
                         >
                           <div className="flex items-center justify-between">
                             <span
@@ -407,7 +407,7 @@ export default function ClientesView({
                     {detalle.reservas.map((r, i) => (
                       <li
                         key={i}
-                        className="flex items-center justify-between rounded-xl border border-white/10 bg-cream p-3 text-sm"
+                        className="flex items-center justify-between rounded-xl border border-ink/10 bg-cream p-3 text-sm"
                       >
                         <span className="text-ink/80">
                           {

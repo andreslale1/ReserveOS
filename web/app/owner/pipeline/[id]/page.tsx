@@ -14,7 +14,7 @@ export default async function OportunidadPage({ params }: { params: Promise<{ id
   ]);
   const conContrato: Record<string, boolean> = {};
   void contratos;
-  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/60">{error.message}</main>;
+  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/60">{error.message}</main>;
   if (!data) notFound();
   const lista = (props ?? []) as Propuesta[];
   const { data: cs } = await supabase.rpc("contratos_listar");

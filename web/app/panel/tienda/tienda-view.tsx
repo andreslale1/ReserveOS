@@ -58,7 +58,7 @@ export default function TiendaView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="text-2xl font-semibold text-ink md:text-3xl">
           Tienda
         </h1>
@@ -86,7 +86,7 @@ export default function TiendaView({
 
         {tab === "Catálogo" &&
           (productos.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">
+            <div className="rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">
               No hay productos cargados todavía.
             </div>
           ) : (
@@ -94,7 +94,7 @@ export default function TiendaView({
               {productos.map((p, i) => (
                 <li
                   key={i}
-                  className="rounded-2xl border border-white/10 bg-card p-5"
+                  className="rounded-2xl border border-ink/10 bg-card p-5"
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium text-ink">
@@ -116,7 +116,7 @@ export default function TiendaView({
                         className={`rounded-full px-3 py-1 text-xs ${
                           v.stock > 0
                             ? "bg-neutral-tint text-ink-soft"
-                            : "bg-red-500/10 text-red-400"
+                            : "bg-[#fbe9e5] text-[#8f2f1f]"
                         }`}
                       >
                         {v.nombre} · {v.stock > 0 ? `${v.stock} en stock` : "sin stock"}
@@ -130,7 +130,7 @@ export default function TiendaView({
 
         {tab === "Pedidos" &&
           (pedidos.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">
+            <div className="rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">
               No hay pedidos todavía.
             </div>
           ) : (
@@ -140,7 +140,7 @@ export default function TiendaView({
                 return (
                   <li
                     key={p.id}
-                    className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-card p-4"
+                    className="flex items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-card p-4"
                   >
                     <div>
                       <p className="text-sm font-medium text-ink">
@@ -169,7 +169,7 @@ export default function TiendaView({
 
         {tab === "Carritos abandonados" &&
           (carritosAbandonados.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">
+            <div className="rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">
               No hay carritos abandonados (más de 2 horas sin actividad).
             </div>
           ) : (
@@ -179,7 +179,7 @@ export default function TiendaView({
               {carritosAbandonados.map((c) => (
                 <li
                   key={c.carrito_id}
-                  className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-card p-4"
+                  className="flex items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-card p-4"
                 >
                   <div>
                     <p className="text-sm font-medium text-ink">
@@ -202,7 +202,7 @@ export default function TiendaView({
                           setAvisoCarrito(r.error ?? "Recordatorio en cola: sale con los demás mensajes.");
                         })
                       }
-                      className="rounded-full border border-white/15 px-3 py-1 text-xs text-ink hover:bg-white/5"
+                      className="rounded-full border border-ink/15 px-3 py-1 text-xs text-ink hover:bg-ink/5"
                     >
                       Recordar
                     </button>
@@ -213,7 +213,7 @@ export default function TiendaView({
                           marcarCarritoPerdido(c.carrito_id);
                         })
                       }
-                      className="rounded-full border border-white/15 px-3 py-1 text-xs text-ink-soft hover:text-ink"
+                      className="rounded-full border border-ink/15 px-3 py-1 text-xs text-ink-soft hover:text-ink"
                     >
                       Marcar perdido
                     </button>

@@ -44,13 +44,13 @@ export default function AutomatizacionesView({ tenantId, panel }: { tenantId: st
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="text-2xl font-semibold text-ink md:text-3xl">Automatizaciones</h1>
         <p className="mt-1 text-sm text-ink-soft">Lo que el sistema hace solo, a la hora de cada sede. Puedes apagar las que no quieras.</p>
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
-        <p className="rounded-2xl border border-white/10 bg-card px-4 py-3 text-sm text-ink-soft" role="status">
+        <p className="rounded-2xl border border-ink/10 bg-card px-4 py-3 text-sm text-ink-soft" role="status">
           Los mensajes se preparan y quedan en una cola ({cola.pendientes} esperando, {cola.enviados} enviados). El envío real empieza cuando se conecte el correo, WhatsApp o las
           notificaciones de tu estudio.
         </p>
@@ -59,7 +59,7 @@ export default function AutomatizacionesView({ tenantId, panel }: { tenantId: st
           <p role="alert" className={`mt-4 rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>
         )}
 
-        <section className="mt-6 rounded-2xl border border-white/10 bg-card p-5" aria-labelledby="salud-titulo">
+        <section className="mt-6 rounded-2xl border border-ink/10 bg-card p-5" aria-labelledby="salud-titulo">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 id="salud-titulo" className="text-base font-semibold text-ink">Salud del sistema</h2>
@@ -90,7 +90,7 @@ export default function AutomatizacionesView({ tenantId, panel }: { tenantId: st
             const disponible = a.modulo_activo;
             const estado = !disponible ? "Módulo no contratado" : a.activa ? "Activa" : "Apagada";
             return (
-              <li key={a.clave} className="rounded-2xl border border-white/10 bg-card p-5">
+              <li key={a.clave} className="rounded-2xl border border-ink/10 bg-card p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-ink">{a.nombre}</p>
@@ -113,7 +113,7 @@ export default function AutomatizacionesView({ tenantId, panel }: { tenantId: st
                         aria-label={`${a.activa ? "Apagar" : "Encender"} ${a.nombre}`}
                         disabled={isPending}
                         onClick={() => correr(a.clave, () => configurarAutomatizacion(tenantId, a.clave, !a.activa), a.activa ? "Automatización apagada." : "Automatización encendida.")}
-                        className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-ink-soft hover:text-ink disabled:opacity-50"
+                        className="rounded-full border border-ink/15 px-3 py-1.5 text-xs text-ink-soft hover:text-ink disabled:opacity-50"
                       >
                         {isPending && enCurso === a.clave ? "Guardando…" : a.activa ? "Apagar" : "Encender"}
                       </button>
@@ -129,9 +129,9 @@ export default function AutomatizacionesView({ tenantId, panel }: { tenantId: st
 
         <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink-soft">Últimas ejecuciones con mensajes</h2>
         {ejecuciones.length === 0 ? (
-          <p className="mt-3 rounded-2xl border border-dashed border-white/15 bg-card/60 p-4 text-sm text-ink-soft">Todavía no hay ejecuciones que hayan preparado mensajes para tu estudio.</p>
+          <p className="mt-3 rounded-2xl border border-dashed border-ink/15 bg-card/60 p-4 text-sm text-ink-soft">Todavía no hay ejecuciones que hayan preparado mensajes para tu estudio.</p>
         ) : (
-          <ul className="mt-3 divide-y divide-white/10 rounded-2xl border border-white/10 bg-card">
+          <ul className="mt-3 divide-y divide-ink/10 rounded-2xl border border-ink/10 bg-card">
             {ejecuciones.map((e, i) => (
               <li key={i} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
                 <span className="text-ink">{e.nombre}</span>

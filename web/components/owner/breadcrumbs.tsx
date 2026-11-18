@@ -16,12 +16,12 @@ export function Breadcrumbs() {
     migas.push({ href: "/owner", texto: "Estudios" }, { href: ruta, texto: "Ficha del estudio" });
   }
   return (
-    <nav aria-label="Ruta de navegación" className="px-6 pt-4 text-xs text-white/65 md:px-10">
+    <nav aria-label="Ruta de navegación" className="px-6 pt-4 text-xs text-ink/65 md:px-10">
       <ol className="flex flex-wrap items-center gap-1.5">
         {migas.map((m, i) => (
           <li key={m.href} className="flex items-center gap-1.5">
             {i > 0 && <span aria-hidden>/</span>}
-            {i === migas.length - 1 ? <span aria-current="page" className="text-white">{m.texto}</span> : <Link href={m.href} className="hover:text-white underline-offset-2 hover:underline">{m.texto}</Link>}
+            {i === migas.length - 1 ? <span aria-current="page" className="text-ink">{m.texto}</span> : <Link href={m.href} className="hover:text-ink underline-offset-2 hover:underline">{m.texto}</Link>}
           </li>
         ))}
       </ol>

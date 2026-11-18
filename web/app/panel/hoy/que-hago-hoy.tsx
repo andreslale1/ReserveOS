@@ -51,7 +51,7 @@ export default function QueHagoHoy({ rol, modulos }: { rol: string; modulos: str
       <h2 className="text-xs font-semibold uppercase tracking-wider text-ink/50">{cfg.saludo}</h2>
       <div className="mt-2 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {acciones.map((a) => (
-          <Link key={a.href} href={a.href} className="rounded-2xl border border-white/10 bg-card p-4 transition-colors hover:border-peach">
+          <Link key={a.href} href={a.href} className="rounded-2xl border border-ink/10 bg-card p-4 transition-colors hover:border-peach">
             <p className="text-sm font-semibold text-ink">{a.titulo}</p>
             <p className="mt-0.5 text-xs text-ink/60">{a.detalle}</p>
           </Link>

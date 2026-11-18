@@ -1,85 +1,45 @@
-const groups = [
-  {
-    label: "Agenda y reservas",
-    color: "sage" as const,
-    items: [
-      { name: "Lista de espera", desc: "Promoción automática de cupo." },
-      { name: "Clases en familia", desc: "Reserva y cobro compartido." },
-      { name: "Clases privadas", desc: "Privatiza una fecha para un grupo." },
-      { name: "Check-in por QR", desc: "Asistencia sin lista en papel." },
-    ],
-  },
-  {
-    label: "Cobros y finanzas",
-    color: "blue" as const,
-    items: [
-      { name: "Cobros en línea", desc: "Pasarela, checkout y webhooks." },
-      { name: "Caja / POS", desc: "Apertura y cierre de caja por sede." },
-      { name: "Gastos y metas", desc: "Balance del estudio, mes a mes." },
-      { name: "IVA y FEL", desc: "Facturación electrónica por tenant." },
-    ],
-  },
-  {
-    label: "Clientas y marca",
-    color: "peach" as const,
-    items: [
-      { name: "CRM y segmentos", desc: "Riesgo y seguimiento comercial." },
-      { name: "Campañas", desc: "WhatsApp, email y push con consentimiento." },
-      { name: "Portal con marca", desc: "reservas.tudominio.com, propio." },
-      { name: "App de marca", desc: "Build nativo sobre el mismo backend." },
-    ],
-  },
-];
+"use client";
 
-const colorMap = {
-  sage: "bg-sage/15 text-sage",
-  blue: "bg-blue/15 text-blue",
-  peach: "bg-lime/15 text-lime",
-};
+import { useState } from "react";
+import { GIROS, type Giro } from "@/lib/giros";
 
-import Reveal from "./reveal";
+const ORDEN: Giro[] = ["pilates", "crossfit", "hyrox"];
 
 export default function Modules() {
+  const [g, setG] = useState<Giro>("pilates");
+  const v = GIROS[g];
+  const filas: [string, string][] = [
+    ["Quien reserva", v.persona],
+    ["Lo que se reserva", v.clase],
+    ["Quien lo dirige", v.guia],
+    ["Cómo se reserva", v.reserva === "carril" ? `Por bloque y por ${v.recurso} numerado` : `Por cupo en cada ${v.clase}`],
+    ["Lo que se vende", v.paquete],
+  ];
   return (
-    <section
-      id="modulos"
-      className="border-y border-white/10 bg-void py-20"
-    >
-      <div className="mx-auto max-w-6xl px-6">
-        <Reveal className="max-w-lg">
-          <h2 className="text-3xl font-black uppercase leading-tight tracking-tight text-white md:text-4xl">
-            Un núcleo sólido. Módulos que enciendes cuando los necesitas.
-          </h2>
-          <p className="mt-4 text-white/55">
-            26 módulos activables por tenant. Empiezas con agenda, reservas y
-            cobros — el resto se prende sin migrar de sistema cuando el
-            estudio crece.
-          </p>
-        </Reveal>
-
-        <div className="mt-12 grid gap-8 md:grid-cols-3">
-          {groups.map((group, gi) => (
-            <Reveal key={group.label} delay={gi * 100}>
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${colorMap[group.color]}`}
-              >
-                {group.label}
-              </span>
-              <ul className="mt-5 space-y-4">
-                {group.items.map((item) => (
-                  <li
-                    key={item.name}
-                    className="group rounded-xl border border-white/10 bg-void-card p-4 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-lime/30"
-                  >
-                    <p className="text-sm font-medium text-white">
-                      {item.name}
-                    </p>
-                    <p className="mt-1 text-xs text-white/45">{item.desc}</p>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
+    <section id="giros" className="mx-auto max-w-6xl px-6 py-24">
+      <div className="max-w-2xl">
+        <h2 className="text-4xl font-semibold leading-tight text-ink md:text-5xl">Cada gimnasio habla su propio idioma.</h2>
+        <p className="mt-5 text-ink-soft">Elegimos el giro al crear tu cuenta y todo el sistema —pantallas, correos y reportes— usa tus palabras.</p>
+      </div>
+      <div className="mt-10 grid gap-10 md:grid-cols-[auto_1fr]">
+        <div role="tablist" aria-label="Giro del negocio" className="flex gap-2 md:flex-col">
+          {ORDEN.map((k) => (
+            <button key={k} role="tab" aria-selected={g === k} onClick={() => setG(k)}
+              className={`press-spring rounded-lg px-5 py-3 text-left text-sm font-semibold transition-colors ${g === k ? "bg-lime text-white" : "border border-line bg-void-card text-ink hover:border-ink/30"}`}>
+              {GIROS[k].nombre}
+            </button>
           ))}
+        </div>
+        <div role="tabpanel" className="rounded-2xl border border-line bg-void-card p-8">
+          <p className="max-w-xl text-lg leading-relaxed text-ink">{v.detalle}</p>
+          <dl className="mt-7 divide-y divide-line border-t border-line">
+            {filas.map(([k, val]) => (
+              <div key={k} className="grid grid-cols-[10rem_1fr] gap-4 py-3.5 text-sm">
+                <dt className="text-ink-soft">{k}</dt>
+                <dd className="font-medium text-ink first-letter:uppercase">{val}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </div>
     </section>

@@ -50,7 +50,7 @@ export default function CheckinView({ tenantId }: { tenantId: string }) {
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Check-in</h1>
         <p className="mt-1 text-sm text-ink/60">Escanea el QR de la clienta o escribe su código. Marca su asistencia a la clase de ahora.</p>
       </header>
@@ -60,11 +60,11 @@ export default function CheckinView({ tenantId }: { tenantId: string }) {
           <button className="press-spring rounded-full bg-ink px-5 py-3 text-sm font-medium text-cream" onClick={() => setCamara(!camara)}>{camara ? "Cerrar cámara" : "Escanear con la cámara"}</button>
         )}
         {camara && <video ref={video} className="w-full rounded-2xl bg-black" muted playsInline />}
-        <div className="rounded-2xl border border-white/10 bg-card p-5">
+        <div className="rounded-2xl border border-ink/10 bg-card p-5">
           <label className="text-sm text-ink/60">Código de la clienta
-            <input className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 font-mono uppercase tracking-widest text-ink outline-none focus:border-ink/30" value={codigo} onChange={(e) => setCodigo(e.target.value)} onKeyDown={(e) => e.key === "Enter" && enviar(codigo)} placeholder="A1B2C3D4E5" />
+            <input className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 font-mono uppercase tracking-widest text-ink outline-none focus:border-ink/30" value={codigo} onChange={(e) => setCodigo(e.target.value)} onKeyDown={(e) => e.key === "Enter" && enviar(codigo)} placeholder="A1B2C3D4E5" />
           </label>
-          <button className="press-spring mt-3 rounded-full border border-white/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending || codigo.trim().length < 4} onClick={() => enviar(codigo)}>Registrar llegada</button>
+          <button className="press-spring mt-3 rounded-full border border-ink/20 px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending || codigo.trim().length < 4} onClick={() => enviar(codigo)}>Registrar llegada</button>
         </div>
         {!soportaCamara && <p className="text-xs text-ink/50">Este navegador no puede leer QR con la cámara; usa el campo de arriba o abre esta página en Chrome.</p>}
       </div>

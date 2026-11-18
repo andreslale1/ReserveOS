@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { guardarGastoMarketing, guardarMeta } from "./actions";
 
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 const boton = "press-spring rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50";
 
 const NOMBRES: Record<string, string> = {
@@ -29,7 +29,7 @@ export function MetasForm({ tenantId, mes, metas }: { tenantId: string; mes: str
   }
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Definir metas del mes">
+    <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-label="Definir metas del mes">
       <h3 className="text-base font-semibold text-ink">Metas de este mes</h3>
       <div className="mt-3 grid gap-4 sm:grid-cols-2">
         {metas.map((m) => (
@@ -66,7 +66,7 @@ export function GastoMarketingForm({ tenantId, mes }: { tenantId: string; mes: s
   }
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Registrar gasto de marketing">
+    <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-label="Registrar gasto de marketing">
       <h3 className="text-base font-semibold text-ink">Gasto de marketing de este mes</h3>
       <p className="mt-1 text-xs text-ink-soft">El canal debe escribirse igual que «¿Cómo te enteraste?» de las clientas para que el CAC cuadre.</p>
       <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end">

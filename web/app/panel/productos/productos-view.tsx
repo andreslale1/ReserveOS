@@ -5,7 +5,7 @@ import { agregarVariante, guardarProducto, moverStock } from "./actions";
 
 export type Producto = { id: string; nombre: string; descripcion: string; precio: number; categoria: string; imagen: string; activo: boolean; variantes: { id: string; nombre: string; stock: number }[] };
 export type Movimiento = { created_at: string; producto: string; variante: string; delta: number; saldo: number; tipo: string; motivo: string | null; actor: string | null };
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
 // Entradas y devoluciones suman, salidas restan; un ajuste respeta el signo escrito (ej. -3 baja 3).
 function deltaFirmado(tipo: string, n: number) {
@@ -29,7 +29,7 @@ export default function ProductosView({ tenantId, puedeGestionar, productos, mov
   }
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div>
           <h1 className="font-serif text-2xl text-ink md:text-3xl">Productos e inventario</h1>
           <p className="mt-1 text-sm text-ink/60">Lo que vendes en el estudio y cuánto tienes. Cada cambio de stock queda registrado con su motivo.</p>
@@ -39,7 +39,7 @@ export default function ProductosView({ tenantId, puedeGestionar, productos, mov
       <div className="mx-auto grid max-w-4xl gap-6 px-6 py-8 md:px-10">
         {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
         {abierto && (
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="text-sm text-ink/60">Nombre<input className={input} value={f.nombre} onChange={(e) => setF({ ...f, nombre: e.target.value })} /></label>
               <label className="text-sm text-ink/60">Precio (Q)<input type="number" min={0} className={input} value={f.precio} onChange={(e) => setF({ ...f, precio: e.target.value })} /></label>
@@ -54,13 +54,13 @@ export default function ProductosView({ tenantId, puedeGestionar, productos, mov
         )}
         {productos.length === 0 && <p className="text-sm text-ink/55">Aún no tienes productos.</p>}
         {productos.map((p) => (
-          <section key={p.id} className={`rounded-2xl border border-white/10 bg-card p-5 ${p.activo ? "" : "opacity-60"}`}>
+          <section key={p.id} className={`rounded-2xl border border-ink/10 bg-card p-5 ${p.activo ? "" : "opacity-60"}`}>
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div><h2 className="text-base font-semibold text-ink">{p.nombre} <span className="text-sm font-normal text-ink/55">· {q(p.precio)}{p.categoria ? ` · ${p.categoria}` : ""}{p.activo ? "" : " · oculto"}</span></h2>
                 {p.descripcion && <p className="text-sm text-ink/60">{p.descripcion}</p>}</div>
               {puedeGestionar && <button className="text-xs text-ink/55 hover:text-ink" onClick={() => { setF({ id: p.id, nombre: p.nombre, descripcion: p.descripcion, precio: String(p.precio), categoria: p.categoria, imagen: p.imagen, activo: p.activo }); setAbierto(true); }}>Editar</button>}
             </div>
-            <ul className="mt-3 divide-y divide-white/10">
+            <ul className="mt-3 divide-y divide-ink/10">
               {p.variantes.map((v) => {
                 const m = mov[v.id] ?? { delta: "", tipo: "entrada", motivo: "" };
                 return (
@@ -71,7 +71,7 @@ export default function ProductosView({ tenantId, puedeGestionar, productos, mov
                         <select className={`${input} mt-0 w-28`} value={m.tipo} onChange={(e) => setMov({ ...mov, [v.id]: { ...m, tipo: e.target.value } })}><option value="entrada">Entrada</option><option value="salida">Salida</option><option value="ajuste">Ajuste</option><option value="devolucion">Devolución</option></select>
                         <input type="number" className={`${input} mt-0 w-20`} placeholder="Cant." value={m.delta} onChange={(e) => setMov({ ...mov, [v.id]: { ...m, delta: e.target.value } })} />
                         <input className={`${input} mt-0 w-44`} placeholder="Motivo" value={m.motivo} onChange={(e) => setMov({ ...mov, [v.id]: { ...m, motivo: e.target.value } })} />
-                        <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs text-ink disabled:opacity-50" disabled={isPending || !Number(m.delta) || m.motivo.trim().length < 3}
+                        <button className="rounded-full border border-ink/20 px-3 py-1.5 text-xs text-ink disabled:opacity-50" disabled={isPending || !Number(m.delta) || m.motivo.trim().length < 3}
                           onClick={() => correr(() => moverStock(v.id, deltaFirmado(m.tipo, Number(m.delta)), m.tipo, m.motivo), "Stock actualizado.", () => setMov({ ...mov, [v.id]: { delta: "", tipo: m.tipo, motivo: "" } }))}>Registrar</button>
                       </span>
                     </div>
@@ -82,14 +82,14 @@ export default function ProductosView({ tenantId, puedeGestionar, productos, mov
             {puedeGestionar && (
               <div className="mt-2 flex gap-2">
                 <input className={`${input} mt-0 flex-1`} placeholder="Nueva variante (talla, color…)" value={nv[p.id] ?? ""} onChange={(e) => setNv({ ...nv, [p.id]: e.target.value })} />
-                <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs text-ink disabled:opacity-50" disabled={isPending || !(nv[p.id] ?? "").trim()} onClick={() => correr(() => agregarVariante(p.id, nv[p.id]), "Variante agregada.", () => setNv({ ...nv, [p.id]: "" }))}>+ Variante</button>
+                <button className="rounded-full border border-ink/20 px-3 py-1.5 text-xs text-ink disabled:opacity-50" disabled={isPending || !(nv[p.id] ?? "").trim()} onClick={() => correr(() => agregarVariante(p.id, nv[p.id]), "Variante agregada.", () => setNv({ ...nv, [p.id]: "" }))}>+ Variante</button>
               </div>
             )}
           </section>
         ))}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Movimientos recientes</h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {movimientos.length === 0 && <li className="py-2 text-sm text-ink/50">Sin movimientos.</li>}
             {movimientos.map((m, i) => (
               <li key={i} className="flex flex-wrap items-center justify-between gap-2 py-2 text-sm">

@@ -90,7 +90,7 @@ export default function PaquetesView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div>
           <h1 className="text-2xl font-semibold text-ink md:text-3xl">
             Paquetes
@@ -111,7 +111,7 @@ export default function PaquetesView({
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
         {mostrarForm && (
-          <div className="mb-6 grid gap-4 rounded-2xl border border-white/10 bg-card p-5 sm:grid-cols-2">
+          <div className="mb-6 grid gap-4 rounded-2xl border border-ink/10 bg-card p-5 sm:grid-cols-2">
             <label className="text-sm text-ink-soft">
               Nombre
               <input
@@ -119,7 +119,7 @@ export default function PaquetesView({
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Paquete 8 clases"
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             <label className="text-sm text-ink-soft">
@@ -128,7 +128,7 @@ export default function PaquetesView({
                 type="number"
                 value={precio}
                 onChange={(e) => setPrecio(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             <label className="text-sm text-ink-soft">
@@ -137,7 +137,7 @@ export default function PaquetesView({
                 type="number"
                 value={numClases}
                 onChange={(e) => setNumClases(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             <label className="text-sm text-ink-soft">
@@ -146,7 +146,7 @@ export default function PaquetesView({
                 type="number"
                 value={vigenciaDias}
                 onChange={(e) => setVigenciaDias(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             <label className="text-sm text-ink-soft sm:col-span-2">
@@ -154,7 +154,7 @@ export default function PaquetesView({
               <select
                 value={cobertura}
                 onChange={(e) => setCobertura(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               >
                 <option value="sede">Solo la sede donde se vende</option>
                 <option value="sedes">Sedes seleccionadas</option>
@@ -171,7 +171,7 @@ export default function PaquetesView({
                       className={`cursor-pointer rounded-full border px-3 py-1 text-xs ${
                         sedeIds.includes(s.id)
                           ? "border-ink bg-ink text-cream"
-                          : "border-white/15 text-ink-soft"
+                          : "border-ink/15 text-ink-soft"
                       }`}
                     >
                       <input
@@ -198,7 +198,7 @@ export default function PaquetesView({
                 type="text"
                 value={descripcion}
                 onChange={(e) => setDescripcion(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             <div className="sm:col-span-2">
@@ -217,7 +217,7 @@ export default function PaquetesView({
         )}
 
         {paquetes.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">
+          <div className="rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">
             Todavía no hay paquetes creados — este estudio no tiene nada que
             vender hasta que crees el primero.
           </div>
@@ -226,7 +226,7 @@ export default function PaquetesView({
             {paquetes.map((p) => (
               <li
                 key={p.id}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-card p-5"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-card p-5"
               >
                 <div>
                   <div className="flex items-center gap-2">
@@ -252,7 +252,7 @@ export default function PaquetesView({
                   <button
                     disabled={isPending}
                     onClick={() => toggle(p.id, p.activo)}
-                    className="rounded-full border border-white/15 px-3 py-1 text-xs text-ink-soft hover:text-ink"
+                    className="rounded-full border border-ink/15 px-3 py-1 text-xs text-ink-soft hover:text-ink"
                   >
                     {p.activo ? "Desactivar" : "Activar"}
                   </button>

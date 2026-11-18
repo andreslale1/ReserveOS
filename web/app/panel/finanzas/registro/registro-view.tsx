@@ -8,7 +8,7 @@ type Fila = { id: string; fecha: string; descripcion: string | null; monto: numb
 type Gasto = Fila & { categoria: string; tipo: string };
 
 const input =
-  "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+  "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 const boton =
   "press-spring rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50";
 const q = (n: number) => `Q${n.toLocaleString("es-GT", { maximumFractionDigits: 2 })}`;
@@ -57,7 +57,7 @@ export default function RegistroView({
   const totPasivos = pasivos.reduce((a, x) => a + x.monto, 0);
 
   const Tarjeta = ({ children, titulo }: { children: React.ReactNode; titulo: string }) => (
-    <section className="rounded-2xl border border-white/10 bg-card p-5">
+    <section className="rounded-2xl border border-ink/10 bg-card p-5">
       <h2 className="text-base font-semibold text-ink">{titulo}</h2>
       {children}
     </section>
@@ -65,7 +65,7 @@ export default function RegistroView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div>
           <Link href="/panel/finanzas" className="text-sm text-ink/60 hover:text-ink">
             ← Finanzas
@@ -73,7 +73,7 @@ export default function RegistroView({
           <h1 className="mt-2 font-serif text-2xl text-ink md:text-3xl">Gastos y balance</h1>
         </div>
         {puedeBalance && (
-          <a href="/panel/finanzas/export" className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink/70 hover:text-ink">
+          <a href="/panel/finanzas/export" className="rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/70 hover:text-ink">
             Exportar a CSV
           </a>
         )}
@@ -138,7 +138,7 @@ export default function RegistroView({
           >
             Guardar gasto
           </button>
-          <ul className="mt-5 divide-y divide-white/10">
+          <ul className="mt-5 divide-y divide-ink/10">
             {gastos.length === 0 && <li className="py-3 text-sm text-ink/50">Sin gastos registrados.</li>}
             {gastos.map((x) => (
               <li key={x.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
@@ -205,7 +205,7 @@ export default function RegistroView({
             ).map(([titulo, tabla, filas]) => (
               <div key={tabla} className="mt-5">
                 <p className="text-xs uppercase tracking-wide text-ink/45">{titulo}</p>
-                <ul className="mt-1 divide-y divide-white/10">
+                <ul className="mt-1 divide-y divide-ink/10">
                   {filas.length === 0 && <li className="py-2 text-sm text-ink/50">Ninguno.</li>}
                   {filas.map((x) => (
                     <li key={x.id} className="flex items-center justify-between py-2 text-sm">

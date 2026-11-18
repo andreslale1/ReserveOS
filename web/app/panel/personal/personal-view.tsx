@@ -99,7 +99,7 @@ export default function PersonalView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div>
           <h1 className="text-2xl font-semibold text-ink md:text-3xl">
             Personal
@@ -121,7 +121,7 @@ export default function PersonalView({
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
         {mostrarInvitar && (
-          <div className="mb-6 rounded-2xl border border-white/10 bg-card p-5">
+          <div className="mb-6 rounded-2xl border border-ink/10 bg-card p-5">
             {invLink ? (
               <div>
                 <p className="text-sm font-medium text-ink">
@@ -131,12 +131,12 @@ export default function PersonalView({
                   <input
                     readOnly
                     value={invLink}
-                    className="w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-xs text-ink"
+                    className="w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-xs text-ink"
                     onFocus={(e) => e.target.select()}
                   />
                   <button
                     onClick={() => navigator.clipboard.writeText(invLink)}
-                    className="shrink-0 rounded-full border border-white/15 px-3 py-2 text-xs text-ink-soft hover:text-ink"
+                    className="shrink-0 rounded-full border border-ink/15 px-3 py-2 text-xs text-ink-soft hover:text-ink"
                   >
                     Copiar
                   </button>
@@ -156,7 +156,7 @@ export default function PersonalView({
                     type="text"
                     value={invNombre}
                     onChange={(e) => setInvNombre(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                    className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
                   />
                 </label>
                 <label className="text-sm text-ink-soft">
@@ -165,7 +165,7 @@ export default function PersonalView({
                     type="email"
                     value={invEmail}
                     onChange={(e) => setInvEmail(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                    className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
                   />
                 </label>
                 <label className="text-sm text-ink-soft">
@@ -173,7 +173,7 @@ export default function PersonalView({
                   <select
                     value={invRole}
                     onChange={(e) => setInvRole(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                    className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
                   >
                     {rolesDisponibles.map((r) => (
                       <option key={r.value} value={r.value}>
@@ -192,7 +192,7 @@ export default function PersonalView({
                           className={`cursor-pointer rounded-full border px-3 py-1 text-xs ${
                             invSedes.includes(s.id)
                               ? "border-ink bg-ink text-cream"
-                              : "border-white/15 text-ink-soft"
+                              : "border-ink/15 text-ink-soft"
                           }`}
                         >
                           <input
@@ -245,7 +245,7 @@ export default function PersonalView({
             return (
               <li
                 key={p.id}
-                className="rounded-2xl border border-white/10 bg-card p-5"
+                className="rounded-2xl border border-ink/10 bg-card p-5"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
@@ -298,7 +298,7 @@ export default function PersonalView({
                               if (e.target.value) agregar(p.id, e.target.value);
                             }}
                             onBlur={() => setAgregando(null)}
-                            className="rounded-full border border-white/15 bg-cream px-2 py-1 text-xs text-ink"
+                            className="rounded-full border border-ink/15 bg-cream px-2 py-1 text-xs text-ink"
                           >
                             <option value="" disabled>
                               Elegir sede…
@@ -312,7 +312,7 @@ export default function PersonalView({
                         ) : (
                           <button
                             onClick={() => setAgregando(p.id)}
-                            className="rounded-full border border-dashed border-white/20 px-3 py-1 text-xs text-ink-soft hover:text-ink"
+                            className="rounded-full border border-dashed border-ink/20 px-3 py-1 text-xs text-ink-soft hover:text-ink"
                           >
                             + sede
                           </button>

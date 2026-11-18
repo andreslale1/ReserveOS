@@ -1,4 +1,5 @@
 import Link from "next/link";
+import MenuGrupo from "./menu-grupo";
 import { salir } from "@/components/owner/salir";
 import { estiloMarca, marcaPorSlug } from "@/lib/marca";
 import { getPanelContext, ROLE_LABEL, puedeVer, rutaHabilitada } from "@/lib/panel-context";
@@ -70,86 +71,45 @@ export default async function PanelLayout({
       )
     : [];
 
+  const grupos = ORDEN_GRUPOS.map((g) => ({ titulo: g, enlaces: links.filter((l) => (GRUPO[l.href] ?? "Configuración") === g) })).filter((g) => g.enlaces.length > 0);
+  const plano = links.length <= 8;
+
   return (
-    <div className="flex min-h-screen flex-col bg-cream md:flex-row" style={estiloMarca(marca?.color)}>
-      <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-white/10 bg-card px-4 py-6 md:flex">
-        <div className="flex items-center gap-2 px-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-peach">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M2 8.5L6 12.5L14 3.5"
-                stroke="#0a0b08"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </span>
-          {marca?.logo ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={marca.logo} alt={`Logo de ${tenantName}`} className="h-8 w-auto max-w-[9rem] object-contain" />
-          ) : (
-            <span className="text-base font-semibold text-ink">{marca ? tenantName : "ReserveOS"}</span>
-          )}
-        </div>
-
-        <nav aria-label="Panel del estudio" className="mt-6 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
-          {ORDEN_GRUPOS.map((g) => {
-            const enlaces = links.filter((l) => (GRUPO[l.href] ?? "Configuración") === g);
-            if (enlaces.length === 0) return null;
-            return (
-              <div key={g}>
-                {links.length > 8 && <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-ink/45">{g}</p>}
-                <div className="mt-1 flex flex-col gap-0.5">
-                  {enlaces.map((l) => (
-                    <Link key={l.href} href={l.href} className="rounded-lg px-3 py-1.5 text-sm text-ink-soft transition-colors duration-200 hover:bg-cream hover:text-ink">
-                      {l.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </nav>
-
-        <div className="mt-4 shrink-0 rounded-xl bg-cream px-3 py-3">
-          <p className="text-xs font-medium text-ink">
-            {membership?.nombre ?? "—"}
-          </p>
-          <p className="text-xs text-ink-soft">
-            {membership ? ROLE_LABEL[membership.role] : ""} · {tenantName}
-          </p>
-          {variosEstudios && (
-            <Link href="/elegir-panel" className="mt-1 block text-xs text-ink/50 underline">Cambiar de estudio</Link>
-          )}
-          <form action={salir}><button className="mt-2 text-xs text-ink/60 underline hover:text-ink">Cerrar sesión</button></form>
-          {marca && <p className="mt-3 text-[10px] text-ink/35">Con tecnología ReserveOS</p>}
-        </div>
-      </aside>
-
-      <nav className="flex items-center gap-1 overflow-x-auto border-b border-white/10 bg-card px-4 py-3 md:hidden">
-        {links.map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            className="shrink-0 rounded-full px-3 py-1.5 text-sm text-ink-soft transition-colors duration-200 hover:bg-cream hover:text-ink"
-          >
-            {l.label}
-          </Link>
-        ))}
-        <form action={salir} className="shrink-0"><button className="rounded-full px-3 py-1.5 text-sm text-ink/60">Cerrar sesión</button></form>
-      </nav>
-
-      <div className="flex-1">
-        {avisos.length > 0 && (
-          <div className="border-b border-white/10 bg-peach-tint px-6 py-3 text-sm text-ink md:px-10">
-            {avisos.map((a, i) => (
-              <p key={i}><strong>Aviso de ReserveOS:</strong> {a.titulo} · {a.estado}</p>
-            ))}
+    <div className="tema-estudio min-h-screen bg-cream" style={estiloMarca(marca?.color)}>
+      <header className="bg-ink text-void">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-1 px-5 py-3">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
+            <Link href="/panel/hoy" className="flex items-center py-1">
+              {marca?.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={marca.logo} alt={`Logo de ${tenantName}`} className="h-8 w-auto max-w-[10rem] object-contain" />
+              ) : (
+                <span className="font-serif text-2xl leading-none text-void">{marca ? tenantName : "ReserveOS"}</span>
+              )}
+            </Link>
+            <nav aria-label="Panel del estudio" className="flex flex-wrap items-center">
+              {plano
+                ? links.map((l) => <Link key={l.href} href={l.href} className="rounded-md px-3 py-2 text-sm font-medium text-void/90 hover:bg-void/10 hover:text-void">{l.label}</Link>)
+                : grupos.map((g) => <MenuGrupo key={g.titulo} titulo={g.titulo} enlaces={g.enlaces} />)}
+            </nav>
           </div>
-        )}
-        {children}
-      </div>
+          <div className="flex items-center gap-4 text-xs text-void/80">
+            <span>{membership?.nombre ?? "—"} · {membership ? ROLE_LABEL[membership.role] : ""}</span>
+            {variosEstudios && <Link href="/elegir-panel" className="underline hover:text-void">Cambiar estudio</Link>}
+            <form action={salir}><button className="underline hover:text-void">Cerrar sesión</button></form>
+          </div>
+        </div>
+      </header>
+
+      {avisos.length > 0 && (
+        <div className="border-b border-ink/15 bg-peach-tint px-6 py-3 text-sm text-ink md:px-10">
+          {avisos.map((a, i) => (
+            <p key={i}><strong>Aviso de ReserveOS:</strong> {a.titulo} · {a.estado}</p>
+          ))}
+        </div>
+      )}
+      <div className="mx-auto max-w-6xl">{children}</div>
+      {marca && <p className="pb-8 text-center text-[10px] uppercase tracking-[0.2em] text-ink/35">Con tecnología ReserveOS</p>}
     </div>
   );
 }

@@ -50,7 +50,7 @@ export default function PagosPendientesView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="text-2xl font-semibold text-ink md:text-3xl">
           Pagos pendientes
         </h1>
@@ -66,7 +66,7 @@ export default function PagosPendientesView({
         )}
 
         {pendientes.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">
+          <div className="rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">
             No hay pagos pendientes de confirmar.
           </div>
         ) : (
@@ -74,7 +74,7 @@ export default function PagosPendientesView({
             {pendientes.map((p) => (
               <li
                 key={p.id}
-                className="rounded-2xl border border-white/10 bg-card p-5"
+                className="rounded-2xl border border-ink/10 bg-card p-5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
@@ -130,7 +130,7 @@ export default function PagosPendientesView({
                         onClick={() =>
                           setRechazando(rechazando === p.id ? null : p.id)
                         }
-                        className="rounded-full border border-red-400/40 px-4 py-1.5 text-xs text-red-500 hover:bg-red-500/10"
+                        className="rounded-full border border-[#e6b8ae] px-4 py-1.5 text-xs text-red-500 hover:bg-[#fbe9e5]"
                       >
                         Rechazar
                       </button>
@@ -142,12 +142,12 @@ export default function PagosPendientesView({
                           value={motivo}
                           onChange={(e) => setMotivo(e.target.value)}
                           placeholder="Motivo (opcional)"
-                          className="rounded-lg border border-white/15 bg-cream px-2 py-1 text-xs text-ink outline-none"
+                          className="rounded-lg border border-ink/15 bg-cream px-2 py-1 text-xs text-ink outline-none"
                         />
                         <button
                           disabled={isPending}
                           onClick={() => rechazar(p.id)}
-                          className="rounded-full bg-red-500 px-3 py-1 text-xs font-medium text-white"
+                          className="rounded-full bg-red-500 px-3 py-1 text-xs font-medium text-ink"
                         >
                           Confirmar rechazo
                         </button>

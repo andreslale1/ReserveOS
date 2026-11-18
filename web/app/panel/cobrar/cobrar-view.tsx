@@ -7,7 +7,7 @@ export type PaqueteCat = { id: string; nombre: string; num_clases: number | null
 type Clienta = { id: string; nombre: string; telefono: string | null; email: string | null };
 
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-card px-3 py-2 text-ink outline-none focus:border-ink/40";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-card px-3 py-2 text-ink outline-none focus:border-ink/40";
 const METODOS = [
   { id: "efectivo", label: "Efectivo" },
   { id: "tarjeta_estudio", label: "Tarjeta (POS del estudio)" },
@@ -49,7 +49,7 @@ export default function CobrarView({ clientas, paquetes, sedes, puedeCortesia }:
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div className="mx-auto max-w-2xl">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Cobrar un paquete</h1>
         <p className="mt-1 text-sm text-ink/60">Busca a la clienta, elige el paquete y registra el cobro. Queda en la caja de la sede.</p>
@@ -58,7 +58,7 @@ export default function CobrarView({ clientas, paquetes, sedes, puedeCortesia }:
       <div className="mx-auto grid max-w-2xl gap-6 px-6 py-8 md:px-10">
         {msg && <p role={msg.ok ? "status" : "alert"} className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">1. ¿Quién paga?</h2>
           {clienta ? (
             <div className="mt-3 flex items-center justify-between rounded-xl bg-cream px-4 py-3">
@@ -71,9 +71,9 @@ export default function CobrarView({ clientas, paquetes, sedes, puedeCortesia }:
                 <input className={input} value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Escribe al menos 2 letras" autoComplete="off" />
               </label>
               {resultados.length > 0 && (
-                <ul className="mt-2 divide-y divide-white/10 rounded-xl border border-white/10">
+                <ul className="mt-2 divide-y divide-ink/10 rounded-xl border border-ink/10">
                   {resultados.map((c) => (
-                    <li key={c.id}><button className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-ink hover:bg-white/5" onClick={() => setClienta(c)}>
+                    <li key={c.id}><button className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-ink hover:bg-ink/5" onClick={() => setClienta(c)}>
                       <span>{c.nombre}</span><span className="text-xs text-ink/50">{c.telefono ?? ""}</span></button></li>
                   ))}
                 </ul>
@@ -83,7 +83,7 @@ export default function CobrarView({ clientas, paquetes, sedes, puedeCortesia }:
           )}
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">2. ¿Qué compra?</h2>
           {sedes.length > 1 && (
             <label className="mt-3 block text-sm text-ink/60">Sede donde se cobra
@@ -93,7 +93,7 @@ export default function CobrarView({ clientas, paquetes, sedes, puedeCortesia }:
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
             {disponibles.map((p) => (
               <button key={p.id} onClick={() => setPaqueteId(p.id)} aria-pressed={paqueteId === p.id}
-                className={`rounded-xl border px-4 py-3 text-left transition ${paqueteId === p.id ? "border-ink bg-white/10" : "border-white/15 hover:border-white/30"}`}>
+                className={`rounded-xl border px-4 py-3 text-left transition ${paqueteId === p.id ? "border-ink bg-ink/10" : "border-ink/15 hover:border-ink/30"}`}>
                 <span className="block text-sm font-medium text-ink">{p.nombre}</span>
                 <span className="block text-xs text-ink/55">{p.num_clases ?? "Ilimitadas"} clases · {p.vigencia_dias} días{p.sedes ? ` · ${p.sedes}` : ""}</span>
                 <span className="mt-1 block text-base font-semibold text-ink">{q(p.precio)}</span>
@@ -103,12 +103,12 @@ export default function CobrarView({ clientas, paquetes, sedes, puedeCortesia }:
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">3. ¿Cómo paga?</h2>
           <div className="mt-3 flex flex-wrap gap-2">
             {[...METODOS, ...(puedeCortesia ? [{ id: "cortesia", label: "Cortesía (sin cobro)" }] : [])].map((m) => (
               <button key={m.id} onClick={() => setMetodo(m.id)} aria-pressed={metodo === m.id}
-                className={`rounded-full border px-4 py-1.5 text-sm ${metodo === m.id ? "border-ink bg-ink text-cream" : "border-white/15 text-ink/70 hover:text-ink"}`}>{m.label}</button>
+                className={`rounded-full border px-4 py-1.5 text-sm ${metodo === m.id ? "border-ink bg-ink text-cream" : "border-ink/15 text-ink/70 hover:text-ink"}`}>{m.label}</button>
             ))}
           </div>
           {metodo !== "cortesia" && (
@@ -118,7 +118,7 @@ export default function CobrarView({ clientas, paquetes, sedes, puedeCortesia }:
           )}
         </section>
 
-        <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-card p-5">
+        <div className="flex items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-card p-5">
           <p className="text-sm text-ink/70">{listo ? <>Total: <strong className="text-lg text-ink">{metodo === "cortesia" ? "Q0" : q(paquete!.precio)}</strong>{codigo.trim() && metodo !== "cortesia" ? " (con descuento al confirmar)" : ""}</> : "Elige clienta y paquete."}</p>
           <button disabled={!listo || pendiente} onClick={cobrar} className="press-spring rounded-full bg-ink px-6 py-2.5 text-sm font-medium text-cream disabled:opacity-40">
             {pendiente ? "Cobrando…" : "Cobrar"}

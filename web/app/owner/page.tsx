@@ -8,7 +8,7 @@ export default async function OwnerPage() {
 
   if (error) {
     return (
-      <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/60">
+      <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/60">
         Error cargando estudios: {error.message}
       </main>
     );

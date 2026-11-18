@@ -13,6 +13,6 @@ export default async function RentabilidadPage({ searchParams }: { searchParams:
     supabase.rpc("costos_listar", { p_desde: desde, p_hasta: hasta }),
     supabase.rpc("listar_tenants_plataforma"),
   ]);
-  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/60">{error.message}</main>;
+  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/60">{error.message}</main>;
   return <RentabilidadView mes={base} rent={rent as Rent} costos={(costos ?? []) as Costo[]} estudios={((estudios ?? []) as { id: string; name: string }[]).map((e) => ({ id: e.id, name: e.name }))} />;
 }

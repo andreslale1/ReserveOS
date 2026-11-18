@@ -11,7 +11,7 @@ export type Detalle = {
   tiene_acceso: boolean; consentimiento_completado: boolean; cliente_desde: string;
 };
 
-const boton = "rounded-full border border-white/15 px-4 py-1.5 text-sm text-ink hover:bg-white/5 disabled:opacity-50";
+const boton = "rounded-full border border-ink/15 px-4 py-1.5 text-sm text-ink hover:bg-ink/5 disabled:opacity-50";
 
 function Dato({ t, v }: { t: string; v: string }) {
   return <div><p className="text-xs uppercase tracking-wide text-ink/45">{t}</p><p className="mt-1 text-lg font-semibold text-ink">{v}</p></div>;
@@ -29,7 +29,7 @@ export default function CuentaPanel({ clienteId, nombre, detalle, esDuena, esG }
   const abs = (r: string) => (typeof window === "undefined" ? r : `${window.location.origin}${r}`);
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Detalle y cuenta">
+    <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-label="Detalle y cuenta">
       <h2 className="text-base font-semibold text-ink">Detalle de la clienta</h2>
       <div className="mt-3 grid gap-4 sm:grid-cols-4">
         <Dato t="Asistencia" v={detalle.pct_asistencia === null ? "—" : `${detalle.pct_asistencia}%`} />
@@ -42,7 +42,7 @@ export default function CuentaPanel({ clienteId, nombre, detalle, esDuena, esG }
       </p>
 
       {esG && (
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-white/10 pt-4">
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-ink/10 pt-4">
           {!detalle.tiene_acceso && (
             <button className={boton} disabled={isPending} onClick={() => { setMsg(null); startTransition(async () => { const r = await reenviarAcceso(clienteId); if (r.error) setMsg({ ok: false, texto: r.error }); else { setEnlace(abs(r.enlace!)); setMsg({ ok: true, texto: "Enlace de acceso nuevo. El anterior ya no sirve." }); } }); }}>
               Generar enlace de acceso
@@ -66,7 +66,7 @@ export default function CuentaPanel({ clienteId, nombre, detalle, esDuena, esG }
         <div className="mt-4 rounded-xl border border-peach p-4" role="alertdialog" aria-label="Confirmar eliminación">
           <p className="text-sm text-ink">Se borra la ficha de <strong>{nombre}</strong> y su historial. Queda registrado quién lo hizo. Si tiene pagos confirmados, anúlalos antes.</p>
           <label className="mt-3 block text-sm text-ink/70" htmlFor="confirmar-nombre">Escribe el nombre exacto para confirmar
-            <input id="confirmar-nombre" value={confirmar} onChange={(e) => setConfirmar(e.target.value)} className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink" />
+            <input id="confirmar-nombre" value={confirmar} onChange={(e) => setConfirmar(e.target.value)} className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink" />
           </label>
           <div className="mt-3 flex gap-2">
             <button className="rounded-full bg-ink px-4 py-1.5 text-sm text-cream disabled:opacity-50" disabled={isPending || confirmar.trim().toLowerCase() !== nombre.trim().toLowerCase()}

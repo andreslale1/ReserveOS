@@ -37,7 +37,7 @@ export default function FinanzasView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="text-2xl font-semibold text-ink md:text-3xl">
           Finanzas
         </h1>
@@ -46,19 +46,19 @@ export default function FinanzasView({
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-card p-5">
+          <div className="rounded-2xl border border-ink/10 bg-card p-5">
             <p className="text-xs uppercase tracking-wide text-ink-soft">
               Ingresos del mes
             </p>
             <p className="mt-2 text-3xl font-bold text-ink">{fmt(ingresos)}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-card p-5">
+          <div className="rounded-2xl border border-ink/10 bg-card p-5">
             <p className="text-xs uppercase tracking-wide text-ink-soft">
               Gastos del mes
             </p>
             <p className="mt-2 text-3xl font-bold text-ink">{fmt(gastos)}</p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-card p-5">
+          <div className="rounded-2xl border border-ink/10 bg-card p-5">
             <p className="text-xs uppercase tracking-wide text-ink-soft">
               Neto
             </p>
@@ -71,7 +71,7 @@ export default function FinanzasView({
         </div>
 
         {meta !== null && (
-          <div className="mt-6 rounded-2xl border border-white/10 bg-card p-5">
+          <div className="mt-6 rounded-2xl border border-ink/10 bg-card p-5">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium text-ink">Meta del mes</span>
               <span className="text-ink-soft">
@@ -99,7 +99,7 @@ export default function FinanzasView({
             {listaGastos.map((g, i) => (
               <li
                 key={i}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-card p-4"
+                className="flex items-center justify-between rounded-xl border border-ink/10 bg-card p-4"
               >
                 <div>
                   <p className="text-sm font-medium text-ink">
@@ -117,19 +117,19 @@ export default function FinanzasView({
           </ul>
         )}
         {atribucion && atribucion.sedes.length > 0 && (
-          <section className="mt-8 rounded-2xl border border-white/10 bg-card p-5">
+          <section className="mt-8 rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Ingresos por sede</h2>
             <p className="mt-1 text-xs text-ink/55">Cobros confirmados menos devoluciones, atribuidos a la sede donde se cobró. Si una clienta compra en una sede y toma clases en otra, el ingreso se cuenta una sola vez.</p>
             <div className="mt-3 overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-xs text-ink/50"><tr><th className="py-2">Sede</th><th className="text-right">Paquetes</th><th className="text-right">Tienda</th><th className="text-right">Otros</th><th className="text-right">Devoluciones</th><th className="text-right">Neto</th><th className="text-right">Clases asistidas</th></tr></thead>
-                <tbody className="divide-y divide-white/10">
+                <tbody className="divide-y divide-ink/10">
                   {atribucion.sedes.map((s) => (
                     <tr key={s.sede_id}><td className="py-2 text-ink">{s.sede}</td><td className="text-right">{fmt(s.paquetes)}</td><td className="text-right">{fmt(s.tienda)}</td><td className="text-right">{fmt(s.otros)}</td><td className="text-right text-ink/60">{s.devoluciones > 0 ? `−${fmt(s.devoluciones)}` : fmt(0)}</td><td className="text-right font-semibold text-ink">{fmt(s.neto)}</td><td className="text-right text-ink/70">{s.clases_asistidas}/{s.clases_reservadas}</td></tr>
                   ))}
                 </tbody>
                 {atribucion.consolidado !== null && (
-                  <tfoot><tr className="border-t border-white/20"><td className="py-2 font-semibold text-ink">Consolidado</td><td colSpan={4} className="text-right text-xs text-ink/55">{atribucion.cuadra ? "✓ La suma de las sedes cuadra" : "⚠ La suma no cuadra: revisa cobros sin sede"}</td><td className="text-right font-semibold text-ink">{fmt(atribucion.consolidado)}</td><td /></tr></tfoot>
+                  <tfoot><tr className="border-t border-ink/20"><td className="py-2 font-semibold text-ink">Consolidado</td><td colSpan={4} className="text-right text-xs text-ink/55">{atribucion.cuadra ? "✓ La suma de las sedes cuadra" : "⚠ La suma no cuadra: revisa cobros sin sede"}</td><td className="text-right font-semibold text-ink">{fmt(atribucion.consolidado)}</td><td /></tr></tfoot>
                 )}
               </table>
             </div>

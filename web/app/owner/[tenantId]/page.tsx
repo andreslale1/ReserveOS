@@ -48,7 +48,7 @@ export default async function OwnerTenantPage({
 
   if (error || !data) {
     return (
-      <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/60">
+      <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/60">
         {error?.message ?? "Estudio no encontrado"}
       </main>
     );
@@ -61,16 +61,16 @@ export default async function OwnerTenantPage({
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10 md:px-10">
-      <Link href="/owner" className="text-sm text-white/50 hover:text-white">
+      <Link href="/owner" className="text-sm text-ink/50 hover:text-ink">
         ← Estudios
       </Link>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black uppercase tracking-tight text-white md:text-3xl">
+          <h1 className="text-2xl font-black uppercase tracking-tight text-ink md:text-3xl">
             {d.tenant.name}
           </h1>
-          <p className="mt-1 text-sm text-white/50">
+          <p className="mt-1 text-sm text-ink/50">
             {d.tenant.slug} · {est.label}{d.tenant.tipo !== "cliente" ? ` · ${d.tenant.tipo}` : ""} · creado{" "}
             {new Date(d.tenant.created_at).toLocaleDateString("es-GT")}
           </p>
@@ -78,7 +78,7 @@ export default async function OwnerTenantPage({
       </div>
 
       {d.tenant.estado_motivo && d.tenant.status !== "activo" && (
-        <p className="mt-3 text-xs text-white/50">Motivo del estado: {d.tenant.estado_motivo}</p>
+        <p className="mt-3 text-xs text-ink/50">Motivo del estado: {d.tenant.estado_motivo}</p>
       )}
 
       <div className="mt-8 grid gap-4 sm:grid-cols-4">
@@ -90,17 +90,17 @@ export default async function OwnerTenantPage({
           ["Errores (24 h)", m.errores_24h],
           ["Tickets abiertos", m.tickets_abiertos],
         ].map(([t, v]) => (
-          <div key={String(t)} className="rounded-2xl border border-white/10 bg-void-card p-5">
-            <p className="text-xs uppercase tracking-wide text-white/40">{t}</p>
-            <p className="mt-2 text-2xl font-bold text-white">{v}</p>
+          <div key={String(t)} className="rounded-2xl border border-ink/10 bg-void-card p-5">
+            <p className="text-xs uppercase tracking-wide text-ink/40">{t}</p>
+            <p className="mt-2 text-2xl font-bold text-ink">{v}</p>
           </div>
         ))}
-        <div className="rounded-2xl border border-white/10 bg-void-card p-5 sm:col-span-2">
-          <p className="text-xs uppercase tracking-wide text-white/40">Contrato y suscripción</p>
-          <p className="mt-2 text-sm text-white">
+        <div className="rounded-2xl border border-ink/10 bg-void-card p-5 sm:col-span-2">
+          <p className="text-xs uppercase tracking-wide text-ink/40">Contrato y suscripción</p>
+          <p className="mt-2 text-sm text-ink">
             {d.contrato ? `Contrato ${d.contrato.estado}${d.contrato.mensualidad != null ? ` · ${fmt(d.contrato.mensualidad)}/mes` : ""}` : "Sin contrato vinculado"}
           </p>
-          <p className="mt-1 text-xs text-white/50">
+          <p className="mt-1 text-xs text-ink/50">
             {d.suscripcion ? `Plan ${d.suscripcion.plan ?? "—"} · ${d.suscripcion.estado ?? "—"}` : "Sin suscripción"}
           </p>
         </div>
@@ -113,88 +113,88 @@ export default async function OwnerTenantPage({
         planActual={planActual}
       />
 
-      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-white/40">
+      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink/40">
         Sedes
       </h2>
       <ul className="mt-3 flex flex-wrap gap-2">
         {d.sedes.map((s) => (
           <li
             key={s.id}
-            className="rounded-full border border-white/10 bg-void-card px-3 py-1.5 text-xs text-white/70"
+            className="rounded-full border border-ink/10 bg-void-card px-3 py-1.5 text-xs text-ink/70"
           >
             {s.name} · {s.timezone}
           </li>
         ))}
         {d.sedes.length === 0 && (
-          <li className="text-xs text-white/40">Sin sedes todavía.</li>
+          <li className="text-xs text-ink/40">Sin sedes todavía.</li>
         )}
       </ul>
 
-      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-white/40">
+      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink/40">
         Personal ({d.personal.length})
       </h2>
       <ul className="mt-3 space-y-1.5">
         {d.personal.map((p) => (
           <li
             key={p.id}
-            className="flex items-center justify-between rounded-lg border border-white/5 bg-void-card/60 px-4 py-2 text-xs"
+            className="flex items-center justify-between rounded-lg border border-ink/5 bg-void-card/60 px-4 py-2 text-xs"
           >
-            <span className="text-white">
+            <span className="text-ink">
               {p.nombre ?? "—"}{" "}
-              <span className="text-white/40">{p.email}</span>
+              <span className="text-ink/40">{p.email}</span>
             </span>
-            <span className="text-white/50">{p.role}</span>
+            <span className="text-ink/50">{p.role}</span>
           </li>
         ))}
         {d.personal.length === 0 && (
-          <li className="text-xs text-white/40">Sin personal todavía.</li>
+          <li className="text-xs text-ink/40">Sin personal todavía.</li>
         )}
       </ul>
 
-      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-white/40">
+      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink/40">
         Paquetes ({d.paquetes.length})
       </h2>
       <ul className="mt-3 space-y-1.5">
         {d.paquetes.map((p) => (
           <li
             key={p.id}
-            className="flex items-center justify-between rounded-lg border border-white/5 bg-void-card/60 px-4 py-2 text-xs"
+            className="flex items-center justify-between rounded-lg border border-ink/5 bg-void-card/60 px-4 py-2 text-xs"
           >
-            <span className={p.activo ? "text-white" : "text-white/40"}>
+            <span className={p.activo ? "text-ink" : "text-ink/40"}>
               {p.nombre} {!p.activo && "(inactivo)"}
             </span>
-            <span className="text-white/50">
+            <span className="text-ink/50">
               {fmt(p.precio)} · {p.num_clases ?? "∞"} clases
             </span>
           </li>
         ))}
         {d.paquetes.length === 0 && (
-          <li className="text-xs text-white/40">
+          <li className="text-xs text-ink/40">
             Sin paquetes todavía — este estudio no tiene nada que vender.
           </li>
         )}
       </ul>
 
-      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-white/40">
+      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink/40">
         Clases programadas ({d.proximas_clases.length})
       </h2>
       <ul className="mt-3 space-y-1.5">
         {d.proximas_clases.map((c) => (
           <li
             key={c.id}
-            className="flex items-center justify-between rounded-lg border border-white/5 bg-void-card/60 px-4 py-2 text-xs"
+            className="flex items-center justify-between rounded-lg border border-ink/5 bg-void-card/60 px-4 py-2 text-xs"
           >
-            <span className="text-white">
+            <span className="text-ink">
               {c.nombre_clase} · {c.sede}
             </span>
-            <span className="text-white/50">
+            <span className="text-ink/50">
               {DIAS[c.dia_semana]} {String(c.hora_inicio).slice(0, 5)} ·{" "}
               {c.cupo_maximo} cupos
             </span>
           </li>
         ))}
         {d.proximas_clases.length === 0 && (
-          <li className="text-xs text-white/40">
+          <li className="text-xs text-ink/40">
             Sin clases programadas todavía.
           </li>
         )}
@@ -207,14 +207,14 @@ export default async function OwnerTenantPage({
         puedeOtorgar={puedeOtorgar}
       />
 
-      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-white/40">Historial de estado</h2>
+      <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink/40">Historial de estado</h2>
       <ul className="mt-3 space-y-1.5">
         {((historial ?? []) as { created_at: string; estado_anterior: string; estado_nuevo: string; motivo: string; actor: string }[]).map((h) => (
-          <li key={h.created_at + h.estado_nuevo} className="rounded-lg border border-white/5 bg-void-card/60 px-4 py-2 text-xs text-white/70">
+          <li key={h.created_at + h.estado_nuevo} className="rounded-lg border border-ink/5 bg-void-card/60 px-4 py-2 text-xs text-ink/70">
             {new Date(h.created_at).toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "short", timeStyle: "short" })} · {h.actor}: {h.estado_anterior} → {h.estado_nuevo} — {h.motivo}
           </li>
         ))}
-        {(historial ?? []).length === 0 && <li className="text-xs text-white/40">Sin cambios de estado registrados.</li>}
+        {(historial ?? []).length === 0 && <li className="text-xs text-ink/40">Sin cambios de estado registrados.</li>}
       </ul>
     </main>
   );

@@ -18,7 +18,7 @@ export default async function CuentasPage() {
     <main className="mx-auto max-w-4xl px-6 py-8 md:px-10">
       <h1 className="font-serif text-2xl text-ink">Cuentas del equipo</h1>
       <p className="mt-1 text-sm text-ink/60">Quién tiene acceso y cuándo entró por última vez. {inactivas.length > 0 ? `${inactivas.length} cuenta(s) sin entrar en más de 60 días: revisa si deben seguir con acceso.` : "Todas las cuentas están activas."}</p>
-      <ul className="mt-6 divide-y divide-white/10 rounded-2xl border border-white/10 bg-card">
+      <ul className="mt-6 divide-y divide-ink/10 rounded-2xl border border-ink/10 bg-card">
         {cuentas.map((c) => {
           const d = dias(c.ultimo_acceso);
           const alerta = d === null || d > 60;

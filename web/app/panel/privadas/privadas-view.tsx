@@ -6,7 +6,7 @@ import { asignarPrivada, cancelarPrivada, crearHorarioPrivado } from "./actions"
 export type Hueco = { horario_id: string; fecha: string; hora_inicio: string; hora_fin: string; nombre_clase: string; sede_id: string; sede: string; instructora: string | null; reserva_id: string | null; cliente: string | null; asistio: boolean | null };
 export type Opcion = { id: string; nombre: string };
 
-const campo = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-ink/30";
+const campo = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-ink/30";
 const boton = "press-spring rounded-full bg-ink px-5 py-2 text-sm font-medium text-cream disabled:opacity-50";
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -31,7 +31,7 @@ export default function PrivadasView({ tenantId, agenda, error, desde, hasta, se
       {msg && <p role={msg.ok ? "status" : "alert"} className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
       {error && <p role="alert" className="rounded-xl bg-peach-tint px-4 py-3 text-sm text-ink">{error}</p>}
 
-      <form method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-white/10 bg-card p-5" aria-label="Rango de la agenda">
+      <form method="get" className="flex flex-wrap items-end gap-3 rounded-2xl border border-ink/10 bg-card p-5" aria-label="Rango de la agenda">
         <label className="text-sm text-ink/70">Desde<input type="date" name="desde" defaultValue={desde} className={campo} /></label>
         <label className="text-sm text-ink/70">Hasta<input type="date" name="hasta" defaultValue={hasta} className={campo} /></label>
         {sedes.length > 1 && <label className="text-sm text-ink/70">Sede<select name="sede" defaultValue={sedeId} className={campo}><option value="">Todas</option>{sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>}
@@ -39,9 +39,9 @@ export default function PrivadasView({ tenantId, agenda, error, desde, hasta, se
         <p className="w-full text-xs text-ink/50">Sin fechas se muestran los próximos 14 días.</p>
       </form>
 
-      <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Agenda de clases privadas">
+      <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-label="Agenda de clases privadas">
         <h2 className="text-base font-semibold text-ink">Agenda</h2>
-        <ul className="mt-3 divide-y divide-white/10">
+        <ul className="mt-3 divide-y divide-ink/10">
           {agenda.length === 0 && <li className="py-3 text-sm text-ink/55">No hay horarios privados en ese período{puedeCrear ? ". Crea uno abajo." : "."}</li>}
           {agenda.map((h) => (
             <li key={`${h.horario_id}|${h.fecha}`} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
@@ -52,17 +52,17 @@ export default function PrivadasView({ tenantId, agenda, error, desde, hasta, se
               {h.reserva_id ? (
                 <span className="flex items-center gap-3">
                   <span className="rounded-full bg-sage-tint px-3 py-1 text-xs text-sage">{h.cliente}</span>
-                  {puedeAsignar && <button className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-50" disabled={isPending}
+                  {puedeAsignar && <button className="rounded-full border border-ink/15 px-3 py-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-50" disabled={isPending}
                     onClick={() => { if (window.confirm(`¿Cancelar la clase privada de ${h.cliente}? Se le devuelve la clase a su paquete.`)) correr(() => cancelarPrivada(h.reserva_id!), "Clase privada cancelada y devuelta al paquete."); }}>Cancelar</button>}
                 </span>
-              ) : <span className="rounded-full bg-white/5 px-3 py-1 text-xs text-ink/60">Libre</span>}
+              ) : <span className="rounded-full bg-ink/5 px-3 py-1 text-xs text-ink/60">Libre</span>}
             </li>
           ))}
         </ul>
       </section>
 
       {puedeAsignar && (
-        <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Asignar clase privada">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-label="Asignar clase privada">
           <h2 className="text-base font-semibold text-ink">Asignar una clase privada</h2>
           <p className="mt-1 text-xs text-ink/55">Crea el paquete privado de la clienta, lo cobra al método elegido y le aparta el horario.</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -76,7 +76,7 @@ export default function PrivadasView({ tenantId, agenda, error, desde, hasta, se
       )}
 
       {puedeCrear && (
-        <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Nuevo horario privado">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-label="Nuevo horario privado">
           <h2 className="text-base font-semibold text-ink">Nuevo horario privado</h2>
           <p className="mt-1 text-xs text-ink/55">Un lugar por horario (1 a 1). La instructora debe estar asignada a la sede.</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">

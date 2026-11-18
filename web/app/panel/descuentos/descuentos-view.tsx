@@ -63,7 +63,7 @@ export default function DescuentosView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div>
           <h1 className="text-2xl font-semibold text-ink md:text-3xl">
             Descuentos
@@ -85,7 +85,7 @@ export default function DescuentosView({
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
         {mostrarForm && (
-          <div className="mb-6 grid gap-4 rounded-2xl border border-white/10 bg-card p-5 sm:grid-cols-4">
+          <div className="mb-6 grid gap-4 rounded-2xl border border-ink/10 bg-card p-5 sm:grid-cols-4">
             <label className="text-sm text-ink-soft">
               Código
               <input
@@ -93,7 +93,7 @@ export default function DescuentosView({
                 value={codigo}
                 onChange={(e) => setCodigo(e.target.value.toUpperCase())}
                 placeholder="BIENVENIDA10"
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
               />
             </label>
             <label className="text-sm text-ink-soft">
@@ -102,7 +102,7 @@ export default function DescuentosView({
                 type="number"
                 value={pct}
                 onChange={(e) => setPct(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
               />
             </label>
             <label className="text-sm text-ink-soft">
@@ -112,7 +112,7 @@ export default function DescuentosView({
                 value={usosMaximos}
                 onChange={(e) => setUsosMaximos(e.target.value)}
                 placeholder="Sin límite"
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
               />
             </label>
             <label className="text-sm text-ink-soft">
@@ -121,7 +121,7 @@ export default function DescuentosView({
                 type="date"
                 value={vigenteHasta}
                 onChange={(e) => setVigenteHasta(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
               />
             </label>
             <div className="sm:col-span-4">
@@ -140,7 +140,7 @@ export default function DescuentosView({
         )}
 
         {codigos.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">
+          <div className="rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">
             No hay códigos de descuento creados.
           </div>
         ) : (
@@ -148,7 +148,7 @@ export default function DescuentosView({
             {codigos.map((c) => (
               <li
                 key={c.id}
-                className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-card p-5"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-card p-5"
               >
                 <div>
                   <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ export default function DescuentosView({
                     <button
                       disabled={isPending}
                       onClick={() => toggle(c.id, c.activo)}
-                      className="rounded-full border border-white/15 px-3 py-1 text-xs text-ink-soft hover:text-ink"
+                      className="rounded-full border border-ink/15 px-3 py-1 text-xs text-ink-soft hover:text-ink"
                     >
                       {c.activo ? "Desactivar" : "Activar"}
                     </button>

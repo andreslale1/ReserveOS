@@ -28,15 +28,15 @@ export default function TicketView({ d }: { d: Detalle }) {
   return (
     <main className="mx-auto grid max-w-5xl gap-6 px-6 py-8 md:px-10 lg:grid-cols-[1fr_300px]">
       <div>
-        <Link href="/owner/soporte" className="text-sm text-white/70 hover:text-white">← Soporte</Link>
+        <Link href="/owner/soporte" className="text-sm text-ink/70 hover:text-ink">← Soporte</Link>
         <h1 className="mt-2 text-xl font-semibold">{t.asunto}</h1>
-        <p className="text-sm text-white/70">{t.estudio}{t.sede_nombre ? ` · ${t.sede_nombre}` : ""}{t.version ? ` · versión ${t.version}` : ""} · abierto por {t.abierto_por_nombre ?? "—"}</p>
-        <div aria-live="polite">{msg && <p role={msg.ok ? "status" : "alert"} className={`mt-3 rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-lime/15 text-lime" : "bg-red-400/15 text-red-200"}`}>{msg.texto}</p>}</div>
+        <p className="text-sm text-ink/70">{t.estudio}{t.sede_nombre ? ` · ${t.sede_nombre}` : ""}{t.version ? ` · versión ${t.version}` : ""} · abierto por {t.abierto_por_nombre ?? "—"}</p>
+        <div aria-live="polite">{msg && <p role={msg.ok ? "status" : "alert"} className={`mt-3 rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-lime/15 text-lime" : "bg-[#fbe9e5] text-[#8f2f1f]"}`}>{msg.texto}</p>}</div>
         <ul className="mt-5 space-y-3">
           {d.mensajes.map((m) => (
-            <li key={m.id} className={`rounded-2xl border p-4 text-sm ${m.interno ? "border-yellow-300/30 bg-yellow-300/5" : m.es_equipo ? "border-lime/30 bg-void-card" : "border-white/10 bg-void-card"}`}>
-              <p className="text-xs text-white/65">{m.autor_nombre ?? "—"} · {m.es_equipo ? "equipo" : "estudio"}{m.interno ? " · NOTA INTERNA (el estudio no la ve)" : ""} · {new Date(m.created_at).toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "short", timeStyle: "short" })}</p>
-              <p className="mt-1 whitespace-pre-wrap text-white/85">{m.mensaje}</p>
+            <li key={m.id} className={`rounded-2xl border p-4 text-sm ${m.interno ? "border-yellow-300/30 bg-[#e8b84a]/5" : m.es_equipo ? "border-lime/30 bg-void-card" : "border-ink/10 bg-void-card"}`}>
+              <p className="text-xs text-ink/65">{m.autor_nombre ?? "—"} · {m.es_equipo ? "equipo" : "estudio"}{m.interno ? " · NOTA INTERNA (el estudio no la ve)" : ""} · {new Date(m.created_at).toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "short", timeStyle: "short" })}</p>
+              <p className="mt-1 whitespace-pre-wrap text-ink/85">{m.mensaje}</p>
             </li>
           ))}
         </ul>
@@ -48,12 +48,12 @@ export default function TicketView({ d }: { d: Detalle }) {
         }}>
           <Campo label="Respuesta" requerido error={errs.texto}>{(p) => <textarea {...p} rows={3} className={inputOwner} value={r.texto} onChange={(e) => setR({ ...r, texto: e.target.value })} />}</Campo>
           <div className="mt-2 flex items-center gap-4">
-            <label className="flex items-center gap-2 text-xs text-white/75"><input type="checkbox" checked={r.interno} onChange={(e) => setR({ ...r, interno: e.target.checked })} /> Nota interna (el estudio no la ve)</label>
+            <label className="flex items-center gap-2 text-xs text-ink/75"><input type="checkbox" checked={r.interno} onChange={(e) => setR({ ...r, interno: e.target.checked })} /> Nota interna (el estudio no la ve)</label>
             <button type="submit" className="rounded-full bg-lime px-4 py-1.5 text-sm font-semibold text-void disabled:opacity-50" disabled={isPending}>{isPending ? "Enviando…" : "Enviar"}</button>
           </div>
         </form>
       </div>
-      <aside className="h-fit rounded-2xl border border-white/15 bg-void-card p-5">
+      <aside className="h-fit rounded-2xl border border-ink/15 bg-void-card p-5">
         <h2 className="text-sm font-semibold">Gestión</h2>
         <form ref={gestion} noValidate className="mt-3 grid gap-3" onSubmit={(e) => {
           e.preventDefault();
@@ -65,9 +65,9 @@ export default function TicketView({ d }: { d: Detalle }) {
           <Campo label="Prioridad">{(p) => <select {...p} className={inputOwner} value={f.prioridad} onChange={(e) => setF({ ...f, prioridad: e.target.value })}>{["baja", "normal", "alta", "urgente"].map((x) => <option key={x}>{x}</option>)}</select>}</Campo>
           <Campo label="Asignado a">{(p) => <input {...p} className={inputOwner} value={f.asignado} onChange={(e) => setF({ ...f, asignado: e.target.value })} />}</Campo>
           <Campo label="Causa" requerido={["resuelto", "cerrado"].includes(f.estado)} error={errs.causa} ayuda="Obligatoria al resolver o cerrar.">{(p) => <input {...p} className={inputOwner} placeholder="código, configuración, proveedor…" value={f.causa} onChange={(e) => setF({ ...f, causa: e.target.value })} />}</Campo>
-          <button type="submit" className="w-full rounded-full border border-white/25 px-4 py-2 text-sm disabled:opacity-50" disabled={isPending}>{isPending ? "Guardando…" : "Guardar cambios"}</button>
+          <button type="submit" className="w-full rounded-full border border-ink/25 px-4 py-2 text-sm disabled:opacity-50" disabled={isPending}>{isPending ? "Guardando…" : "Guardar cambios"}</button>
         </form>
-        <p className="mt-3 text-xs text-white/65">Responder antes de {new Date(t.sla_vence).toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "short", timeStyle: "short" })}</p>
+        <p className="mt-3 text-xs text-ink/65">Responder antes de {new Date(t.sla_vence).toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "short", timeStyle: "short" })}</p>
       </aside>
     </main>
   );

@@ -6,7 +6,7 @@ import ClasesView, { type Clase } from "./clases-view";
 type Filtros = { desde?: string; hasta?: string; sede?: string; dia?: string; hora?: string; instructora?: string };
 type Resumen = { instructora_id: string | null; instructora: string; clases: number; clases_canceladas: number; alumnas: number; asistieron: number; no_vinieron: number; sin_marcar: number; cancelaciones: number; ocupacion_pct: number; asistencia_pct: number | null };
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
-const campo = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-ink/30";
+const campo = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-ink/30";
 
 export default async function InstructorasPage({ searchParams }: { searchParams: Promise<Filtros> }) {
   const f = await searchParams;
@@ -36,7 +36,7 @@ export default async function InstructorasPage({ searchParams }: { searchParams:
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Clases por instructora</h1>
         <p className="mt-1 text-sm text-ink/60">
           {propia ? "Las clases que has dado: alumnas, asistencia y cancelaciones." : "Cuántas clases dictó cada persona, con cuántas alumnas, qué ocupación y asistencia tuvo. La instructora queda guardada en cada clase: si cambias la del horario, lo ya dado no cambia."}
@@ -44,7 +44,7 @@ export default async function InstructorasPage({ searchParams }: { searchParams:
       </header>
 
       <div className="mx-auto grid max-w-6xl gap-5 px-6 py-8 md:px-10">
-        <form method="get" className="grid gap-3 rounded-2xl border border-white/10 bg-card p-5 sm:grid-cols-2 lg:grid-cols-4" aria-label="Filtros">
+        <form method="get" className="grid gap-3 rounded-2xl border border-ink/10 bg-card p-5 sm:grid-cols-2 lg:grid-cols-4" aria-label="Filtros">
           <label className="text-sm text-ink/70">Desde<input type="date" name="desde" defaultValue={f.desde ?? ""} className={campo} /></label>
           <label className="text-sm text-ink/70">Hasta<input type="date" name="hasta" defaultValue={f.hasta ?? ""} className={campo} /></label>
           {sedes.length > 1 && <label className="text-sm text-ink/70">Sede<select name="sede" defaultValue={f.sede ?? ""} className={campo}><option value="">Todas</option>{sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>}
@@ -56,11 +56,11 @@ export default async function InstructorasPage({ searchParams }: { searchParams:
         {error && <p role="alert" className="rounded-xl bg-peach-tint px-4 py-3 text-sm text-ink">{error}</p>}
         <p className="text-xs text-ink/55">Sin fechas se muestran los últimos 30 días. Máximo 3 meses por consulta.</p>
 
-        <section className="overflow-x-auto rounded-2xl border border-white/10 bg-card p-5" aria-label="Resumen por instructora">
+        <section className="overflow-x-auto rounded-2xl border border-ink/10 bg-card p-5" aria-label="Resumen por instructora">
           <h2 className="text-base font-semibold text-ink">Resumen</h2>
           <table className="mt-3 w-full min-w-[640px] text-left text-sm">
             <thead className="text-xs uppercase tracking-wide text-ink/50"><tr><th className="py-2">Instructora</th><th>Clases</th><th>Alumnas</th><th>Asistieron</th><th>No vinieron</th><th>Sin marcar</th><th>Cancelaciones</th><th>Ocupación</th><th>Asistencia</th></tr></thead>
-            <tbody className="divide-y divide-white/10 text-ink">
+            <tbody className="divide-y divide-ink/10 text-ink">
               {filas.length === 0 && <tr><td colSpan={9} className="py-4 text-ink/55">No hay clases dadas en ese período.</td></tr>}
               {filas.map((r) => (
                 <tr key={r.instructora_id ?? "sin"}>

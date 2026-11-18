@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { marcarComunicadoVisto } from "./actions";
 
-const card = "rounded-2xl border border-white/10 bg-card p-5";
+const card = "rounded-2xl border border-ink/10 bg-card p-5";
 export type Aviso = { id: string; titulo: string; mensaje: string; creado: string; visto: boolean };
 
 export function Avisos({ avisos }: { avisos: Aviso[] }) {
@@ -13,7 +13,7 @@ export function Avisos({ avisos }: { avisos: Aviso[] }) {
   return (
     <section className={card} aria-labelledby="avisos-t">
       <h2 id="avisos-t" className="text-sm font-semibold uppercase tracking-wide text-ink/50">Avisos del estudio</h2>
-      <ul className="mt-3 divide-y divide-white/10">
+      <ul className="mt-3 divide-y divide-ink/10">
         {avisos.map((a) => (
           <li key={a.id} className="py-3">
             <p className="text-sm font-medium text-ink">{!vistos.has(a.id) && <span className="mr-2 rounded-full bg-peach-tint px-2 py-0.5 text-[10px] font-semibold uppercase">Nuevo</span>}{a.titulo}</p>
@@ -39,7 +39,7 @@ export function InvitarYGanar({ enlace, codigo, referidas, estudio }: { enlace: 
       <p className="mt-3 break-all rounded-lg bg-cream px-3 py-2 text-sm text-ink">{enlace}</p>
       <p className="mt-1 text-xs text-ink/50">Tu código: <span className="font-mono">{codigo}</span> · Amigas que ya compraron: <strong>{referidas}</strong></p>
       <div className="mt-3 flex flex-wrap gap-3 text-sm">
-        <button className="rounded-full border border-white/15 px-4 py-2 font-medium text-ink" onClick={async () => { try { await navigator.clipboard.writeText(texto); setCopiado(true); setTimeout(() => setCopiado(false), 1500); } catch { /* sin portapapeles */ } }}>{copiado ? "Copiado ✓" : "Copiar mensaje"}</button>
+        <button className="rounded-full border border-ink/15 px-4 py-2 font-medium text-ink" onClick={async () => { try { await navigator.clipboard.writeText(texto); setCopiado(true); setTimeout(() => setCopiado(false), 1500); } catch { /* sin portapapeles */ } }}>{copiado ? "Copiado ✓" : "Copiar mensaje"}</button>
         <a className="rounded-full bg-ink px-4 py-2 font-medium text-cream" href={`https://wa.me/?text=${encodeURIComponent(texto)}`} target="_blank" rel="noopener noreferrer">Compartir por WhatsApp</a>
       </div>
     </section>

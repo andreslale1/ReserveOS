@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { cerrarFechas, quitarCierre } from "./actions";
 
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 
 export default function CierresView({ tenantId, sedes, cierres, puedeTodas }: {
   tenantId: string; sedes: { id: string; name: string }[]; cierres: { id: string; sede_id: string | null; desde: string; hasta: string; motivo: string }[]; puedeTodas: boolean;
@@ -17,13 +17,13 @@ export default function CierresView({ tenantId, sedes, cierres, puedeTodas }: {
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Feriados y cierres</h1>
         <p className="mt-1 text-sm text-ink/60">Cierra una sede por feriado o remodelación. Se cancelan las clases y reservas de esos días y cada clienta recupera su clase.</p>
       </header>
       <div className="mx-auto grid max-w-3xl gap-6 px-6 py-8 md:px-10">
         {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Nuevo cierre</h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <label className="text-sm text-ink/60">Sede
@@ -46,9 +46,9 @@ export default function CierresView({ tenantId, sedes, cierres, puedeTodas }: {
             <button className="press-spring mt-4 rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={f.motivo.trim().length < 3} onClick={() => setConfirmar(true)}>Cerrar estas fechas</button>
           )}
         </section>
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Cierres vigentes y próximos</h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {cierres.length === 0 && <li className="py-3 text-sm text-ink/50">No hay cierres programados.</li>}
             {cierres.map((c) => (
               <li key={c.id} className="flex items-center justify-between gap-3 py-3 text-sm">

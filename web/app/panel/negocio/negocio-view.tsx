@@ -27,7 +27,7 @@ const mesLegible = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateStri
 
 function Tarjeta({ titulo, valor, sub, alerta }: { titulo: string; valor: string; sub?: string; alerta?: boolean }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-card p-5">
+    <div className="rounded-2xl border border-ink/10 bg-card p-5">
       <p className="text-xs uppercase tracking-wide text-ink-soft">{titulo}</p>
       <p className={`mt-2 text-2xl font-bold ${alerta ? "text-ink underline decoration-wavy decoration-peach" : "text-ink"}`}>{valor}</p>
       {sub && <p className="mt-1 text-xs text-ink-soft">{sub}</p>}
@@ -37,7 +37,7 @@ function Tarjeta({ titulo, valor, sub, alerta }: { titulo: string; valor: string
 const Seccion = ({ titulo, children }: { titulo: string; children: React.ReactNode }) => (
   <section className="mt-8"><h2 className="text-sm font-medium uppercase tracking-wide text-ink-soft">{titulo}</h2><div className="mt-3">{children}</div></section>
 );
-const Vacio = ({ texto }: { texto: string }) => <div className="rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">{texto}</div>;
+const Vacio = ({ texto }: { texto: string }) => <div className="rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">{texto}</div>;
 
 export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, clientas, serie, riesgo, ranking, actividad, resumenFin }: {
   tab: Tab; rol: string; tenantId: string; sedeId: string | null; sedes: { id: string; name: string }[]; cm: CM;
@@ -64,7 +64,7 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="text-2xl font-semibold text-ink md:text-3xl">Negocio</h1>
         <p className="mt-1 text-sm text-ink-soft">
           {esG ? "Visión estratégica del estudio." : conta ? "Resumen financiero agregado, sin datos de clientas." : "Tus sedes."} · {mesLegible(cm.mes)} · hoy {formatoFecha(cm.hoy)} (hora de Guatemala)
@@ -73,17 +73,17 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
           <form method="get" className="mt-3 flex items-center gap-2">
             <input type="hidden" name="tab" value={tab} />
             <label htmlFor="sede" className="text-sm text-ink-soft">Sede</label>
-            <select id="sede" name="sede" defaultValue={sedeId ?? ""} className="rounded-lg border border-white/15 bg-cream px-3 py-1.5 text-sm text-ink">
+            <select id="sede" name="sede" defaultValue={sedeId ?? ""} className="rounded-lg border border-ink/15 bg-cream px-3 py-1.5 text-sm text-ink">
               <option value="">{esG ? "Todas las sedes" : "Todas mis sedes"}</option>
               {sedes.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-            <button className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-ink hover:bg-white/5">Ver</button>
+            <button className="rounded-full border border-ink/15 px-3 py-1.5 text-xs text-ink hover:bg-ink/5">Ver</button>
           </form>
         )}
         <nav aria-label="Secciones de Negocio" className="mt-4 flex flex-wrap gap-2">
           {pestañas.filter((p) => p.visible).map((p) => (
             <Link key={p.id} href={href(p.id)} aria-current={tab === p.id ? "page" : undefined}
-              className={`rounded-full px-4 py-1.5 text-sm ${tab === p.id ? "bg-ink text-cream" : "border border-white/15 text-ink hover:bg-white/5"}`}>
+              className={`rounded-full px-4 py-1.5 text-sm ${tab === p.id ? "bg-ink text-cream" : "border border-ink/15 text-ink hover:bg-ink/5"}`}>
               {p.label}
             </Link>
           ))}
@@ -117,7 +117,7 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
             {cm.encuestas && (
               <Seccion titulo="Satisfacción (últimos 90 días)">
                 {cm.encuestas.respuestas === 0 ? <Vacio texto="Todavía no hay respuestas de encuestas." /> : (
-                  <div className="rounded-2xl border border-white/10 bg-card p-5">
+                  <div className="rounded-2xl border border-ink/10 bg-card p-5">
                     <p className="text-sm text-ink">{cm.encuestas.respuestas} respuestas · satisfacción {cm.encuestas.satisfaccion_prom ?? "—"} de 5 · {pct(cm.encuestas.recomendaria_pct)} la recomendaría</p>
                     <ul className="mt-3 space-y-2">
                       {cm.encuestas.comentarios.map((c, i) => <li key={i} className="text-sm text-ink-soft">{formatoFecha(c.fecha)} · {c.satisfaccion}/5 — «{c.comentario}»</li>)}
@@ -128,7 +128,7 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
             )}
             {esG && actividad.length > 0 && (
               <Seccion titulo="Actividad reciente del personal">
-                <ul className="divide-y divide-white/10 rounded-2xl border border-white/10 bg-card px-5">
+                <ul className="divide-y divide-ink/10 rounded-2xl border border-ink/10 bg-card px-5">
                   {actividad.map((a) => <li key={a.id} className="py-2 text-sm text-ink"><span className="font-medium">{a.actor_nombre ?? "Sistema"}</span> · {a.operacion} en {a.tabla} · <span className="text-ink-soft">{new Date(a.created_at).toLocaleString("es-GT", { timeZone: "America/Guatemala" })}</span></li>)}
                 </ul>
               </Seccion>
@@ -165,10 +165,10 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
             </Seccion>
             <Seccion titulo="Horarios, de más a menos llenos">
               {cm.operacion.horarios.length === 0 ? <Vacio texto="Aún no hay clases con reservas en este período." /> : (
-                <div className="overflow-x-auto rounded-2xl border border-white/10 bg-card">
+                <div className="overflow-x-auto rounded-2xl border border-ink/10 bg-card">
                   <table className="w-full text-left text-sm">
                     <thead className="text-xs uppercase text-ink-soft"><tr><th className="px-4 py-3">Clase</th><th className="px-4 py-3">Día</th><th className="px-4 py-3">Hora</th><th className="px-4 py-3">Sede</th><th className="px-4 py-3 text-right">Ocupación</th></tr></thead>
-                    <tbody className="divide-y divide-white/10">
+                    <tbody className="divide-y divide-ink/10">
                       {cm.operacion.horarios.map((h, i) => <tr key={i}><td className="px-4 py-2 text-ink">{h.nombre_clase}</td><td className="px-4 py-2">{DIAS[h.dia_semana]}</td><td className="px-4 py-2">{h.hora_inicio.slice(0, 5)}</td><td className="px-4 py-2">{h.sede}</td><td className="px-4 py-2 text-right">{pct(h.ocupacion_pct)}</td></tr>)}
                     </tbody>
                   </table>
@@ -177,10 +177,10 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
             </Seccion>
             {esG && ranking.length > 0 && (
               <Seccion titulo="Instructoras">
-                <div className="overflow-x-auto rounded-2xl border border-white/10 bg-card">
+                <div className="overflow-x-auto rounded-2xl border border-ink/10 bg-card">
                   <table className="w-full text-left text-sm">
                     <thead className="text-xs uppercase text-ink-soft"><tr><th className="px-4 py-3">Instructora</th><th className="px-4 py-3 text-right">Clases</th><th className="px-4 py-3 text-right">Ocupación</th><th className="px-4 py-3 text-right">Asistencia</th></tr></thead>
-                    <tbody className="divide-y divide-white/10">
+                    <tbody className="divide-y divide-ink/10">
                       {ranking.map((r) => <tr key={r.instructor_membership_id}><td className="px-4 py-2 text-ink">{r.nombre}</td><td className="px-4 py-2 text-right">{r.total_clases}</td><td className="px-4 py-2 text-right">{pct(r.ocupacion_promedio)}</td><td className="px-4 py-2 text-right">{pct(r.pct_asistencia)}</td></tr>)}
                     </tbody>
                   </table>
@@ -214,10 +214,10 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
             )}
             <Seccion titulo="Últimos 6 meses">
               {serie.length === 0 ? <Vacio texto="Sin datos todavía." /> : (
-                <div className="overflow-x-auto rounded-2xl border border-white/10 bg-card">
+                <div className="overflow-x-auto rounded-2xl border border-ink/10 bg-card">
                   <table className="w-full text-left text-sm">
                     <thead className="text-xs uppercase text-ink-soft"><tr><th className="px-4 py-3">Mes</th><th className="px-4 py-3 text-right">Cobrado</th><th className="px-4 py-3 text-right">Devoluciones</th><th className="px-4 py-3 text-right">Ingreso confirmado</th><th className="px-4 py-3 text-right">Gastos</th><th className="px-4 py-3" aria-hidden /></tr></thead>
-                    <tbody className="divide-y divide-white/10">
+                    <tbody className="divide-y divide-ink/10">
                       {serie.map((s) => (
                         <tr key={s.mes}>
                           <td className="px-4 py-2 capitalize text-ink">{mesLegible(s.mes)}</td>
@@ -239,12 +239,12 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
             <Seccion titulo={`Avance de ${mesLegible(cm.metas.mes)} (día ${cm.metas.dias_transcurridos} de ${cm.metas.dias_mes})`}>
               <div className="grid gap-4 sm:grid-cols-2">
                 {cm.metas.metas.map((m) => (
-                  <div key={m.tipo} className="rounded-2xl border border-white/10 bg-card p-5">
+                  <div key={m.tipo} className="rounded-2xl border border-ink/10 bg-card p-5">
                     <p className="text-xs uppercase tracking-wide text-ink-soft">{{ ingresos: "Ingresos", reservas: "Reservas", clientas_nuevas: "Clientas nuevas", clientas_con_paquete: "Clientas con paquete" }[m.tipo]}</p>
                     <p className="mt-2 text-2xl font-bold text-ink">{m.tipo === "ingresos" ? q(m.real) : m.real}{m.meta !== null && <span className="text-base font-normal text-ink-soft"> de {m.tipo === "ingresos" ? q(m.meta) : m.meta}</span>}</p>
                     {m.meta !== null && m.meta > 0 ? (
                       <>
-                        <div className="mt-3 h-2 overflow-hidden rounded bg-white/10" role="progressbar" aria-valuenow={Math.min(100, Number(m.avance_pct ?? 0))} aria-valuemin={0} aria-valuemax={100} aria-label="Avance de la meta">
+                        <div className="mt-3 h-2 overflow-hidden rounded bg-ink/10" role="progressbar" aria-valuenow={Math.min(100, Number(m.avance_pct ?? 0))} aria-valuemin={0} aria-valuemax={100} aria-label="Avance de la meta">
                           <div className="h-full bg-lime" style={{ width: `${Math.min(100, Number(m.avance_pct ?? 0))}%` }} />
                         </div>
                         <p className="mt-2 text-xs text-ink-soft">Avance {pct(m.avance_pct)} · al ritmo actual cierra en {m.tipo === "ingresos" ? q(m.proyeccion) : m.proyeccion} ({pct(m.proyeccion_pct)} de la meta)</p>
@@ -272,10 +272,10 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
             )}
             <Seccion titulo="Clientas para contactar (14 días o más sin venir, con paquete vigente)">
               {riesgo.length === 0 ? <Vacio texto="Nadie en riesgo de fuga ahora mismo." /> : (
-                <div className="overflow-x-auto rounded-2xl border border-white/10 bg-card">
+                <div className="overflow-x-auto rounded-2xl border border-ink/10 bg-card">
                   <table className="w-full text-left text-sm">
                     <thead className="text-xs uppercase text-ink-soft"><tr><th className="px-4 py-3">Clienta</th><th className="px-4 py-3">Última visita</th><th className="px-4 py-3 text-right">Días sin venir</th><th className="px-4 py-3">Paquete vence</th><th className="px-4 py-3 text-right">Clases</th><th className="px-4 py-3">Contactar</th></tr></thead>
-                    <tbody className="divide-y divide-white/10">
+                    <tbody className="divide-y divide-ink/10">
                       {riesgo.map((r) => {
                         const tel = (r.telefono ?? "").replace(/\D/g, "");
                         return (
@@ -301,10 +301,10 @@ export default function NegocioView({ tab, rol, tenantId, sedeId, sedes, cm, cli
           <>
             <Seccion titulo="Canales de los últimos 3 meses">
               {cm.adquisicion.length === 0 ? <Vacio texto="Aún no hay clientas con canal registrado ni gasto de marketing." /> : (
-                <div className="overflow-x-auto rounded-2xl border border-white/10 bg-card">
+                <div className="overflow-x-auto rounded-2xl border border-ink/10 bg-card">
                   <table className="w-full text-left text-sm">
                     <thead className="text-xs uppercase text-ink-soft"><tr><th className="px-4 py-3">Canal</th><th className="px-4 py-3 text-right">Gasto</th><th className="px-4 py-3 text-right">Clientas nuevas</th><th className="px-4 py-3 text-right">CAC</th><th className="px-4 py-3 text-right">LTV</th><th className="px-4 py-3 text-right">LTV / CAC</th></tr></thead>
-                    <tbody className="divide-y divide-white/10">
+                    <tbody className="divide-y divide-ink/10">
                       {cm.adquisicion.map((a) => <tr key={a.canal}><td className="px-4 py-2 text-ink">{a.canal}</td><td className="px-4 py-2 text-right">{q(a.gasto_total)}</td><td className="px-4 py-2 text-right">{a.clientas_nuevas}</td><td className="px-4 py-2 text-right">{q(a.cac)}</td><td className="px-4 py-2 text-right">{q(a.ltv_promedio)}</td><td className="px-4 py-2 text-right">{a.ltv_cac_ratio ?? "—"}</td></tr>)}
                     </tbody>
                   </table>

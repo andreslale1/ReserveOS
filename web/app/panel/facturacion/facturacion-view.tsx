@@ -7,7 +7,7 @@ export type Config = { nit_emisor: string; razon_social: string; nombre_comercia
 export type Venta = { origen_tipo: string; origen_id: string; fecha: string; sede: string | null; cliente: string; concepto: string; monto: number };
 export type Doc = { id: string; created_at: string; sede: string | null; concepto: string; nit_receptor: string; nombre_receptor: string; monto: number; iva: number; estado: string; serie: string | null; numero: string | null; error: string | null; motivo_anulacion: string | null };
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT", { minimumFractionDigits: 2 })}`;
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 const EST: Record<string, string> = { pendiente: "Por emitir", enviando: "Enviando…", emitido: "Emitida", error: "Con error", anulacion_pendiente: "Anular (hubo devolución)", anulado: "Anulada" };
 
 export default function FacturacionView({ tenantId, config, ventas, docs, puedeConfigurar, puedeAnular }: { tenantId: string; config: Config | null; ventas: Venta[]; docs: Doc[]; puedeConfigurar: boolean; puedeAnular: boolean }) {
@@ -26,14 +26,14 @@ export default function FacturacionView({ tenantId, config, ventas, docs, puedeC
   }
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div><h1 className="font-serif text-2xl text-ink md:text-3xl">Facturación</h1><p className="mt-1 text-sm text-ink/60">Una factura por cada venta, con el IVA desglosado. Si una compra se devuelve, su factura queda marcada para anular.</p></div>
-        {puedeConfigurar && <a href="/panel/facturacion/export" className="rounded-full border border-white/15 px-4 py-2 text-sm text-ink/70 hover:text-ink">Exportar a CSV</a>}
+        {puedeConfigurar && <a href="/panel/facturacion/export" className="rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/70 hover:text-ink">Exportar a CSV</a>}
       </header>
       <div className="mx-auto grid max-w-5xl gap-6 px-6 py-8 md:px-10">
         {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
         {!config && <p className="rounded-xl bg-peach-tint px-4 py-3 text-sm text-ink">Antes de facturar, registra los datos fiscales de tu estudio.</p>}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <div className="flex items-center justify-between"><h2 className="text-base font-semibold text-ink">Datos del emisor</h2>{config && <button className="text-xs text-ink/55 hover:text-ink" onClick={() => setAbierto(!abierto)}>{abierto ? "Cerrar" : "Editar"}</button>}</div>
           {config && !abierto && <p className="mt-2 text-sm text-ink/70">{config.razon_social} · NIT {config.nit_emisor} · {config.regimen === "general" ? "Régimen general (IVA 12%)" : "Pequeño contribuyente"}</p>}
           {abierto && (
@@ -51,9 +51,9 @@ export default function FacturacionView({ tenantId, config, ventas, docs, puedeC
           )}
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Ventas sin factura <span className="text-sm font-normal text-ink/50">(últimos 60 días)</span></h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {ventas.length === 0 && <li className="py-3 text-sm text-ink/50">Todo está facturado.</li>}
             {ventas.map((v) => {
               const k = `${v.origen_tipo}:${v.origen_id}`; const f = fv[k] ?? { nit: "", nombre: "" };
@@ -63,7 +63,7 @@ export default function FacturacionView({ tenantId, config, ventas, docs, puedeC
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <input className={`${input} mt-0 w-36`} placeholder="NIT (vacío = CF)" value={f.nit} onChange={(e) => setFv({ ...fv, [k]: { ...f, nit: e.target.value } })} />
                     <input className={`${input} mt-0 w-56`} placeholder="Nombre en la factura" value={f.nombre} onChange={(e) => setFv({ ...fv, [k]: { ...f, nombre: e.target.value } })} />
-                    <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs text-ink disabled:opacity-50" disabled={isPending || !config} onClick={() => correr(() => solicitarFactura(tenantId, v.origen_tipo, v.origen_id, f.nit, f.nombre, ""), "Factura generada: queda por emitir.")}>Generar factura</button>
+                    <button className="rounded-full border border-ink/20 px-3 py-1.5 text-xs text-ink disabled:opacity-50" disabled={isPending || !config} onClick={() => correr(() => solicitarFactura(tenantId, v.origen_tipo, v.origen_id, f.nit, f.nombre, ""), "Factura generada: queda por emitir.")}>Generar factura</button>
                   </div>
                 </li>
               );
@@ -71,10 +71,10 @@ export default function FacturacionView({ tenantId, config, ventas, docs, puedeC
           </ul>
         </section>
 
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Facturas</h2>
           <p className="mt-1 text-xs text-ink/55">Mientras no haya un certificador conectado, emite cada factura en tu sistema de facturación (SAT/certificador) y registra aquí su serie y número.</p>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {docs.length === 0 && <li className="py-3 text-sm text-ink/50">Aún no hay facturas.</li>}
             {docs.map((d) => (
               <li key={d.id} className="py-3 text-sm">
@@ -92,7 +92,7 @@ export default function FacturacionView({ tenantId, config, ventas, docs, puedeC
                 {puedeAnular && ["anulacion_pendiente", "emitido"].includes(d.estado) && (
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <input className={`${input} mt-0 w-64`} placeholder="Motivo de la anulación" value={an[d.id] ?? ""} onChange={(e) => setAn({ ...an, [d.id]: e.target.value })} />
-                    <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs text-ink disabled:opacity-50" disabled={isPending || (an[d.id] ?? "").trim().length < 3} onClick={() => correr(() => anularFactura(d.id, an[d.id] ?? ""), "Factura marcada como anulada.")}>Ya la anulé</button>
+                    <button className="rounded-full border border-ink/20 px-3 py-1.5 text-xs text-ink disabled:opacity-50" disabled={isPending || (an[d.id] ?? "").trim().length < 3} onClick={() => correr(() => anularFactura(d.id, an[d.id] ?? ""), "Factura marcada como anulada.")}>Ya la anulé</button>
                   </div>
                 )}
               </li>

@@ -7,7 +7,7 @@ export default async function ActivacionesPage() {
     supabase.rpc("proyectos_listar"),
     supabase.rpc("listar_tenants_plataforma"),
   ]);
-  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/60">{error.message}</main>;
+  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/60">{error.message}</main>;
   const proyectos = (data ?? []) as Proyecto[];
   // Puertas y estados por módulo solo de los proyectos que siguen en curso.
   const gates: Record<string, Gate[]> = {};

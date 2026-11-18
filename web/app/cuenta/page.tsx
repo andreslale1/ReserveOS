@@ -21,26 +21,48 @@ export default async function InicioPage() {
   const { data: codigo } = await supabase.rpc("mi_codigo_checkin", { p_tenant_id: actual!.tenant_id, p_renovar: false });
   const qrImagen = codigo ? await QRCode.toDataURL(`RSCK:${codigo}`, { margin: 1, width: 440 }) : null;
   const activos = r.paquetes.filter((p) => p.estado === "activa");
-  const pendientes = r.paquetes.filter((p) => p.estado === "pendiente_pago");
   const fmt = (f: string) => new Date(f + "T00:00:00").toLocaleDateString("es-GT", { weekday: "short", day: "numeric", month: "short" });
 
   return (
     <div className="grid gap-5">
-      <h1 className="font-serif text-2xl text-ink">Hola, {r.nombre.split(" ")[0]}</h1>
+      <div>
+        <h1 className="text-4xl text-ink">Hola, {r.nombre.split(" ")[0]}</h1>
+        <p className="mt-1 text-sm text-ink/60">Bienvenida a tu espacio {actual!.estudio}.</p>
+      </div>
       {r.consentimiento_pendiente && (
         <Link href="/cuenta/perfil#consentimiento" className="rounded-2xl bg-peach-tint px-5 py-4 text-sm text-ink">Completa tu consentimiento y datos de salud antes de tu primera clase →</Link>
       )}
-      {pendientes.map((p) => (
-        <div key={p.id} className="rounded-2xl bg-peach-tint px-5 py-4 text-sm text-ink">Tu pago de <strong>{p.paquete}</strong> está pendiente de confirmación. Te avisamos cuando lo aprueben.</div>
-      ))}
 
-      <Link href="/cuenta/clases" className="block rounded-2xl bg-peach px-5 py-4 text-center text-base font-semibold text-void transition-opacity hover:opacity-90">Reservar una clase</Link>
-      <section className="rounded-2xl border border-white/10 bg-card p-5">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <Link href="/cuenta/clases" className="rounded-2xl border border-ink/10 bg-card p-5 transition-colors hover:border-peach">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Clases disponibles</p>
+          <p className="mt-2 font-serif text-5xl text-ink">{activos[0] ? (activos[0].totales === null ? "∞" : activos[0].totales - activos[0].usadas) : 0}</p>
+          <p className="mt-1 text-sm text-ink/65">{activos[0] ? "De tu paquete activo — reservar" : "Compra un paquete para seguir"}</p>
+        </Link>
+        <Link href="/cuenta/paquetes" className="rounded-2xl border border-ink/10 bg-card p-5 transition-colors hover:border-peach">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Tu paquete</p>
+          <p className="mt-2 font-serif text-2xl text-ink">{activos[0]?.paquete ?? "Sin paquete activo"}</p>
+          <p className="mt-1 text-sm text-ink/65">{activos[0] ? `Vence ${fmt(activos[0].vence)}` : "Comprar paquete"}</p>
+          {activos[0]?.sedes && <p className="mt-1 text-xs text-ink/50">Válido en: {activos[0].sedes}</p>}
+        </Link>
+        <Link href="/cuenta/historial" className="rounded-2xl border border-ink/10 bg-card p-5 transition-colors hover:border-peach">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Próxima clase</p>
+          <p className="mt-2 font-serif text-2xl text-ink">{r.proximas[0] ? fmt(r.proximas[0].fecha) : "—"}</p>
+          <p className="mt-1 text-sm text-ink/65">{r.proximas[0] ? `${r.proximas[0].clase} · ${r.proximas[0].hora.slice(0, 5)}` : "Sin reservas"}</p>
+          {r.proximas[0] && <p className="mt-1 text-xs text-ink/50">Sede {r.proximas[0].sede}{r.proximas[0].para !== r.nombre ? ` · para ${r.proximas[0].para}` : ""}</p>}
+        </Link>
+      </div>
+      <div className="flex flex-wrap gap-3">
+        <Link href="/cuenta/clases" className="rounded-full bg-peach px-6 py-3 text-sm font-semibold text-void transition-opacity hover:opacity-90">Reservar clase</Link>
+        <Link href="/cuenta/paquetes" className="rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink hover:border-peach">Mi paquete</Link>
+        <Link href="/cuenta/perfil" className="rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink hover:border-peach">Mis datos</Link>
+      </div>
+      <section className="rounded-2xl border border-ink/10 bg-card p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Próximas reservas</h2>
           
         </div>
-        <ul className="mt-2 divide-y divide-white/5">
+        <ul className="mt-2 divide-y divide-ink/5">
           {r.proximas.length === 0 && <li className="py-3 text-sm text-ink/60">No tienes reservas próximas.</li>}
           {r.proximas.map((x) => (
             <li key={x.id} className="py-3 text-sm">
@@ -51,12 +73,12 @@ export default async function InicioPage() {
           ))}
         </ul>
       </section>
-      <section className="rounded-2xl border border-white/10 bg-card p-5">
+      <section className="rounded-2xl border border-ink/10 bg-card p-5">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Mis clases</h2>
         {activos.length === 0 ? (
           <p className="mt-2 text-sm text-ink/65">No tienes un paquete activo. <Link href="/cuenta/paquetes" className="underline">Elige uno</Link> para reservar.</p>
         ) : (
-          <ul className="mt-2 divide-y divide-white/5">
+          <ul className="mt-2 divide-y divide-ink/5">
             {activos.map((p) => (
               <li key={p.id} className="py-3 text-sm">
                 <p className="font-medium text-ink">{p.paquete}{p.congelada ? " · congelado" : ""}</p>
@@ -69,12 +91,12 @@ export default async function InicioPage() {
       </section>
 
       {reto && (
-        <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Reto del mes">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-label="Reto del mes">
           <div className="flex items-baseline justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Reto del mes</h2>
             <p className="text-sm text-ink/70"><strong className="text-ink">{reto.asistidas}</strong> de {reto.meta} clases</p>
           </div>
-          <div className="mt-3 h-3 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuemin={0} aria-valuemax={reto.meta} aria-valuenow={Math.min(reto.asistidas, reto.meta)} aria-label="Avance del reto mensual">
+          <div className="mt-3 h-3 overflow-hidden rounded-full bg-ink/10" role="progressbar" aria-valuemin={0} aria-valuemax={reto.meta} aria-valuenow={Math.min(reto.asistidas, reto.meta)} aria-label="Avance del reto mensual">
             <div className="h-full rounded-full bg-sage" style={{ width: `${reto.porcentaje}%` }} />
           </div>
           <p className="mt-2 text-xs text-ink/60">
@@ -83,7 +105,7 @@ export default async function InicioPage() {
         </section>
       )}
 
-      <details className="rounded-2xl border border-white/10 bg-card p-5">
+      <details className="rounded-2xl border border-ink/10 bg-card p-5">
         <summary className="cursor-pointer text-sm font-semibold uppercase tracking-wide text-ink/50">Llegué al estudio (check-in y mi QR)</summary>
         <div className="mt-3">
           <CheckinButton />

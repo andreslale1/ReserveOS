@@ -12,7 +12,7 @@ export default function VerificarBoton() {
         onClick={() => { setMsg(null); startTransition(async () => { const r = await verificarAhora(); setMsg(r.error ? { ok: false, texto: r.error } : { ok: true, texto: "Verificación guardada." }); }); }}>
         {isPending ? "Verificando…" : "Verificar ahora"}
       </button>
-      <span role="status" aria-live="polite" className={`text-xs ${msg?.ok ? "text-lime" : "text-red-300"}`}>{msg?.texto}</span>
+      <span role="status" aria-live="polite" className={`text-xs ${msg?.ok ? "text-lime" : "text-[#8f2f1f]"}`}>{msg?.texto}</span>
     </div>
   );
 }

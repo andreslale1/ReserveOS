@@ -1,11 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+const display = Bricolage_Grotesque({ variable: "--f-display", subsets: ["latin"], weight: ["500", "600", "700"] });
+const body = Instrument_Sans({ variable: "--f-body", subsets: ["latin"], weight: ["400", "500", "600"] });
 
 export const metadata: Metadata = {
   title: "ReserveOS — El sistema operativo de tu estudio",
@@ -17,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#111111",
+  themeColor: "#2f5d8c",
   width: "device-width",
   initialScale: 1,
 };
@@ -26,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${inter.variable} h-full antialiased`}
+      className={`${display.variable} ${body.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-cream text-ink">
         {children}

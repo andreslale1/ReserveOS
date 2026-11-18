@@ -5,10 +5,10 @@ import RegistrarSw from "./registrar-sw";
 
 const TABS = [
   { href: "/cuenta", label: "Inicio" },
-  { href: "/cuenta/clases", label: "Clases" },
-  { href: "/cuenta/paquetes", label: "Paquetes" },
-  { href: "/cuenta/historial", label: "Historial" },
-  { href: "/cuenta/perfil", label: "Perfil" },
+  { href: "/cuenta/clases", label: "Reservar" },
+  { href: "/cuenta/historial", label: "Mis clases" },
+  { href: "/cuenta/paquetes", label: "Mi paquete" },
+  { href: "/cuenta/perfil", label: "Mis datos" },
 ];
 
 export default async function CuentaLayout({ children }: { children: React.ReactNode }) {
@@ -27,29 +27,41 @@ export default async function CuentaLayout({ children }: { children: React.React
     );
   }
   const marca = ((mods as string[] | null) ?? []).includes("portal_marca") ? await marcaPorSlug(actual.slug) : null;
+  const { data: resumen } = await supabase.rpc("mi_resumen", { p_tenant_id: actual.tenant_id });
+  const pendiente = ((resumen as { paquetes?: { estado: string; paquete: string }[] } | null)?.paquetes ?? []).find((p) => p.estado === "pendiente_pago");
+  const enlaces = [...TABS.slice(0, 4), ...(conTienda ? [{ href: "/cuenta/tienda", label: "Tienda" }] : []), TABS[4]];
   return (
-    <div className="min-h-screen bg-cream pb-20" style={estiloMarca(marca?.color)}>
+    <div className="tema-estudio min-h-screen bg-cream" style={estiloMarca(marca?.color)}>
       <RegistrarSw />
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/10 bg-cream/95 px-5 py-3 backdrop-blur">
-        {marca?.logo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={marca.logo} alt={`Logo de ${actual.estudio}`} className="h-8 w-auto max-w-[10rem] object-contain" />
-        ) : (
-          <span className="font-serif text-lg text-ink">{actual.estudio}</span>
-        )}
-        <span className="flex items-center gap-4 text-xs text-ink/55">
-          {contextos.length > 1 && !dominioEstudio && <Link href="/elegir-estudio" className="underline">Cambiar estudio</Link>}
-          {todos.some((c) => c.tenant_id === actual.tenant_id && c.rol_staff) && <Link href="/panel" className="underline">Panel</Link>}
-        </span>
-      </header>
-      <div className="mx-auto max-w-2xl px-5 py-6">{children}</div>
-      <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-card/95 backdrop-blur">
-        <ul className="mx-auto flex max-w-2xl justify-around">
-          {[...TABS.slice(0, 3), ...(conTienda ? [{ href: "/cuenta/tienda", label: "Tienda" }] : []), ...TABS.slice(3)].map((t) => (
-            <li key={t.href}><Link href={t.href} className="block px-3 py-3.5 text-xs font-medium text-ink/70 hover:text-ink">{t.label}</Link></li>
+      <header className="border-b border-ink/15 bg-cream">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-5 py-4">
+          <Link href="/cuenta" className="flex items-center">
+            {marca?.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={marca.logo} alt={`Logo de ${actual.estudio}`} className="h-9 w-auto max-w-[11rem] object-contain" />
+            ) : (
+              <span className="font-serif text-2xl text-ink">{actual.estudio}</span>
+            )}
+          </Link>
+          <span className="flex items-center gap-4 text-xs text-ink/60">
+            {contextos.length > 1 && !dominioEstudio && <Link href="/elegir-estudio" className="border-b border-ink/20 pb-0.5 hover:text-ink">Cambiar estudio</Link>}
+            {todos.some((c) => c.tenant_id === actual.tenant_id && c.rol_staff) && <Link href="/panel" className="border-b border-ink/20 pb-0.5 hover:text-ink">Panel</Link>}
+          </span>
+        </div>
+        <nav aria-label="Mi cuenta" className="mx-auto flex max-w-4xl gap-1 overflow-x-auto px-3">
+          {enlaces.map((t) => (
+            <Link key={t.href} href={t.href} className="shrink-0 border-b-2 border-transparent px-3 py-3 text-sm font-medium text-ink/65 transition-colors duration-150 hover:border-ink hover:text-ink">{t.label}</Link>
           ))}
-        </ul>
-      </nav>
+        </nav>
+      </header>
+      {pendiente && (
+        <div className="mx-auto max-w-4xl px-5 pt-5">
+          <p className="border border-peach/40 bg-peach-tint px-4 py-3 text-sm text-ink">
+            Tu pago de <strong>{pendiente.paquete}</strong> está pendiente de confirmación. Te avisamos cuando lo aprueben.
+          </p>
+        </div>
+      )}
+      <main className="mx-auto max-w-4xl px-5 py-8">{children}</main>
     </div>
   );
 }

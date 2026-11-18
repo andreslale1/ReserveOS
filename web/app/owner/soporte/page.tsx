@@ -9,6 +9,6 @@ export default async function SoportePage({ searchParams }: { searchParams: Prom
     supabase.rpc("incidentes_listar"),
     supabase.rpc("listar_tenants_plataforma"),
   ]);
-  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/70">{error.message}</main>;
+  if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/70">{error.message}</main>;
   return <SoporteView filtro={["abiertos", "sla", "incidentes"].includes(filtro ?? "") ? (filtro as "abiertos" | "sla" | "incidentes") : undefined} tickets={(tickets ?? []) as Ticket[]} incidentes={(incidentes ?? []) as Incidente[]} estudios={((tenants ?? []) as { id: string; name: string }[]).map((t) => ({ id: t.id, name: t.name }))} />;
 }

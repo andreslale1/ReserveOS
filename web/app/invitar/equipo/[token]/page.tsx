@@ -38,26 +38,26 @@ export default function InvitarEquipoPage({ params }: { params: Promise<{ token:
 
   const next = encodeURIComponent(`/invitar/equipo/${token}`);
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center bg-void px-6 text-white">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center bg-void px-6 text-ink">
       <h1 className="text-2xl font-semibold">Invitación al equipo de ReserveOS</h1>
       <div role="status" aria-live="polite" className="mt-4 text-sm">
-        {cargando && <p className="text-white/60">Cargando…</p>}
+        {cargando && <p className="text-ink/60">Cargando…</p>}
         {!cargando && !logueada && (
           <>
-            <p className="text-white/70">Inicia sesión (o crea tu cuenta) con el mismo correo al que llegó la invitación para continuar.</p>
+            <p className="text-ink/70">Inicia sesión (o crea tu cuenta) con el mismo correo al que llegó la invitación para continuar.</p>
             <Link href={`/login?next=${next}`} className="mt-4 inline-block rounded-full bg-lime px-5 py-2 font-semibold text-void">Iniciar sesión</Link>
           </>
         )}
-        {!cargando && logueada && !info && !error && <p className="text-red-300">Esta invitación no existe.</p>}
-        {info && !info.coincide && <p className="text-red-300">Esta invitación es para otro correo. Cierra sesión e ingresa con el correo invitado.</p>}
-        {info?.coincide && info.estado !== "pendiente" && <p className="text-red-300">Esta invitación está {info.estado === "vencida" ? "vencida: pide una nueva" : info.estado === "aceptada" ? "ya aceptada" : "revocada"}.</p>}
+        {!cargando && logueada && !info && !error && <p className="text-[#8f2f1f]">Esta invitación no existe.</p>}
+        {info && !info.coincide && <p className="text-[#8f2f1f]">Esta invitación es para otro correo. Cierra sesión e ingresa con el correo invitado.</p>}
+        {info?.coincide && info.estado !== "pendiente" && <p className="text-[#8f2f1f]">Esta invitación está {info.estado === "vencida" ? "vencida: pide una nueva" : info.estado === "aceptada" ? "ya aceptada" : "revocada"}.</p>}
         {info?.coincide && info.estado === "pendiente" && (
           <>
-            <p className="text-white/70">Te invitan como <strong className="text-lime">{info.rol}</strong> ({info.email}).</p>
+            <p className="text-ink/70">Te invitan como <strong className="text-lime">{info.rol}</strong> ({info.email}).</p>
             <button onClick={aceptar} disabled={enviando} className="mt-4 rounded-full bg-lime px-5 py-2 font-semibold text-void disabled:opacity-50">{enviando ? "Aceptando…" : "Aceptar invitación"}</button>
           </>
         )}
-        {error && <p role="alert" className="mt-3 text-red-300">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-[#8f2f1f]">{error}</p>}
       </div>
     </main>
   );

@@ -17,12 +17,12 @@ export default async function SuscripcionPage() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Mi suscripción a ReserveOS</h1>
         <p className="mt-1 text-sm text-ink/60">Tu plan y tus pagos</p>
       </header>
       <div className="mx-auto grid max-w-3xl gap-6 px-6 py-8 md:px-10">
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           {s?.suscripcion ? (
             <p className="text-sm text-ink">
               Plan <strong>{s.suscripcion.plan}</strong> · {q(s.suscripcion.precio_mensual)} al mes · se cobra el día {s.suscripcion.dia_cobro} · {s.suscripcion.estado}
@@ -31,7 +31,7 @@ export default async function SuscripcionPage() {
             <p className="text-sm text-ink/60">Todavía no tienes una suscripción registrada. Contacta a ReserveOS.</p>
           )}
         </section>
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Qué incluye tu plan</h2>
           <ul className="mt-3 grid gap-1 sm:grid-cols-2">
             {incluidos.map((m) => (
@@ -39,9 +39,9 @@ export default async function SuscripcionPage() {
             ))}
           </ul>
         </section>
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Pagos</h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {(s?.cobros ?? []).length === 0 && <li className="py-3 text-sm text-ink/50">Sin cobros todavía.</li>}
             {(s?.cobros ?? []).map((c) => (
               <li key={c.periodo} className="flex flex-wrap items-center justify-between py-2.5 text-sm">

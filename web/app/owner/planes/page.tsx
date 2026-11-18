@@ -8,7 +8,7 @@ export default async function PlanesPage() {
     supabase.from("module_catalog").select("key, name, description, depends_on").order("name"),
   ]);
   if (error) {
-    return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/60">{error.message}</main>;
+    return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/60">{error.message}</main>;
   }
   return <PlanesView planes={(planes ?? []) as Plan[]} modulos={(mods ?? []) as ModuloCat[]} soloLectura={operador.rol !== "operador"} />;
 }

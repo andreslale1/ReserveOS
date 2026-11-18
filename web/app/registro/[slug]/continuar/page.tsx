@@ -40,7 +40,7 @@ export default function ContinuarPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-void px-6">
-      <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-void-card p-8 text-sm text-white/70">
+      <div className="w-full max-w-sm rounded-[2rem] border border-ink/10 bg-void-card p-8 text-sm text-ink/70">
         {estado === "trabajando" && <p role="status">Terminando de crear tu cuenta…</p>}
         {estado === "sin-sesion" && (
           <div className="space-y-3" role="alert">

@@ -6,7 +6,7 @@ import SitioEditor from "./sitio-editor";
 import { generarSecretoWebhook, guardarMarca, guardarReglas, quitarDominio, solicitarDominio } from "./actions";
 
 const input =
-  "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+  "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 
 export default function ConfiguracionView({
   tenantId,
@@ -45,7 +45,7 @@ export default function ConfiguracionView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div className="mx-auto max-w-2xl">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Configuración del estudio</h1>
         <p className="mt-1 text-sm text-ink/60">Nombre, marca y dominio</p>
@@ -55,7 +55,7 @@ export default function ConfiguracionView({
         {msg && (
           <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>
         )}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <div className="grid gap-3">
             <label className="text-sm text-ink/60">
               Nombre del estudio
@@ -84,7 +84,7 @@ export default function ConfiguracionView({
             Guardar
           </button>
         </section>
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Reglas de reserva</h2>
           <p className="mt-1 text-sm text-ink/60">Aplican a todas tus sedes y a todas tus clientas.</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -104,7 +104,7 @@ export default function ConfiguracionView({
         <Enlaces baseUrl={baseUrl} slug={slug} nombre={nombre} dominioActivo={dominios.find((d) => d.verified)?.domain ?? null} />
         <SitioEditor tenantId={tenantId} contenido={contenido} contacto={contacto} />
         {puedeIntegrar && (
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Pagos en línea</h2>
             <p className="mt-1 text-sm text-ink/65">Para conectar tu proveedor de pagos, ReserveOS te da una dirección y una clave secreta. Tu proveedor (o quien lo integre) las usa para avisarnos de cada pago, y nosotros comprobamos la firma antes de activar nada.</p>
             <div className="mt-3 flex gap-2">
@@ -124,10 +124,10 @@ export default function ConfiguracionView({
             )}
           </section>
         )}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Tu propio dominio</h2>
           <p className="mt-1 text-sm text-ink/65">Identificador: <strong>{slug}</strong>. Tus clientas pueden entrar desde, por ejemplo, <em>reservas.tuestudio.com</em>.</p>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {dominios.length === 0 && <li className="py-2 text-sm text-ink/55">Aún no has solicitado un dominio.</li>}
             {dominios.map((d) => (
               <li key={d.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">

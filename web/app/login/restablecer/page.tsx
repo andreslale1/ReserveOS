@@ -38,14 +38,14 @@ export default function RestablecerPage() {
     setEstado("hecho");
   }
 
-  const campo = "w-full rounded-xl border border-white/10 bg-void px-4 py-2.5 text-sm text-white outline-none focus:border-lime";
+  const campo = "w-full rounded-xl border border-ink/10 bg-void px-4 py-2.5 text-sm text-ink outline-none focus:border-lime";
   return (
     <main className="flex min-h-screen items-center justify-center bg-void px-6">
-      <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-void-card p-8">
-        <h1 className="text-2xl font-black uppercase tracking-tight text-white">Nueva contraseña</h1>
-        {estado === "buscando" && <p className="mt-4 text-sm text-white/60" role="status">Comprobando tu enlace…</p>}
+      <div className="w-full max-w-sm rounded-[2rem] border border-ink/10 bg-void-card p-8">
+        <h1 className="text-2xl font-black uppercase tracking-tight text-ink">Nueva contraseña</h1>
+        {estado === "buscando" && <p className="mt-4 text-sm text-ink/60" role="status">Comprobando tu enlace…</p>}
         {estado === "expirado" && (
-          <div className="mt-4 space-y-3 text-sm text-white/70" role="alert">
+          <div className="mt-4 space-y-3 text-sm text-ink/70" role="alert">
             <p>Este enlace venció o ya se usó. Pide uno nuevo y ábrelo desde el mismo navegador.</p>
             <Link href="/login/olvide" className="inline-block text-lime underline">Pedir un enlace nuevo</Link>
           </div>
@@ -53,11 +53,11 @@ export default function RestablecerPage() {
         {estado === "listo" && (
           <form onSubmit={guardar} className="mt-4 space-y-4">
             <div>
-              <label htmlFor="p1" className="mb-1.5 block text-xs font-medium text-white/60">Contraseña nueva (mínimo 8 caracteres)</label>
+              <label htmlFor="p1" className="mb-1.5 block text-xs font-medium text-ink/60">Contraseña nueva (mínimo 8 caracteres)</label>
               <input id="p1" type="password" required minLength={8} autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} className={campo} />
             </div>
             <div>
-              <label htmlFor="p2" className="mb-1.5 block text-xs font-medium text-white/60">Repite la contraseña</label>
+              <label htmlFor="p2" className="mb-1.5 block text-xs font-medium text-ink/60">Repite la contraseña</label>
               <input id="p2" type="password" required autoComplete="new-password" value={repetir} onChange={(e) => setRepetir(e.target.value)} className={campo} />
             </div>
             {error && <p role="alert" className="rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-300">{error}</p>}
@@ -67,7 +67,7 @@ export default function RestablecerPage() {
           </form>
         )}
         {estado === "hecho" && (
-          <div className="mt-4 space-y-3 text-sm text-white/70" role="status">
+          <div className="mt-4 space-y-3 text-sm text-ink/70" role="status">
             <p>Listo, tu contraseña quedó cambiada.</p>
             <Link href="/login" className="inline-block text-lime underline">Entrar</Link>
           </div>

@@ -62,11 +62,11 @@ const ESTADO: Record<string, string> = {
 };
 
 const input =
-  "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+  "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 const boton =
   "press-spring rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50";
 const botonSec =
-  "rounded-full border border-white/15 px-3 py-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-50";
+  "rounded-full border border-ink/15 px-3 py-1.5 text-xs text-ink/70 hover:text-ink disabled:opacity-50";
 
 export default function FichaView({
   cliente,
@@ -139,7 +139,7 @@ export default function FichaView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <Link href="/panel/clientes" className="text-sm text-ink/60 hover:text-ink">
           ← Clientas
         </Link>
@@ -165,12 +165,12 @@ export default function FichaView({
         <CuentaPanel clienteId={cliente.id} nombre={cliente.nombre} detalle={detalle} esDuena={rol === "duena"} esG={rol === "duena" || rol === "gerente_general"} />
 
         {/* Membresías: saldo y consumo (P27) */}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Paquetes y saldo</h2>
           {membresias.length === 0 && (
             <p className="mt-3 text-sm text-ink/50">Sin paquetes todavía.</p>
           )}
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {membresias.map((m) => {
               const restantes =
                 m.totales === null ? null : m.totales - m.usadas;
@@ -313,7 +313,7 @@ export default function FichaView({
 
         {/* Venta / cortesía (P24, P25) */}
         {puedeVender && (
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Vender o regalar paquete</h2>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="text-sm text-ink/60">
@@ -378,7 +378,7 @@ export default function FichaView({
         )}
 
         {/* Reservas (P18) */}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Reservas</h2>
           {puedeVender && (
             <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto]">
@@ -408,7 +408,7 @@ export default function FichaView({
               </button>
             </div>
           )}
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {reservas.length === 0 && (
               <li className="py-3 text-sm text-ink/50">Sin reservas.</li>
             )}
@@ -448,7 +448,7 @@ export default function FichaView({
         </section>
 
         {/* Ficha (P12) */}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Datos de la clienta</h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {(

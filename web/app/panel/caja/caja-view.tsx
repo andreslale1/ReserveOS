@@ -74,7 +74,7 @@ export default function CajaView({
   if (!sede) {
     return (
       <main className="min-h-screen bg-cream">
-        <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+        <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
           <h1 className="text-2xl font-semibold text-ink md:text-3xl">
             Caja
           </h1>
@@ -104,7 +104,7 @@ export default function CajaView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="text-2xl font-semibold text-ink md:text-3xl">Caja</h1>
         <p className="mt-1 text-sm text-ink-soft">
           Cobros en efectivo, tarjeta y transferencia del día — los pagos por
@@ -132,7 +132,7 @@ export default function CajaView({
         )}
 
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-card p-5">
+          <div className="rounded-2xl border border-ink/10 bg-card p-5">
             <p className="text-xs uppercase tracking-wide text-ink-soft">
               Efectivo
             </p>
@@ -140,7 +140,7 @@ export default function CajaView({
               {fmt(montoDe(sede.esperado, "efectivo"))}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-card p-5">
+          <div className="rounded-2xl border border-ink/10 bg-card p-5">
             <p className="text-xs uppercase tracking-wide text-ink-soft">
               Tarjeta
             </p>
@@ -148,7 +148,7 @@ export default function CajaView({
               {fmt(montoDe(sede.esperado, "tarjeta_estudio"))}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-card p-5">
+          <div className="rounded-2xl border border-ink/10 bg-card p-5">
             <p className="text-xs uppercase tracking-wide text-ink-soft">
               Transferencia
             </p>
@@ -166,7 +166,7 @@ export default function CajaView({
           Detalle del día
         </h2>
         {sede.detalle.length === 0 ? (
-          <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">
+          <div className="mt-4 rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">
             No hay cobros registrados hoy en esta sede.
           </div>
         ) : (
@@ -174,7 +174,7 @@ export default function CajaView({
             {sede.detalle.map((d, i) => (
               <li
                 key={i}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-card p-4"
+                className="flex items-center justify-between rounded-xl border border-ink/10 bg-card p-4"
               >
                 <div>
                   <p className="text-sm font-medium text-ink">
@@ -198,7 +198,7 @@ export default function CajaView({
             <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink-soft">
               Cerrar caja de hoy
             </h2>
-            <div className="mt-4 grid gap-4 rounded-2xl border border-white/10 bg-card p-5 sm:grid-cols-3">
+            <div className="mt-4 grid gap-4 rounded-2xl border border-ink/10 bg-card p-5 sm:grid-cols-3">
               <label className="text-sm text-ink-soft">
                 Efectivo contado
                 <input
@@ -206,7 +206,7 @@ export default function CajaView({
                   value={efectivo}
                   onChange={(e) => setEfectivo(e.target.value)}
                   placeholder={String(montoDe(sede.esperado, "efectivo"))}
-                  className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
+                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
                 />
               </label>
               <label className="text-sm text-ink-soft">
@@ -216,7 +216,7 @@ export default function CajaView({
                   value={tarjeta}
                   onChange={(e) => setTarjeta(e.target.value)}
                   placeholder={String(montoDe(sede.esperado, "tarjeta_estudio"))}
-                  className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
+                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
                 />
               </label>
               <label className="text-sm text-ink-soft">
@@ -228,7 +228,7 @@ export default function CajaView({
                   placeholder={String(
                     montoDe(sede.esperado, "transferencia"),
                   )}
-                  className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
+                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
                 />
               </label>
               <label className="text-sm text-ink-soft sm:col-span-3">
@@ -238,7 +238,7 @@ export default function CajaView({
                   value={notas}
                   onChange={(e) => setNotas(e.target.value)}
                   placeholder="Opcional"
-                  className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
+                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-lime/50"
                 />
               </label>
               <div className="sm:col-span-3">
@@ -261,7 +261,7 @@ export default function CajaView({
               Historial de cierres
             </h2>
             {sede.historial.length === 0 ? (
-              <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-card p-8 text-center text-sm text-ink-soft">
+              <div className="mt-4 rounded-2xl border border-dashed border-ink/15 bg-card p-8 text-center text-sm text-ink-soft">
                 Sin cierres anteriores.
               </div>
             ) : (
@@ -275,7 +275,7 @@ export default function CajaView({
                   return (
                     <li
                       key={i}
-                      className="flex items-center justify-between rounded-xl border border-white/10 bg-card p-4"
+                      className="flex items-center justify-between rounded-xl border border-ink/10 bg-card p-4"
                     >
                       <div>
                         <p className="text-sm font-medium text-ink">
@@ -287,7 +287,7 @@ export default function CajaView({
                         </p>
                       </div>
                       <span
-                        className={`text-sm font-semibold ${diff === 0 ? "text-sage" : "text-red-400"}`}
+                        className={`text-sm font-semibold ${diff === 0 ? "text-sage" : "text-[#8f2f1f]"}`}
                       >
                         {diff === 0 ? "Cuadrada" : `${diff > 0 ? "+" : ""}${fmt(diff)}`}
                       </span>

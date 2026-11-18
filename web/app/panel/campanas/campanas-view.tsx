@@ -9,7 +9,7 @@ export type Plantilla = { id: string; clave: string; nombre: string; canal: stri
 export type Resumen = { pendientes: number; enviados: number; fallidos: number; email_conectado: boolean; whatsapp_conectado: boolean };
 
 const TIPOS: Record<string, string> = { todas: "Todas las clientas", inactivas: "Sin venir hace N días", por_vencer: "Paquete por vencer en N días", sin_paquete: "Sin paquete activo", nuevas: "Nuevas (últimos N días)", cumple_mes: "Cumplen años este mes" };
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 const describe = (c: { tipo: string; dias?: number }) => (TIPOS[c.tipo] ?? c.tipo).replace("N", String(c.dias ?? ""));
 
 export default function CampanasView({ tenantId, campanas, segmentos, plantillas, resumen }: { tenantId: string; campanas: Campana[]; segmentos: Segmento[]; plantillas: Plantilla[]; resumen: Resumen }) {
@@ -28,11 +28,11 @@ export default function CampanasView({ tenantId, campanas, segmentos, plantillas
   }
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Campañas y mensajes</h1>
         <p className="mt-1 text-sm text-ink/60">Escribe a tus clientas con su consentimiento. Los avisos de reserva y de paquete por vencer salen solos.</p>
         <div className="mt-4 flex gap-2 text-sm">
-          {(["campanas", "segmentos", "plantillas"] as const).map((t) => <button key={t} onClick={() => setTab(t)} className={`rounded-full px-4 py-1.5 ${tab === t ? "bg-ink text-cream" : "border border-white/15 text-ink/70"}`}>{t === "campanas" ? "Campañas" : t === "segmentos" ? "Segmentos" : "Plantillas"}</button>)}
+          {(["campanas", "segmentos", "plantillas"] as const).map((t) => <button key={t} onClick={() => setTab(t)} className={`rounded-full px-4 py-1.5 ${tab === t ? "bg-ink text-cream" : "border border-ink/15 text-ink/70"}`}>{t === "campanas" ? "Campañas" : t === "segmentos" ? "Segmentos" : "Plantillas"}</button>)}
         </div>
       </header>
       <div className="mx-auto grid max-w-4xl gap-6 px-6 py-8 md:px-10">
@@ -42,7 +42,7 @@ export default function CampanasView({ tenantId, campanas, segmentos, plantillas
         {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
         {tab === "campanas" && (<>
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Nueva campaña</h2>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="text-sm text-ink/60">Nombre<input className={input} value={c.nombre} onChange={(e) => setC({ ...c, nombre: e.target.value })} /></label>
@@ -54,9 +54,9 @@ export default function CampanasView({ tenantId, campanas, segmentos, plantillas
             <button className="press-spring mt-3 rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending || c.nombre.trim().length < 2 || !c.segmento || !c.plantilla}
               onClick={() => { setMsg(null); startTransition(async () => { const r = await enviarCampana(tenantId, c.nombre, c.segmento, c.plantilla, c.programada); if (r.error) setMsg({ ok: false, texto: r.error }); else { setMsg({ ok: true, texto: `Campaña lista: ${r.resumen?.encolados} mensajes en cola. Sin consentimiento (omitidas): ${r.resumen?.omitidos_sin_consentimiento}. Sin dato de contacto: ${r.resumen?.omitidos_sin_destino}.` }); setC({ nombre: "", segmento: "", plantilla: "", programada: "" }); } }); }}>Crear campaña</button>
           </section>
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Mis campañas</h2>
-            <ul className="mt-3 divide-y divide-white/10">
+            <ul className="mt-3 divide-y divide-ink/10">
               {campanas.length === 0 && <li className="py-3 text-sm text-ink/50">Aún no has creado campañas.</li>}
               {campanas.map((x) => (
                 <li key={x.id} className="py-3 text-sm">
@@ -71,7 +71,7 @@ export default function CampanasView({ tenantId, campanas, segmentos, plantillas
         </>)}
 
         {tab === "segmentos" && (<>
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Nuevo segmento</h2>
             <div className="mt-3 grid gap-3 sm:grid-cols-3">
               <label className="text-sm text-ink/60">Nombre<input className={input} value={s.nombre} onChange={(e) => setS({ ...s, nombre: e.target.value })} /></label>
@@ -80,8 +80,8 @@ export default function CampanasView({ tenantId, campanas, segmentos, plantillas
             </div>
             <button className="press-spring mt-3 rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending || s.nombre.trim().length < 2} onClick={() => correr(() => crearSegmento(tenantId, s.nombre, s.tipo, Number(s.dias || 30)), "Segmento creado.", () => setS({ ...s, nombre: "" }))}>Guardar segmento</button>
           </section>
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
-            <ul className="divide-y divide-white/10">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
+            <ul className="divide-y divide-ink/10">
               {segmentos.length === 0 && <li className="py-3 text-sm text-ink/50">Aún no tienes segmentos.</li>}
               {segmentos.map((x) => <li key={x.id} className="py-3 text-sm text-ink"><strong>{x.nombre}</strong> <span className="text-ink/55">· {describe(x.criterio)}</span><span className="block text-xs text-ink/55">{x.personas} personas · {x.con_consentimiento} aceptaron recibir promociones</span></li>)}
             </ul>
@@ -89,7 +89,7 @@ export default function CampanasView({ tenantId, campanas, segmentos, plantillas
         </>)}
 
         {tab === "plantillas" && (<>
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">{p.id ? "Editar plantilla" : "Nueva plantilla de promoción"}</h2>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="text-sm text-ink/60">Nombre<input className={input} value={p.nombre} onChange={(e) => setP({ ...p, nombre: e.target.value })} /></label>
@@ -103,8 +103,8 @@ export default function CampanasView({ tenantId, campanas, segmentos, plantillas
               {p.id && <button className="text-sm text-ink/55" onClick={() => setP({ id: null, nombre: "", canal: "email", asunto: "", cuerpo: "" })}>Cancelar edición</button>}
             </div>
           </section>
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
-            <ul className="divide-y divide-white/10">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
+            <ul className="divide-y divide-ink/10">
               {plantillas.map((x) => (
                 <li key={x.id} className="py-3 text-sm">
                   <div className="flex items-start justify-between gap-3">

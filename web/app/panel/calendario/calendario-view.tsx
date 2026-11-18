@@ -98,7 +98,7 @@ export default function CalendarioView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div>
           <h1 className="font-serif text-2xl text-ink md:text-3xl">
             Calendario
@@ -108,7 +108,7 @@ export default function CalendarioView({
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex overflow-hidden rounded-full border border-white/15 text-sm" aria-label="Ver clases por">
+          <div className="flex overflow-hidden rounded-full border border-ink/15 text-sm" aria-label="Ver clases por">
             {([["dia", "Día"], ["semana", "Semana"], ["mes", "Mes"]] as const).map(([v, etiqueta]) => (
               <a key={v} href={`/panel/hoy?vista=${v}`} className="px-4 py-1.5 text-ink/60 hover:text-ink">{etiqueta}</a>
             ))}
@@ -126,14 +126,14 @@ export default function CalendarioView({
 
       <div className="px-6 pt-8 md:px-10">
         {mostrarForm && (
-          <div className="mb-6 grid gap-4 rounded-2xl border border-white/10 bg-card p-5 sm:grid-cols-3">
+          <div className="mb-6 grid gap-4 rounded-2xl border border-ink/10 bg-card p-5 sm:grid-cols-3">
             {sedes.length > 1 && (
               <label className="text-sm text-ink/60">
                 Sede
                 <select
                   value={sedeId}
                   onChange={(e) => setSedeId(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
                 >
                   {sedes.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -148,7 +148,7 @@ export default function CalendarioView({
               <select
                 value={diaSemana}
                 onChange={(e) => setDiaSemana(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               >
                 {DIAS.map((d, i) => (
                   <option key={i} value={i}>
@@ -164,7 +164,7 @@ export default function CalendarioView({
                 value={nombreClase}
                 onChange={(e) => setNombreClase(e.target.value)}
                 placeholder="Reformer Flow"
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             <label className="text-sm text-ink/60">
@@ -173,7 +173,7 @@ export default function CalendarioView({
                 type="time"
                 value={horaInicio}
                 onChange={(e) => setHoraInicio(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             <label className="text-sm text-ink/60">
@@ -182,7 +182,7 @@ export default function CalendarioView({
                 type="time"
                 value={horaFin}
                 onChange={(e) => setHoraFin(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             <label className="text-sm text-ink/60">
@@ -191,7 +191,7 @@ export default function CalendarioView({
                 type="number"
                 value={cupoMaximo}
                 onChange={(e) => setCupoMaximo(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
               />
             </label>
             {instructoras.length > 0 && (
@@ -200,7 +200,7 @@ export default function CalendarioView({
                 <select
                   value={instructorId}
                   onChange={(e) => setInstructorId(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none"
+                  className="mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none"
                 >
                   <option value="">Sin asignar</option>
                   {instructoras.map((i) => (
@@ -230,7 +230,7 @@ export default function CalendarioView({
       <div className="overflow-x-auto px-6 pb-8 md:px-10">
         <Reveal>
           <div
-            className="grid min-w-[720px] gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10"
+            className="grid min-w-[720px] gap-px overflow-hidden rounded-2xl border border-ink/10 bg-ink/10"
             style={{
               gridTemplateColumns: `88px repeat(${recursos.length || 1}, 1fr)`,
             }}

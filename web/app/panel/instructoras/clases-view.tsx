@@ -8,7 +8,7 @@ export type Clase = {
   cupo: number; reservadas: number; asistieron: number; no_vinieron: number; sin_marcar: number; canceladas: number; clase_cancelada: boolean; ocupacion_pct: number;
 };
 
-const campo = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-ink/30";
+const campo = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-sm text-ink outline-none focus:border-ink/30";
 const llave = (c: Pick<Clase, "horario_id" | "fecha">) => `${c.horario_id}|${c.fecha}`;
 
 export default function ClasesView({ tenantId, clases, instructoras, puedeCorregir, retoActual }: {
@@ -45,13 +45,13 @@ export default function ClasesView({ tenantId, clases, instructoras, puedeCorreg
     <>
       {msg && <p role={msg.ok ? "status" : "alert"} className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
-      <section className="overflow-x-auto rounded-2xl border border-white/10 bg-card p-5" aria-label="Clases dadas">
+      <section className="overflow-x-auto rounded-2xl border border-ink/10 bg-card p-5" aria-label="Clases dadas">
         <h2 className="text-base font-semibold text-ink">Clase por clase</h2>
         <table className="mt-3 w-full min-w-[760px] text-left text-sm">
           <thead className="text-xs uppercase tracking-wide text-ink/50">
             <tr>{puedeCorregir && <th className="w-8 py-2"><span className="sr-only">Elegir</span></th>}<th className="py-2">Fecha</th><th>Clase</th><th>Sede</th><th>Instructora</th><th>Reservadas</th><th>Asistieron</th><th>Sin marcar</th><th>Cancel.</th><th>Ocupación</th></tr>
           </thead>
-          <tbody className="divide-y divide-white/10 text-ink">
+          <tbody className="divide-y divide-ink/10 text-ink">
             {clases.length === 0 && <tr><td colSpan={10} className="py-4 text-ink/55">No hay clases dadas con esos filtros.</td></tr>}
             {clases.map((c) => (
               <tr key={llave(c)} className={c.clase_cancelada ? "opacity-50" : ""}>
@@ -59,7 +59,7 @@ export default function ClasesView({ tenantId, clases, instructoras, puedeCorreg
                 <td className="py-2 whitespace-nowrap">{c.fecha.split("-").reverse().join("/")} {c.hora_inicio.slice(0, 5)}</td>
                 <td>{c.nombre_clase}{c.clase_cancelada && <span className="ml-1 text-xs text-ink/50">(cancelada)</span>}</td>
                 <td>{c.sede}</td>
-                <td>{c.instructora ?? "Sin asignar"}{c.es_sustitucion && <span className="ml-1 rounded-full bg-white/10 px-2 py-0.5 text-xs">sustitución</span>}</td>
+                <td>{c.instructora ?? "Sin asignar"}{c.es_sustitucion && <span className="ml-1 rounded-full bg-ink/10 px-2 py-0.5 text-xs">sustitución</span>}</td>
                 <td>{c.reservadas}/{c.cupo}</td><td>{c.asistieron}</td><td className={c.sin_marcar > 0 ? "text-peach" : ""}>{c.sin_marcar}</td><td>{c.canceladas}</td><td>{Number(c.ocupacion_pct)}%</td>
               </tr>
             ))}
@@ -67,7 +67,7 @@ export default function ClasesView({ tenantId, clases, instructoras, puedeCorreg
         </table>
 
         {puedeCorregir && (
-          <div className="mt-5 grid gap-3 border-t border-white/10 pt-4 sm:grid-cols-[1fr_2fr_auto]">
+          <div className="mt-5 grid gap-3 border-t border-ink/10 pt-4 sm:grid-cols-[1fr_2fr_auto]">
             <label className="text-sm text-ink/70">Quién dio las clases elegidas ({sel.size})
               <select value={instructora} onChange={(e) => setInstructora(e.target.value)} className={campo}><option value="">Elige instructora…</option>{instructoras.map((i) => <option key={i.id} value={i.id}>{i.nombre}</option>)}</select>
             </label>
@@ -84,7 +84,7 @@ export default function ClasesView({ tenantId, clases, instructoras, puedeCorreg
       </section>
 
       {retoActual !== null && (
-        <section className="rounded-2xl border border-white/10 bg-card p-5" aria-label="Reto mensual">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-label="Reto mensual">
           <h2 className="text-base font-semibold text-ink">Reto mensual de las clientas</h2>
           <p className="mt-1 text-sm text-ink/60">Las clientas ven en su inicio una barra de progreso hacia esta meta de clases asistidas en el mes.</p>
           <div className="mt-3 flex flex-wrap items-end gap-3">

@@ -21,8 +21,8 @@ export type Detalle = {
 
 const ETAPAS = ["prospecto", "demo", "propuesta", "negociacion", "ganado", "perdido"];
 const TIPOS = ["llamada", "email", "reunion", "demo", "whatsapp", "nota", "otro"];
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-void px-3 py-2 text-sm text-white outline-none focus:border-lime/60";
-const card = "rounded-2xl border border-white/10 bg-void-card p-5";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-void px-3 py-2 text-sm text-ink outline-none focus:border-lime/60";
+const card = "rounded-2xl border border-ink/10 bg-void-card p-5";
 
 export default function FichaOportunidad({ d }: { d: Detalle }) {
   const o = d.oportunidad;
@@ -49,33 +49,33 @@ export default function FichaOportunidad({ d }: { d: Detalle }) {
   return (
     <main className="mx-auto grid max-w-6xl gap-6 px-6 py-8 md:px-10">
       <div>
-        <Link href="/owner/pipeline" className="text-sm text-white/50 hover:text-white">← Pipeline</Link>
+        <Link href="/owner/pipeline" className="text-sm text-ink/50 hover:text-ink">← Pipeline</Link>
         <h1 className="mt-2 text-2xl font-semibold">{o.nombre}</h1>
-        <p className="text-sm text-white/50">{d.empresa?.tipo}{d.empresa?.ciudad ? ` · ${d.empresa.ciudad}` : ""}{d.empresa?.sitio_web ? ` · ${d.empresa.sitio_web}` : ""}</p>
+        <p className="text-sm text-ink/50">{d.empresa?.tipo}{d.empresa?.ciudad ? ` · ${d.empresa.ciudad}` : ""}{d.empresa?.sitio_web ? ` · ${d.empresa.sitio_web}` : ""}</p>
         {d.proyecto_id && (
           <Link href="/owner/activaciones" className="mt-2 inline-block rounded-full bg-lime px-3 py-1 text-xs font-semibold text-void">Ver proyecto de activación →</Link>
         )}
       </div>
-      {msg && <p className="rounded-xl bg-white/10 px-4 py-3 text-sm">{msg}</p>}
+      {msg && <p className="rounded-xl bg-ink/10 px-4 py-3 text-sm">{msg}</p>}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className={card}>
           <h2 className="text-base font-semibold">Oportunidad</h2>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <label className="text-xs text-white/50">Etapa
+            <label className="text-xs text-ink/50">Etapa
               <select className={input} value={f.etapa} onChange={(e) => setF({ ...f, etapa: e.target.value })}>{ETAPAS.map((x) => <option key={x}>{x}</option>)}</select>
             </label>
-            <label className="text-xs text-white/50">Valor mensual (Q)<input type="number" className={input} value={f.valor} onChange={(e) => setF({ ...f, valor: e.target.value })} /></label>
-            <label className="text-xs text-white/50">Plan de interés<input className={input} value={f.planInteres} onChange={(e) => setF({ ...f, planInteres: e.target.value })} /></label>
-            <label className="text-xs text-white/50">Sedes<input type="number" className={input} value={f.numSedes} onChange={(e) => setF({ ...f, numSedes: e.target.value })} /></label>
-            <label className="text-xs text-white/50">Probabilidad (%)<input type="number" min={0} max={100} className={input} value={f.probabilidad} onChange={(e) => setF({ ...f, probabilidad: e.target.value })} /></label>
-            <label className="text-xs text-white/50">Fuente<input className={input} value={f.fuente} onChange={(e) => setF({ ...f, fuente: e.target.value })} /></label>
-            <label className="text-xs text-white/50">Próxima acción<input className={input} value={f.proximoPaso} onChange={(e) => setF({ ...f, proximoPaso: e.target.value })} /></label>
-            <label className="text-xs text-white/50">Fecha de la acción (dd/mm/aaaa)<CampoFecha className={input} value={f.proximoPasoFecha} onChange={(v) => setF({ ...f, proximoPasoFecha: v })} /></label>
+            <label className="text-xs text-ink/50">Valor mensual (Q)<input type="number" className={input} value={f.valor} onChange={(e) => setF({ ...f, valor: e.target.value })} /></label>
+            <label className="text-xs text-ink/50">Plan de interés<input className={input} value={f.planInteres} onChange={(e) => setF({ ...f, planInteres: e.target.value })} /></label>
+            <label className="text-xs text-ink/50">Sedes<input type="number" className={input} value={f.numSedes} onChange={(e) => setF({ ...f, numSedes: e.target.value })} /></label>
+            <label className="text-xs text-ink/50">Probabilidad (%)<input type="number" min={0} max={100} className={input} value={f.probabilidad} onChange={(e) => setF({ ...f, probabilidad: e.target.value })} /></label>
+            <label className="text-xs text-ink/50">Fuente<input className={input} value={f.fuente} onChange={(e) => setF({ ...f, fuente: e.target.value })} /></label>
+            <label className="text-xs text-ink/50">Próxima acción<input className={input} value={f.proximoPaso} onChange={(e) => setF({ ...f, proximoPaso: e.target.value })} /></label>
+            <label className="text-xs text-ink/50">Fecha de la acción (dd/mm/aaaa)<CampoFecha className={input} value={f.proximoPasoFecha} onChange={(v) => setF({ ...f, proximoPasoFecha: v })} /></label>
             {f.etapa === "perdido" && (
-              <label className="text-xs text-white/50 sm:col-span-2">Motivo por el que se perdió<input className={input} value={f.motivoPerdida} onChange={(e) => setF({ ...f, motivoPerdida: e.target.value })} /></label>
+              <label className="text-xs text-ink/50 sm:col-span-2">Motivo por el que se perdió<input className={input} value={f.motivoPerdida} onChange={(e) => setF({ ...f, motivoPerdida: e.target.value })} /></label>
             )}
-            <label className="text-xs text-white/50 sm:col-span-2">Notas<textarea rows={2} className={input} value={f.notas} onChange={(e) => setF({ ...f, notas: e.target.value })} /></label>
+            <label className="text-xs text-ink/50 sm:col-span-2">Notas<textarea rows={2} className={input} value={f.notas} onChange={(e) => setF({ ...f, notas: e.target.value })} /></label>
           </div>
           <button className="mt-4 rounded-full bg-lime px-4 py-2 text-sm font-semibold text-void disabled:opacity-50" disabled={isPending}
             onClick={() => correr(() => guardarOportunidad(o.id, o.empresa_id, { valor: Number(f.valor || 0), etapa: f.etapa, planInteres: f.planInteres, numSedes: f.numSedes ? Number(f.numSedes) : null, probabilidad: f.probabilidad ? Number(f.probabilidad) : null, proximoPaso: f.proximoPaso, proximoPasoFecha: f.proximoPasoFecha, fuente: f.fuente, motivoPerdida: f.motivoPerdida, notas: f.notas }), "Guardado.")}>
@@ -85,13 +85,13 @@ export default function FichaOportunidad({ d }: { d: Detalle }) {
 
         <section className={card}>
           <h2 className="text-base font-semibold">Contactos</h2>
-          <ul className="mt-3 divide-y divide-white/10">
-            {d.contactos.length === 0 && <li className="py-2 text-sm text-white/50">Sin contactos.</li>}
+          <ul className="mt-3 divide-y divide-ink/10">
+            {d.contactos.length === 0 && <li className="py-2 text-sm text-ink/50">Sin contactos.</li>}
             {d.contactos.map((x) => (
               <li key={x.id} className="flex items-center justify-between gap-2 py-2 text-sm">
                 <span>{x.nombre}{x.es_decisor && <span className="ml-2 text-xs text-lime">decisor</span>}
-                  <span className="block text-xs text-white/50">{[x.cargo, x.telefono, x.email].filter(Boolean).join(" · ")}</span></span>
-                <button className="text-xs text-white/40 hover:text-white" disabled={isPending} onClick={() => correr(() => eliminarContacto(o.id, x.id), "Contacto eliminado.")}>Quitar</button>
+                  <span className="block text-xs text-ink/50">{[x.cargo, x.telefono, x.email].filter(Boolean).join(" · ")}</span></span>
+                <button className="text-xs text-ink/40 hover:text-ink" disabled={isPending} onClick={() => correr(() => eliminarContacto(o.id, x.id), "Contacto eliminado.")}>Quitar</button>
               </li>
             ))}
           </ul>
@@ -101,8 +101,8 @@ export default function FichaOportunidad({ d }: { d: Detalle }) {
             <input className={input} placeholder="Teléfono" value={c.telefono} onChange={(e) => setC({ ...c, telefono: e.target.value })} />
             <input className={input} placeholder="Correo" value={c.email} onChange={(e) => setC({ ...c, email: e.target.value })} />
           </div>
-          <label className="mt-2 flex items-center gap-2 text-xs text-white/60"><input type="checkbox" checked={c.decisor} onChange={(e) => setC({ ...c, decisor: e.target.checked })} /> Es quien decide</label>
-          <button className="mt-3 rounded-full border border-white/15 px-4 py-1.5 text-sm text-white/80 disabled:opacity-50" disabled={isPending || !c.nombre.trim()}
+          <label className="mt-2 flex items-center gap-2 text-xs text-ink/60"><input type="checkbox" checked={c.decisor} onChange={(e) => setC({ ...c, decisor: e.target.checked })} /> Es quien decide</label>
+          <button className="mt-3 rounded-full border border-ink/15 px-4 py-1.5 text-sm text-ink/80 disabled:opacity-50" disabled={isPending || !c.nombre.trim()}
             onClick={() => correr(() => guardarContacto(o.id, o.empresa_id, c), "Contacto agregado.", () => setC({ nombre: "", cargo: "", telefono: "", email: "", decisor: false }))}>
             + Agregar contacto
           </button>
@@ -110,20 +110,20 @@ export default function FichaOportunidad({ d }: { d: Detalle }) {
 
         <section className={card}>
           <h2 className="text-base font-semibold">Tareas</h2>
-          <ul className="mt-3 divide-y divide-white/10">
-            {d.tareas.length === 0 && <li className="py-2 text-sm text-white/50">Sin tareas.</li>}
+          <ul className="mt-3 divide-y divide-ink/10">
+            {d.tareas.length === 0 && <li className="py-2 text-sm text-ink/50">Sin tareas.</li>}
             {d.tareas.map((t) => (
               <li key={t.id} className="flex items-center gap-3 py-2 text-sm">
                 <input type="checkbox" checked={t.estado === "hecha"} disabled={isPending} onChange={(e) => correr(() => completarTarea(o.id, t.id, e.target.checked), "Tarea actualizada.")} />
-                <span className={t.estado === "hecha" ? "text-white/35 line-through" : ""}>{t.titulo}</span>
-                {t.vence && <span className="ml-auto text-xs text-white/45">{t.vence}</span>}
+                <span className={t.estado === "hecha" ? "text-ink/35 line-through" : ""}>{t.titulo}</span>
+                {t.vence && <span className="ml-auto text-xs text-ink/45">{t.vence}</span>}
               </li>
             ))}
           </ul>
           <div className="mt-3 flex flex-wrap gap-2">
             <input className={`${input} flex-1`} placeholder="Nueva tarea" value={tarea.titulo} onChange={(e) => setTarea({ ...tarea, titulo: e.target.value })} />
             <CampoFecha ariaLabel="Fecha de vencimiento (dd/mm/aaaa)" className={`${input} w-40`} value={tarea.vence} onChange={(v) => setTarea({ ...tarea, vence: v })} />
-            <button className="rounded-full border border-white/15 px-4 py-1.5 text-sm disabled:opacity-50" disabled={isPending || !tarea.titulo.trim()}
+            <button className="rounded-full border border-ink/15 px-4 py-1.5 text-sm disabled:opacity-50" disabled={isPending || !tarea.titulo.trim()}
               onClick={() => correr(() => crearTarea(o.id, tarea.titulo, tarea.vence), "Tarea creada.", () => setTarea({ titulo: "", vence: "" }))}>+ Tarea</button>
           </div>
         </section>
@@ -137,11 +137,11 @@ export default function FichaOportunidad({ d }: { d: Detalle }) {
               onClick={() => correr(() => registrarActividad(o.id, act.tipo, act.resumen), "Actividad registrada.", () => setAct({ ...act, resumen: "" }))}>Registrar</button>
           </div>
           <ul className="mt-3 space-y-2">
-            {d.actividades.length === 0 && <li className="text-sm text-white/50">Sin actividad todavía.</li>}
+            {d.actividades.length === 0 && <li className="text-sm text-ink/50">Sin actividad todavía.</li>}
             {d.actividades.map((a) => (
               <li key={a.id} className="text-sm">
-                <span className="text-xs uppercase text-lime">{a.tipo}</span> · <span className="text-white/45">{formatoFecha(hoyGT(new Date(a.fecha)))} {a.autor_nombre ? `· ${a.autor_nombre}` : ""}</span>
-                <p className="text-white/80">{a.resumen}</p>
+                <span className="text-xs uppercase text-lime">{a.tipo}</span> · <span className="text-ink/45">{formatoFecha(hoyGT(new Date(a.fecha)))} {a.autor_nombre ? `· ${a.autor_nombre}` : ""}</span>
+                <p className="text-ink/80">{a.resumen}</p>
               </li>
             ))}
           </ul>

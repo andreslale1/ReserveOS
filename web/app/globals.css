@@ -1,26 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  /* Sitio público: negro + verde lima, atlético y confiado */
-  --color-void: #0a0b08; /* fondo negro del sitio público */
-  --color-void-card: #16180f; /* tarjetas sobre negro */
-  --color-lime: #c6ff3a; /* acento primario — verde lima vibrante */
-  --color-lime-dim: #8fd424; /* variante más oscura para texto sobre lima */
+  /* ReserveOS: sobrio y claro. Blanco hueso, grises cálidos, azul pizarra y azul pastel. */
+  --color-void: #f5f4f1;        /* papel: fondo de página */
+  --color-void-card: #ffffff;   /* superficie: tarjetas */
+  --color-lime: #2f5d8c;        /* acento: azul pizarra (nombre histórico) */
+  --color-lime-dim: #264b72;
 
-  /* Panel interno: mismo negro + gris + verde lima que el resto del
-     programa -- una sola identidad visual en toda la app, sin version
-     "clara" aparte. */
   --color-cream: var(--color-void);
   --color-card: var(--color-void-card);
-  --color-ink: #ffffff;
-  --color-ink-soft: #9a9c93;
+  --color-ink: #1b2530;
+  --color-ink-soft: #5b6673;
   --color-peach: var(--color-lime);
   --color-blue: var(--color-lime);
   --color-sage: var(--color-lime);
-  --color-peach-tint: #1c2410;
-  --color-blue-tint: #1c2410;
-  --color-sage-tint: #1c2410;
-  --color-neutral-tint: #22241d;
+  --color-peach-tint: #dde8f3;
+  --color-blue-tint: #dde8f3;
+  --color-sage-tint: #dde8f3;
+  --color-neutral-tint: #e9e7e2;
+  --color-sand: #e9e3d8;
+  --color-line: #dcdfe3;
 }
 
 @theme inline {
@@ -39,14 +38,20 @@
   --color-blue-tint: var(--color-blue-tint);
   --color-sage-tint: var(--color-sage-tint);
   --color-neutral-tint: var(--color-neutral-tint);
-  --font-serif: var(--font-inter);
-  --font-sans: var(--font-inter);
+  --color-sand: var(--color-sand);
+  --color-line: var(--color-line);
+  --font-serif: var(--f-display);
+  --font-sans: var(--f-body);
+  --font-display: var(--f-display);
 }
 
 body {
   background: var(--color-cream);
   color: var(--color-ink);
+  font-family: var(--f-body), system-ui, sans-serif;
 }
+h1, h2, h3 { font-family: var(--f-display), system-ui, sans-serif; letter-spacing: -0.02em; text-wrap: balance; }
+.tabular { font-variant-numeric: tabular-nums; }
 
 /* Browser surfaces, themed from the palette — not left as browser defaults */
 ::selection {
@@ -154,3 +159,30 @@ body {
     animation: none;
   }
 }
+
+/* ───────── Tema de estudio: la estructura es de ReserveOS (nav agrupada, filas claras); el color y el logo son del estudio ─────────
+   Se aplica a lo que ve un estudio (panel, portal de la clienta, login del estudio). El acento del estudio se inyecta encima (lib/marca.ts). */
+.tema-estudio {
+  --color-void: #f7f6f3;
+  --color-void-card: #ffffff;
+  --color-cream: #eef0f2;
+  --color-card: #ffffff;
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+.tema-estudio .rounded-3xl, .tema-estudio .rounded-\[2rem\] { border-radius: 16px; }
+.tema-estudio .bg-peach, .tema-estudio .bg-lime { color: #fff; }
+
+/* Una sola entrada orquestada: las filas del horario aparecen en cascada. Parten visibles (opacity .0 solo durante la animación). */
+@keyframes fila-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.fila-in { animation: fila-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+@media (prefers-reduced-motion: reduce) { .fila-in { animation: none; } }
+
+/* Movimiento (Emil Kowalski): salida fuerte, nunca ease-in; respuesta inmediata al presionar; solo propiedades concretas. */
+:root { --ease-out: cubic-bezier(0.23, 1, 0.32, 1); --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); }
+.press-spring { transition: transform 160ms var(--ease-out), background-color 150ms ease, border-color 150ms ease, color 150ms ease; }
+.press-spring:active { transform: scale(0.97); }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-4px) scale(0.97); } to { opacity: 1; transform: none; } }
+.menu-in { animation: menu-in 160ms var(--ease-out) both; transform-origin: top left; }
+@media (prefers-reduced-motion: reduce) { .menu-in, .press-spring { animation: none; transition: none; } }
+@media (hover: none) { .press-spring:hover { transform: none; } }

@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { login } from "./actions";
 import { estiloMarca, marcaPorSlug } from "@/lib/marca";
+import { Marca } from "@/components/navbar";
 import { destinoSeguro, slugSeguro } from "@/lib/destino";
 
 export default async function LoginPage({
@@ -18,29 +19,19 @@ export default async function LoginPage({
   const marca = await marcaPorSlug(slug);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-void px-6" style={estiloMarca(marca?.color)}>
-      <div className="w-full max-w-sm rounded-[2rem] border border-white/10 bg-void-card p-8 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.6)]">
+    <main className={`${marca ? "tema-estudio " : ""}flex min-h-screen items-center justify-center bg-void px-6`} style={estiloMarca(marca?.color)}>
+      <div className="w-full max-w-sm rounded-2xl border border-line bg-void-card p-8 shadow-[0_24px_48px_-28px_rgba(27,37,48,0.3)]">
         {marca?.logo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={marca.logo} alt={`Logo de ${marca.nombre}`} className="h-10 w-auto max-w-[12rem] object-contain" />
         ) : (
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-lime ">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M2 8.5L6 12.5L14 3.5"
-              stroke="#0a0b08"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
+        <Marca />
         )}
 
-        <h1 className="mt-5 text-2xl font-black uppercase tracking-tight text-white">
+        <h1 className="mt-6 text-2xl font-semibold text-ink">
           {estudio ? `Entrar a ${estudio}` : "Entrar a ReserveOS"}
         </h1>
-        <p className="mt-1 text-sm text-white/50">
+        <p className="mt-1 text-sm text-ink/50">
           {estudio ? "Tus clases, paquetes y reservas." : "Panel del estudio y operación diaria."}
         </p>
 
@@ -51,7 +42,7 @@ export default async function LoginPage({
           <div>
             <label
               htmlFor="email"
-              className="mb-1.5 block text-xs font-medium text-white/60"
+              className="mb-1.5 block text-xs font-medium text-ink/60"
             >
               Correo
             </label>
@@ -61,14 +52,14 @@ export default async function LoginPage({
               type="email"
               required
               autoComplete="email"
-              className="w-full rounded-xl border border-white/10 bg-void px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-lime"
+              className="w-full rounded-lg border border-line bg-void px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-lime focus-visible:ring-2 focus-visible:ring-lime/30"
             />
           </div>
 
           <div>
             <label
               htmlFor="password"
-              className="mb-1.5 block text-xs font-medium text-white/60"
+              className="mb-1.5 block text-xs font-medium text-ink/60"
             >
               Contraseña
             </label>
@@ -78,28 +69,28 @@ export default async function LoginPage({
               type="password"
               required
               autoComplete="current-password"
-              className="w-full rounded-xl border border-white/10 bg-void px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-lime"
+              className="w-full rounded-lg border border-line bg-void px-4 py-2.5 text-sm text-ink outline-none transition-colors focus:border-lime focus-visible:ring-2 focus-visible:ring-lime/30"
             />
           </div>
 
           {error && (
-            <p role="alert" className="rounded-lg bg-red-500/15 px-3 py-2 text-xs text-red-300">
+            <p role="alert" className="rounded-lg bg-[#fbe9e5] px-3 py-2 text-xs text-[#8f2f1f]">
               {error}
             </p>
           )}
 
           <button
             type="submit"
-            className="press-spring mt-2 w-full rounded-full bg-lime py-2.5 text-sm font-bold uppercase tracking-wide text-void shadow-[0_0_30px_-6px_rgba(198,255,58,0.7)] transition-colors duration-200 hover:bg-lime/85"
+            className="press-spring mt-2 w-full rounded-lg bg-lime py-3 text-sm font-semibold text-white hover:bg-lime-dim"
           >
             Entrar
           </button>
         </form>
 
         <div className="mt-6 space-y-2 text-center text-sm">
-          <Link href="/login/olvide" className="block text-white/60 underline hover:text-white">¿Olvidaste tu contraseña?</Link>
+          <Link href="/login/olvide" className="block text-ink/60 underline hover:text-ink">¿Olvidaste tu contraseña?</Link>
           {slug && (
-            <p className="text-white/50">
+            <p className="text-ink/50">
               ¿Primera vez?{" "}
               <Link href={`/registro/${slug}?next=${encodeURIComponent(destino === "/panel" ? "/cuenta/clases" : destino)}`} className="font-semibold text-lime underline">Crear mi cuenta</Link>
             </p>

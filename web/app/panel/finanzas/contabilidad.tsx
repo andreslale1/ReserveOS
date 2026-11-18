@@ -8,7 +8,7 @@ const q = (n: number | null | undefined) => (n === null || n === undefined ? "�
 
 function Card({ t, v, s }: { t: string; v: string; s?: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-card p-5">
+    <div className="rounded-2xl border border-ink/10 bg-card p-5">
       <p className="text-xs uppercase tracking-wide text-ink-soft">{t}</p>
       <p className="mt-2 text-2xl font-bold text-ink">{v}</p>
       {s && <p className="mt-1 text-xs text-ink-soft">{s}</p>}
@@ -18,12 +18,12 @@ function Card({ t, v, s }: { t: string; v: string; s?: string }) {
 function Antiguedad({ titulo, c }: { titulo: string; c: Cuentas }) {
   if (!c) return null;
   return (
-    <div className="rounded-2xl border border-white/10 bg-card p-5">
+    <div className="rounded-2xl border border-ink/10 bg-card p-5">
       <h3 className="text-base font-semibold text-ink">{titulo}: {q(c.total)}</h3>
       <table className="mt-3 w-full text-sm">
         <caption className="sr-only">Antigüedad de {titulo.toLowerCase()}</caption>
         <thead className="text-left text-xs uppercase text-ink-soft"><tr><th className="py-1">Antigüedad</th><th className="py-1 text-right">Monto</th></tr></thead>
-        <tbody className="divide-y divide-white/10">
+        <tbody className="divide-y divide-ink/10">
           {([["0 a 30 días", c.bucket_0_30], ["31 a 60 días", c.bucket_31_60], ["61 a 90 días", c.bucket_61_90], ["Más de 90 días", c.bucket_90_mas]] as const).map(([l, v]) => (
             <tr key={l}><td className="py-1.5 text-ink">{l}</td><td className="py-1.5 text-right">{q(v)}</td></tr>
           ))}

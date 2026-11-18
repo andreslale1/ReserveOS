@@ -27,7 +27,7 @@ const BLOQUES: Bloque[] = [
   { id: "pie", titulo: "Pie de página", campos: [{ k: "footer_frase_cierre", label: "Frase de cierre" }] },
 ];
 
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 type Valor = string | boolean | null | undefined;
 
 export default function SitioEditor({ tenantId, contenido, contacto }: { tenantId: string; contenido: Record<string, Valor> | null; contacto: { whatsapp: string; instagram: string; facebook: string } }) {
@@ -43,12 +43,12 @@ export default function SitioEditor({ tenantId, contenido, contacto }: { tenantI
   const [isPending, startTransition] = useTransition();
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-card p-5" aria-labelledby="sitio-t">
+    <section className="rounded-2xl border border-ink/10 bg-card p-5" aria-labelledby="sitio-t">
       <h2 id="sitio-t" className="text-base font-semibold text-ink">Tu página pública</h2>
       <p className="mt-1 text-sm text-ink/65">Textos, imágenes y bloques de <code>/e/tu-estudio</code>. Apaga un bloque con «Mostrar en el sitio» y deja de verse al instante. Las imágenes deben ser direcciones <strong>https://</strong>.</p>
       {msg && <p role="status" className={`mt-3 rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
-      <div className="mt-4 rounded-xl border border-white/10 p-4">
+      <div className="mt-4 rounded-xl border border-ink/10 p-4">
         <h3 className="text-sm font-semibold text-ink">Contacto y redes</h3>
         <div className="mt-2 grid gap-3 sm:grid-cols-3">
           <label className="text-sm text-ink/60">WhatsApp (con código de país)<input inputMode="tel" placeholder="50255551234" className={input} value={ct.whatsapp} onChange={(e) => setCt({ ...ct, whatsapp: e.target.value })} /></label>
@@ -59,7 +59,7 @@ export default function SitioEditor({ tenantId, contenido, contacto }: { tenantI
           onClick={() => { setMsg(null); startTransition(async () => { const r = await guardarContacto(tenantId, ct.whatsapp, ct.instagram, ct.facebook); setMsg(r.error ? { ok: false, texto: r.error } : { ok: true, texto: "Contacto guardado." }); }); }}>Guardar contacto</button>
       </div>
 
-      <div className="mt-3 divide-y divide-white/10 rounded-xl border border-white/10">
+      <div className="mt-3 divide-y divide-ink/10 rounded-xl border border-ink/10">
         {BLOQUES.map((b) => (
           <div key={b.id} className="p-4">
             <div className="flex items-center justify-between gap-3">

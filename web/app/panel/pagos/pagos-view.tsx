@@ -6,7 +6,7 @@ import { marcarDevuelto, resolverReembolso } from "./actions";
 export type Reembolso = { id: string; clienta: string; paquete: string; monto: number; motivo: string; estado: string; por_clienta: boolean; created_at: string; resuelto_at: string | null; nota: string | null; devuelto_at: string | null };
 export type Transaccion = { id: string; created_at: string; clienta: string; concepto: string; monto: number; estado: string; proveedor: string; referencia: string | null };
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
-const input = "rounded-lg border border-white/15 bg-cream px-3 py-1.5 text-sm text-ink outline-none focus:border-ink/30";
+const input = "rounded-lg border border-ink/15 bg-cream px-3 py-1.5 text-sm text-ink outline-none focus:border-ink/30";
 const EST: Record<string, string> = { solicitado: "Por resolver", aprobado: "Aprobado · falta devolver el dinero", rechazado: "Rechazado", devuelto: "Devuelto" };
 const EST_TX: Record<string, string> = { iniciado: "Esperando pago", confirmado: "Pagado", rechazado: "Rechazado", reembolsado: "Reembolsado", revision: "En revisión (monto distinto)" };
 
@@ -22,15 +22,15 @@ export default function PagosView({ reembolsos, transacciones, puedeResolver }: 
   }
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Pagos y reembolsos</h1>
         <p className="mt-1 text-sm text-ink/60">Lo cobrado en línea y las solicitudes de reembolso de tus clientas.</p>
       </header>
       <div className="mx-auto grid max-w-4xl gap-6 px-6 py-8 md:px-10">
         {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Reembolsos</h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {reembolsos.length === 0 && <li className="py-3 text-sm text-ink/50">No hay solicitudes.</li>}
             {reembolsos.map((r) => (
               <li key={r.id} className="py-3 text-sm">
@@ -42,22 +42,22 @@ export default function PagosView({ reembolsos, transacciones, puedeResolver }: 
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <input className={`${input} w-56`} placeholder="Nota (obligatoria si rechazas)" value={nota[r.id] ?? ""} onChange={(e) => setNota({ ...nota, [r.id]: e.target.value })} />
                     <button className="press-spring rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-cream" disabled={isPending} onClick={() => correr(() => resolverReembolso(r.id, true, nota[r.id] ?? ""), "Aprobado: la compra se anuló y las reservas futuras se cancelaron.")}>Aprobar</button>
-                    <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs text-ink" disabled={isPending} onClick={() => correr(() => resolverReembolso(r.id, false, nota[r.id] ?? ""), "Rechazado.")}>Rechazar</button>
+                    <button className="rounded-full border border-ink/20 px-3 py-1.5 text-xs text-ink" disabled={isPending} onClick={() => correr(() => resolverReembolso(r.id, false, nota[r.id] ?? ""), "Rechazado.")}>Rechazar</button>
                   </div>
                 )}
                 {r.estado === "aprobado" && (
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <input className={`${input} w-56`} placeholder="Referencia de la devolución" value={nota[r.id] ?? ""} onChange={(e) => setNota({ ...nota, [r.id]: e.target.value })} />
-                    <button className="rounded-full border border-white/20 px-3 py-1.5 text-xs text-ink" disabled={isPending} onClick={() => correr(() => marcarDevuelto(r.id, nota[r.id] ?? ""), "Marcado como devuelto.")}>Ya devolví el dinero</button>
+                    <button className="rounded-full border border-ink/20 px-3 py-1.5 text-xs text-ink" disabled={isPending} onClick={() => correr(() => marcarDevuelto(r.id, nota[r.id] ?? ""), "Marcado como devuelto.")}>Ya devolví el dinero</button>
                   </div>
                 )}
               </li>
             ))}
           </ul>
         </section>
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Cobros en línea</h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {transacciones.length === 0 && <li className="py-3 text-sm text-ink/50">Aún no hay cobros en línea.</li>}
             {transacciones.map((t) => (
               <li key={t.id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">

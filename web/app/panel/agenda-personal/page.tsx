@@ -31,18 +31,18 @@ export default async function AgendaPersonalPage() {
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Agenda del personal</h1>
         <p className="mt-1 text-sm text-ink/60">Clases semanales por instructora</p>
       </header>
       <div className="mx-auto grid max-w-4xl gap-6 px-6 py-8 md:px-10">
         {personas.length === 0 && <p className="text-sm text-ink/50">No hay clases semanales activas.</p>}
         {personas.map((p) => (
-          <section key={p.nombre} className="rounded-2xl border border-white/10 bg-card p-5">
+          <section key={p.nombre} className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">
               {p.nombre} <span className="text-sm font-normal text-ink/50">· {p.clases.length} clases por semana</span>
             </h2>
-            <ul className="mt-3 divide-y divide-white/10">
+            <ul className="mt-3 divide-y divide-ink/10">
               {[...p.clases]
                 .sort((a, b) => a.dia_semana - b.dia_semana || a.hora_inicio.localeCompare(b.hora_inicio))
                 .map((c) => (

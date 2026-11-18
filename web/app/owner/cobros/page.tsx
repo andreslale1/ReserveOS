@@ -13,7 +13,7 @@ export default async function CobrosPage({ searchParams }: { searchParams: Promi
     supabase.rpc("planes_listar"),
   ]);
   if (error) {
-    return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-white/60">{error.message}</main>;
+    return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/60">{error.message}</main>;
   }
   return <CobrosView resumen={resumen as Resumen} estudios={(estudios ?? []) as Estudio[]} cobros={((cobros ?? []) as Cobro[]).filter((c) => !["mora", "por-vencer"].includes(filtro ?? "") || (["pendiente", "parcial"].includes(c.estado) && (filtro === "mora" ? c.fecha_vencimiento < hoy : c.fecha_vencimiento >= hoy && c.fecha_vencimiento <= en7)))} planes={((planes ?? []) as (PlanCat & { estado?: string })[]).filter((p) => p.estado === "publicado")} />;
 }

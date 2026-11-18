@@ -10,7 +10,7 @@ export default function MiQr({ tenantId, imagen, codigo }: { tenantId: string; i
   const [isPending, startTransition] = useTransition();
   return (
     <div className="mt-3">
-      <button className="w-full rounded-full border border-white/15 px-4 py-2.5 text-sm font-medium text-ink" onClick={() => setAbierto(!abierto)}>{abierto ? "Ocultar mi código QR" : "Mostrar mi código QR"}</button>
+      <button className="w-full rounded-full border border-ink/15 px-4 py-2.5 text-sm font-medium text-ink" onClick={() => setAbierto(!abierto)}>{abierto ? "Ocultar mi código QR" : "Mostrar mi código QR"}</button>
       {abierto && (
         <div className="mt-3 flex flex-col items-center rounded-2xl bg-card p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}

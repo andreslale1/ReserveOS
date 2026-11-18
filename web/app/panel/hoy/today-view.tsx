@@ -70,7 +70,7 @@ export default function TodayView({
 
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-ink/45">
@@ -82,7 +82,7 @@ export default function TodayView({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex overflow-hidden rounded-full border border-white/15 text-sm" role="tablist" aria-label="Vista">
+            <div className="flex overflow-hidden rounded-full border border-ink/15 text-sm" role="tablist" aria-label="Vista">
               {([["dia", "Día"], ["semana", "Semana"], ["mes", "Mes"]] as const).map(([v, etiqueta]) => (
                 <Link key={v} href={`/panel/hoy?vista=${v}&f=${fecha}`} role="tab" aria-selected={vista === v}
                   className={`px-4 py-1.5 ${vista === v ? "bg-ink text-cream" : "text-ink/60 hover:text-ink"}`}>{etiqueta}</Link>
@@ -97,15 +97,15 @@ export default function TodayView({
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
         <div className="mb-4 flex items-center gap-2 text-sm">
-          <Link href={`/panel/hoy?vista=${vista}&f=${vista === "mes" ? sumarMes(fecha, -1) : sumarDias(fecha, vista === "semana" ? -7 : -1)}`} className="rounded-full border border-white/15 px-3 py-1 text-ink/70 hover:text-ink" aria-label="Anterior">←</Link>
-          <Link href={`/panel/hoy?vista=${vista}&f=${hoy}`} className="rounded-full border border-white/15 px-3 py-1 text-ink/70 hover:text-ink">Hoy</Link>
-          <Link href={`/panel/hoy?vista=${vista}&f=${vista === "mes" ? sumarMes(fecha, 1) : sumarDias(fecha, vista === "semana" ? 7 : 1)}`} className="rounded-full border border-white/15 px-3 py-1 text-ink/70 hover:text-ink" aria-label="Siguiente">→</Link>
+          <Link href={`/panel/hoy?vista=${vista}&f=${vista === "mes" ? sumarMes(fecha, -1) : sumarDias(fecha, vista === "semana" ? -7 : -1)}`} className="rounded-full border border-ink/15 px-3 py-1 text-ink/70 hover:text-ink" aria-label="Anterior">←</Link>
+          <Link href={`/panel/hoy?vista=${vista}&f=${hoy}`} className="rounded-full border border-ink/15 px-3 py-1 text-ink/70 hover:text-ink">Hoy</Link>
+          <Link href={`/panel/hoy?vista=${vista}&f=${vista === "mes" ? sumarMes(fecha, 1) : sumarDias(fecha, vista === "semana" ? 7 : 1)}`} className="rounded-full border border-ink/15 px-3 py-1 text-ink/70 hover:text-ink" aria-label="Siguiente">→</Link>
         </div>
 
         {vista === "semana" && (
           <ul className="grid gap-3">
             {semana.map((d, i) => (
-              <li key={d.fecha} className="rounded-2xl border border-white/10 bg-card p-4">
+              <li key={d.fecha} className="rounded-2xl border border-ink/10 bg-card p-4">
                 <div className="flex items-center justify-between">
                   <Link href={`/panel/hoy?vista=dia&f=${d.fecha}`} className="text-sm font-medium capitalize text-ink hover:underline">{DIAS[i]} {Number(d.fecha.slice(8))}{d.fecha === hoy ? " · hoy" : ""}</Link>
                   <span className="text-xs text-ink/50">{d.clases.length} {d.clases.length === 1 ? "clase" : "clases"}</span>
@@ -123,7 +123,7 @@ export default function TodayView({
             <div className="mt-1 grid grid-cols-7 gap-1">
               {mes.map((c, i) => c ? (
                 <Link key={c.fecha} href={`/panel/hoy?vista=dia&f=${c.fecha}`}
-                  className={`flex min-h-16 flex-col rounded-xl border p-2 text-left text-sm hover:border-white/30 ${c.fecha === hoy ? "border-ink" : "border-white/10"} bg-card`}>
+                  className={`flex min-h-16 flex-col rounded-xl border p-2 text-left text-sm hover:border-ink/30 ${c.fecha === hoy ? "border-ink" : "border-ink/10"} bg-card`}>
                   <span className="text-ink">{Number(c.fecha.slice(8))}</span>
                   {c.n > 0 && <span className="mt-auto text-[11px] text-ink/55">{c.n} {c.n === 1 ? "clase" : "clases"}</span>}
                 </Link>
@@ -158,7 +158,7 @@ export default function TodayView({
               const estado = estadoCupo(c.ocupados, c.cupoMaximo);
               return (
                 <Reveal key={c.id} delay={i * 60}>
-                  <li className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-card p-5 shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]">
+                  <li className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-card p-5 shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]">
                     <div className="flex items-center gap-5">
                       <div className="w-14 text-center">
                         <p className="font-serif text-lg text-blue">
@@ -179,7 +179,7 @@ export default function TodayView({
                     <div className="flex items-center gap-4">
                       <Link
                         href={`/panel/clase/${c.id}/${fecha}`}
-                        className="rounded-full border border-white/15 px-3 py-1 text-xs text-ink/70 hover:text-ink"
+                        className="rounded-full border border-ink/15 px-3 py-1 text-xs text-ink/70 hover:text-ink"
                       >
                         Abrir clase
                       </Link>

@@ -10,7 +10,7 @@ import { guardarIncidente } from "./actions";
 export type Ticket = { id: string; estudio: string; asunto: string; prioridad: string; estado: string; asignado_a: string | null; sla_vence: string; sla_vencido: boolean; created_at: string };
 export type Incidente = { id: string; titulo: string; descripcion: string | null; severidad: string; estado: string; tenant_id: string | null; started_at: string; resolved_at: string | null };
 
-const COLOR: Record<string, string> = { urgente: "text-red-300", alta: "text-orange-300", normal: "text-white/70", baja: "text-white/65" };
+const COLOR: Record<string, string> = { urgente: "text-[#8f2f1f]", alta: "text-orange-300", normal: "text-ink/70", baja: "text-ink/65" };
 
 export default function SoporteView({ tickets, incidentes, estudios, filtro }: { tickets: Ticket[]; incidentes: Incidente[]; estudios: { id: string; name: string }[]; filtro?: "abiertos" | "sla" | "incidentes" }) {
   const [isPending, startTransition] = useTransition();
@@ -39,32 +39,32 @@ export default function SoporteView({ tickets, incidentes, estudios, filtro }: {
     <main className="mx-auto max-w-5xl px-6 py-8 md:px-10">
       <h1 className="text-2xl font-semibold">Soporte</h1>
       {filtro && <p className="mt-2 text-sm text-lime">Filtro activo: {filtro === "sla" ? "tickets con SLA vencido" : filtro === "incidentes" ? "incidentes sin resolver" : "tickets abiertos"}. <Link href="/owner/soporte" className="underline">Quitar filtro</Link></p>}
-      <p className="mt-1 text-sm text-white/70">Casos de los estudios e incidentes. El diagnóstico usa datos mínimos: no se abre la ficha de clientas ni la caja del estudio.</p>
-      <div aria-live="polite">{msg && <p role={msg.ok ? "status" : "alert"} className={`mt-4 rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-lime/15 text-lime" : "bg-red-400/15 text-red-200"}`}>{msg.texto}</p>}</div>
+      <p className="mt-1 text-sm text-ink/70">Casos de los estudios e incidentes. El diagnóstico usa datos mínimos: no se abre la ficha de clientas ni la caja del estudio.</p>
+      <div aria-live="polite">{msg && <p role={msg.ok ? "status" : "alert"} className={`mt-4 rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-lime/15 text-lime" : "bg-[#fbe9e5] text-[#8f2f1f]"}`}>{msg.texto}</p>}</div>
 
-      <section className="mt-6 rounded-2xl border border-white/10 bg-void-card p-5">
+      <section className="mt-6 rounded-2xl border border-ink/10 bg-void-card p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">Tickets</h2>
-          <label className="flex items-center gap-2 text-xs text-white/75"><input type="checkbox" checked={verCerrados} onChange={(e) => setVerCerrados(e.target.checked)} /> Ver resueltos</label>
+          <label className="flex items-center gap-2 text-xs text-ink/75"><input type="checkbox" checked={verCerrados} onChange={(e) => setVerCerrados(e.target.checked)} /> Ver resueltos</label>
         </div>
-        <ul className="mt-3 divide-y divide-white/10">
+        <ul className="mt-3 divide-y divide-ink/10">
           {lista.length === 0 && <li className="py-3"><EstadoVacio titulo="Sin tickets" texto={filtro === "sla" ? "Ningún ticket tiene el SLA vencido." : "Los estudios abren tickets desde su panel."} /></li>}
           {lista.map((t) => (
             <li key={t.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
               <div>
                 <Link href={`/owner/soporte/${t.id}`} className="font-medium hover:text-lime">{t.asunto}</Link>
-                <p className="text-xs text-white/70">{t.estudio} · <span className={COLOR[t.prioridad]}>{t.prioridad}</span> · {t.estado}{t.asignado_a ? ` · ${t.asignado_a}` : ""}</p>
+                <p className="text-xs text-ink/70">{t.estudio} · <span className={COLOR[t.prioridad]}>{t.prioridad}</span> · {t.estado}{t.asignado_a ? ` · ${t.asignado_a}` : ""}</p>
               </div>
-              {t.sla_vencido ? <span className="text-xs text-red-300">SLA vencido</span> : !["resuelto", "cerrado"].includes(t.estado) && <span className="text-xs text-white/65">responder antes de {new Date(t.sla_vence).toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "short", timeStyle: "short" })}</span>}
+              {t.sla_vencido ? <span className="text-xs text-[#8f2f1f]">SLA vencido</span> : !["resuelto", "cerrado"].includes(t.estado) && <span className="text-xs text-ink/65">responder antes de {new Date(t.sla_vence).toLocaleString("es-GT", { timeZone: "America/Guatemala", dateStyle: "short", timeStyle: "short" })}</span>}
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="mt-6 rounded-2xl border border-white/10 bg-void-card p-5">
+      <section className="mt-6 rounded-2xl border border-ink/10 bg-void-card p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">Incidentes</h2>
-          <button type="button" aria-expanded={i.abierto} className="rounded-full border border-white/25 px-3 py-1.5 text-xs text-white/80" onClick={() => setI({ ...i, id: null, titulo: "", descripcion: "", nota: "", abierto: !i.abierto })}>+ Declarar incidente</button>
+          <button type="button" aria-expanded={i.abierto} className="rounded-full border border-ink/25 px-3 py-1.5 text-xs text-ink/80" onClick={() => setI({ ...i, id: null, titulo: "", descripcion: "", nota: "", abierto: !i.abierto })}>+ Declarar incidente</button>
         </div>
         {i.abierto && (
           <form ref={formRef} onSubmit={declarar} noValidate aria-label="Declarar incidente" className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -77,18 +77,18 @@ export default function SoporteView({ tickets, incidentes, estudios, filtro }: {
             <button type="submit" className="w-fit rounded-full bg-lime px-5 py-2 text-sm font-semibold text-void disabled:opacity-50" disabled={isPending}>{isPending ? "Guardando…" : "Guardar incidente"}</button>
           </form>
         )}
-        <ul className="mt-3 divide-y divide-white/10">
+        <ul className="mt-3 divide-y divide-ink/10">
           {incs.length === 0 && <li className="py-3"><EstadoVacio titulo="Sin incidentes" texto="Declara uno cuando algo afecte a uno o más estudios." /></li>}
           {incs.map((x) => (
             <li key={x.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
               <div>
-                <p className="font-medium">{x.titulo} <span className={`text-xs ${x.severidad === "critico" ? "text-red-300" : x.severidad === "mayor" ? "text-orange-300" : "text-white/70"}`}>· {x.severidad}</span></p>
-                <p className="text-xs text-white/70">{x.estado} · {new Date(x.started_at).toLocaleDateString("es-GT")}{x.tenant_id ? "" : " · global"}</p>
+                <p className="font-medium">{x.titulo} <span className={`text-xs ${x.severidad === "critico" ? "text-[#8f2f1f]" : x.severidad === "mayor" ? "text-orange-300" : "text-ink/70"}`}>· {x.severidad}</span></p>
+                <p className="text-xs text-ink/70">{x.estado} · {new Date(x.started_at).toLocaleDateString("es-GT")}{x.tenant_id ? "" : " · global"}</p>
               </div>
               {x.estado !== "resuelto" && (
                 <div className="flex gap-2">
                   {["identificado", "monitoreando", "resuelto"].filter((e) => e !== x.estado).map((e) => (
-                    <button key={e} type="button" className="rounded-full border border-white/25 px-2.5 py-1 text-xs text-white/80 hover:text-white" disabled={isPending}
+                    <button key={e} type="button" className="rounded-full border border-ink/25 px-2.5 py-1 text-xs text-ink/80 hover:text-ink" disabled={isPending}
                       onClick={() => setCambio({ x, estado: e })}>Pasar a {e}</button>
                   ))}
                 </div>

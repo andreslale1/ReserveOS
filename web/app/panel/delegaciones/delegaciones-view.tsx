@@ -12,7 +12,7 @@ const ACCION: Record<string, string> = {
   P38: "Exportar clientas", P40: "Crear descuentos y regalos", P42: "Campañas", P43: "Ver auditoría",
 };
 const ROL: Record<string, string> = { gerente_general: "Gerente general", gerente_regional: "Gerencia regional", admin_sede: "Admin de sede", recepcion: "Recepción", contadora: "Contadora", marketing: "Marketing", instructora: "Instructora" };
-const input = "mt-1 w-full rounded-lg border border-white/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
+const input = "mt-1 w-full rounded-lg border border-ink/15 bg-cream px-3 py-2 text-ink outline-none focus:border-ink/30";
 
 export default function DelegacionesView({ tenantId, puedeDelegar, delegaciones, acciones, personal, sedes }: {
   tenantId: string; puedeDelegar: boolean; delegaciones: Delegacion[]; acciones: { role: string; action_id: string }[];
@@ -32,14 +32,14 @@ export default function DelegacionesView({ tenantId, puedeDelegar, delegaciones,
   }
   return (
     <main className="min-h-screen bg-cream">
-      <header className="border-b border-white/10 bg-card px-6 py-6 md:px-10">
+      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <h1 className="font-serif text-2xl text-ink md:text-3xl">Delegaciones</h1>
         <p className="mt-1 text-sm text-ink/60">Algunas acciones sensibles (reembolsos, descuentos, cambios de marca…) no las puede hacer nadie más sin que tú lo autorices. Aquí decides a quién, en qué sedes y hasta cuándo.</p>
       </header>
       <div className="mx-auto grid max-w-4xl gap-6 px-6 py-8 md:px-10">
         {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
         {puedeDelegar && (
-          <section className="rounded-2xl border border-white/10 bg-card p-5">
+          <section className="rounded-2xl border border-ink/10 bg-card p-5">
             <h2 className="text-base font-semibold text-ink">Nueva delegación</h2>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <label className="text-sm text-ink/60">¿A quién?
@@ -77,9 +77,9 @@ export default function DelegacionesView({ tenantId, puedeDelegar, delegaciones,
               onClick={() => correr(() => crearDelegacion({ tenantId, membershipId: f.a === "persona" ? f.persona : null, rol: f.a === "rol" ? f.rol : null, accion: f.accion, sedeIds: f.sedeIds, vence: f.vence, motivo: f.motivo }), "Delegación creada.", () => setF({ ...f, accion: "", motivo: "", vence: "", sedeIds: [] }))}>Delegar</button>
           </section>
         )}
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
+        <section className="rounded-2xl border border-ink/10 bg-card p-5">
           <h2 className="text-base font-semibold text-ink">Delegaciones</h2>
-          <ul className="mt-3 divide-y divide-white/10">
+          <ul className="mt-3 divide-y divide-ink/10">
             {delegaciones.length === 0 && <li className="py-3 text-sm text-ink/50">No hay delegaciones. Por defecto, esas acciones solo las haces tú.</li>}
             {delegaciones.map((d) => (
               <li key={d.id} className={`flex flex-wrap items-center justify-between gap-3 py-3 text-sm ${d.activa ? "" : "opacity-50"}`}>
