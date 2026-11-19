@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatoFecha, parseFecha } from "./fechas";
 
 // Campo de fecha en formato dd/mm/aaaa (el <input type="date"> del navegador muestra mm/dd/aaaa según el idioma del sistema).
@@ -9,7 +9,8 @@ export default function CampoFecha({ value, onChange, className, id, requerido, 
   value: string; onChange: (iso: string) => void; className?: string; id?: string; requerido?: boolean; ariaLabel?: string;
 }) {
   const [texto, setTexto] = useState(value ? formatoFecha(value) : "");
-  useEffect(() => { setTexto(value ? formatoFecha(value) : ""); }, [value]);
+  const [valorPrevio, setValorPrevio] = useState(value);
+  if (value !== valorPrevio) { setValorPrevio(value); setTexto(value ? formatoFecha(value) : ""); }
   const invalido = texto.trim() !== "" && parseFecha(texto) === "";
   return (
     <input

@@ -21,6 +21,7 @@ export default async function ClasesPage({ searchParams }: { searchParams: Promi
   const sede = listaSedes.find((s) => s.id === sp.sede) ?? listaSedes.find((s) => s.id === yo?.sede_habitual_id) ?? listaSedes[0];
 
   const dias = Array.from({ length: Math.min(cfg?.anticipacion_maxima_dias ?? 14, 14) }).map((_, i) => {
+  // eslint-disable-next-line react-hooks/purity -- componente de servidor: la hora de la petición es lo que se quiere
     const d = new Date(Date.now() + i * 86400000);
     const fecha = new Intl.DateTimeFormat("en-CA", { timeZone: sede.timezone, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
     const dow = new Date(new Date(d).toLocaleString("en-US", { timeZone: sede.timezone })).getDay();

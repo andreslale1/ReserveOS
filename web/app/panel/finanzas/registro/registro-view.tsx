@@ -13,6 +13,14 @@ const boton =
   "press-spring rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50";
 const q = (n: number) => `Q${n.toLocaleString("es-GT", { maximumFractionDigits: 2 })}`;
 
+const Tarjeta = ({ children, titulo }: { children: React.ReactNode; titulo: string }) => (
+  <section className="rounded-2xl border border-ink/10 bg-card p-5">
+    <h2 className="text-base font-semibold text-ink">{titulo}</h2>
+    {children}
+  </section>
+);
+
+
 export default function RegistroView({
   tenantId,
   mes,
@@ -56,12 +64,6 @@ export default function RegistroView({
   const totActivos = activos.reduce((a, x) => a + x.monto, 0);
   const totPasivos = pasivos.reduce((a, x) => a + x.monto, 0);
 
-  const Tarjeta = ({ children, titulo }: { children: React.ReactNode; titulo: string }) => (
-    <section className="rounded-2xl border border-ink/10 bg-card p-5">
-      <h2 className="text-base font-semibold text-ink">{titulo}</h2>
-      {children}
-    </section>
-  );
 
   return (
     <main className="min-h-screen bg-cream">

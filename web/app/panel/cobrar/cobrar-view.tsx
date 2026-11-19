@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useMemo, useState, useTransition } from "react";
 import { cobrarPaquete } from "./actions";
 
@@ -78,7 +80,7 @@ export default function CobrarView({ clientas, paquetes, sedes, puedeCortesia }:
                   ))}
                 </ul>
               )}
-              {busca.trim().length >= 2 && resultados.length === 0 && <p className="mt-2 text-sm text-ink/55">No hay coincidencias. Si es nueva, créala primero en <a className="underline" href="/panel/clientes">Clientas</a>.</p>}
+              {busca.trim().length >= 2 && resultados.length === 0 && <p className="mt-2 text-sm text-ink/55">No hay coincidencias. Si es nueva, créala primero en <Link className="underline" href="/panel/clientes">Clientas</Link>.</p>}
             </>
           )}
         </section>

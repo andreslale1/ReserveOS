@@ -15,6 +15,29 @@ type Extra = { hoy: string; acciones: Accion[]; comparativa: Record<"oportunidad
 const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
 const fecha = (iso: string | null) => (iso ? iso.split("-").reverse().join("/") : "sin fecha");
 
+const Card = ({ href, titulo, valor, sub, def, alerta }: { href: string; titulo: string; valor: string; sub?: string; def: string; alerta?: boolean }) => (
+  <Link href={href} className="rounded-2xl border border-ink/15 bg-void-card p-5 outline-none transition hover:border-lime/60 focus-visible:ring-2 focus-visible:ring-lime/70">
+    <p className="text-xs font-medium text-ink/70">{titulo}</p>
+    <p className={`mt-2 text-3xl font-semibold ${alerta ? "text-[#8f2f1f]" : "text-ink"}`}>{valor}</p>
+    {sub && <p className="mt-1 text-xs text-ink/70">{sub}</p>}
+    <p className="mt-3 border-t border-ink/10 pt-2 text-[11px] leading-snug text-ink/55">{def}</p>
+  </Link>
+);
+
+const Comp = ({ titulo, par, dinero }: { titulo: string; par: [number, number]; dinero?: boolean }) => {
+  const [a, b] = par;
+  const dif = b === 0 ? null : Math.round(((a - b) / b) * 100);
+  const f = (n: number) => (dinero ? q(n) : String(n));
+  return (
+    <div className="rounded-2xl border border-ink/15 bg-void-card p-4">
+      <p className="text-xs font-medium text-ink/70">{titulo}</p>
+      <p className="mt-1 text-2xl font-semibold">{f(a)}</p>
+      <p className="text-xs text-ink/65">Mes anterior: {f(b)}{dif !== null && <span className={dif >= 0 ? "text-lime" : "text-[#8f2f1f]"}> · {dif >= 0 ? "▲" : "▼"} {Math.abs(dif)}%</span>}</p>
+    </div>
+  );
+};
+
+
 export default async function DireccionPage() {
   const { supabase } = await getOwnerContext();
   const [{ data, error }, { data: extraData }] = await Promise.all([supabase.rpc("plataforma_direccion"), supabase.rpc("owner_direccion_extra")]);
@@ -25,26 +48,6 @@ export default async function DireccionPage() {
   const has = (k: keyof D) => raw[k] !== undefined;
   const extra = (extraData ?? null) as Extra | null;
 
-  const Card = ({ href, titulo, valor, sub, def, alerta }: { href: string; titulo: string; valor: string; sub?: string; def: string; alerta?: boolean }) => (
-    <Link href={href} className="rounded-2xl border border-ink/15 bg-void-card p-5 outline-none transition hover:border-lime/60 focus-visible:ring-2 focus-visible:ring-lime/70">
-      <p className="text-xs font-medium text-ink/70">{titulo}</p>
-      <p className={`mt-2 text-3xl font-semibold ${alerta ? "text-[#8f2f1f]" : "text-ink"}`}>{valor}</p>
-      {sub && <p className="mt-1 text-xs text-ink/70">{sub}</p>}
-      <p className="mt-3 border-t border-ink/10 pt-2 text-[11px] leading-snug text-ink/55">{def}</p>
-    </Link>
-  );
-  const Comp = ({ titulo, par, dinero }: { titulo: string; par: [number, number]; dinero?: boolean }) => {
-    const [a, b] = par;
-    const dif = b === 0 ? null : Math.round(((a - b) / b) * 100);
-    const f = (n: number) => (dinero ? q(n) : String(n));
-    return (
-      <div className="rounded-2xl border border-ink/15 bg-void-card p-4">
-        <p className="text-xs font-medium text-ink/70">{titulo}</p>
-        <p className="mt-1 text-2xl font-semibold">{f(a)}</p>
-        <p className="text-xs text-ink/65">Mes anterior: {f(b)}{dif !== null && <span className={dif >= 0 ? "text-lime" : "text-[#8f2f1f]"}> · {dif >= 0 ? "▲" : "▼"} {Math.abs(dif)}%</span>}</p>
-      </div>
-    );
-  };
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-8 md:px-10">

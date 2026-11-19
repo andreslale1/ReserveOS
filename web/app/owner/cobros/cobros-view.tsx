@@ -172,7 +172,8 @@ export default function CobrosView({ resumen, estudios, cobros, planes }: { resu
       <section className="mt-8 rounded-2xl border border-ink/10 bg-void-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-base font-semibold">Cobros</h2>
-          <a href="/owner/cobros/export" className="text-xs text-ink/50 hover:text-ink">Exportar CSV</a>
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- descarga de archivo (ruta de servidor) */}
+<a href="/owner/cobros/export" className="text-xs text-ink/50 hover:text-ink">Exportar CSV</a>
           <button className="rounded-full border border-ink/15 px-3 py-1 text-xs text-ink/70" onClick={() => setNuevo({ ...nuevo, abierto: !nuevo.abierto })}>+ Cobro (setup, sede extra…)</button>
           <div className="flex gap-2 text-xs">
             {(["abierto", "pagado", "todos"] as const).map((f) => (

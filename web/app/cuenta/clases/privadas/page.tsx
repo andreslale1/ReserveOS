@@ -11,6 +11,7 @@ export default async function PrivadasPage() {
   ]);
   const zona = (sedes ?? []).find((s) => s.id === yo?.sede_habitual_id)?.timezone ?? sedes?.[0]?.timezone ?? "America/Guatemala";
   const hoy = new Intl.DateTimeFormat("en-CA", { timeZone: zona }).format(new Date());
+  // eslint-disable-next-line react-hooks/purity -- componente de servidor: la hora de la petición es lo que se quiere
   const hasta = new Intl.DateTimeFormat("en-CA", { timeZone: zona }).format(new Date(Date.now() + 14 * 86400000));
 
   const [{ data: huecos }, { data: paquetes }, { data: mias }] = await Promise.all([

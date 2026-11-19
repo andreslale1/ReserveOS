@@ -4,6 +4,7 @@ import CobrosView, { type Cobro, type Estudio, type PlanCat, type Resumen } from
 export default async function CobrosPage({ searchParams }: { searchParams: Promise<{ filtro?: string }> }) {
   const { filtro } = await searchParams;
   const hoy = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Guatemala" }).format(new Date());
+  // eslint-disable-next-line react-hooks/purity -- componente de servidor: la hora de la petición es lo que se quiere
   const en7 = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Guatemala" }).format(new Date(Date.now() + 7 * 864e5));
   const { supabase } = await getOwnerContext();
   const [{ data: resumen, error }, { data: estudios }, { data: cobros }, { data: planes }] = await Promise.all([

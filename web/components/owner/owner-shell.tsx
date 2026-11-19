@@ -21,6 +21,8 @@ function Busqueda() {
   const seq = useRef(0);
 
   useEffect(() => {
+    // Búsqueda con retardo: limpiar el estado al vaciar el campo es parte de la sincronización con lo escrito.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (q.trim().length < 2) { setRes([]); setBuscando(false); return; }
     const n = ++seq.current;
     setBuscando(true);
@@ -65,9 +67,12 @@ function Busqueda() {
 
 export function OwnerShell({ rol, nombre, children }: { rol: string; nombre: string; children: React.ReactNode }) {
   const ruta = usePathname();
-  const [menu, setMenu] = useState(false);
-  const [sesion, setSesion] = useState(false);
-  useEffect(() => { setMenu(false); setSesion(false); }, [ruta]);
+  const [menuEn, setMenuEn] = useState<string | null>(null);
+  const [sesionEn, setSesionEn] = useState<string | null>(null);
+  const menu = menuEn === ruta;
+  const sesion = sesionEn === ruta;
+  const setMenu = (v: boolean) => setMenuEn(v ? ruta : null);
+  const setSesion = (v: boolean) => setSesionEn(v ? ruta : null);
   useEffect(() => {
     const fn = (e: KeyboardEvent) => { if (e.key === "Escape") { setMenu(false); setSesion(false); } };
     window.addEventListener("keydown", fn);

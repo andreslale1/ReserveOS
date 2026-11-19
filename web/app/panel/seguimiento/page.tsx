@@ -12,6 +12,19 @@ type Fuga = {
 };
 type Pend = { id: string; nombre: string; telefono: string };
 
+const Lista = ({ titulo, vacio, children }: { titulo: string; vacio: string; children: React.ReactNode[] }) => (
+  <section className="rounded-2xl border border-ink/10 bg-card p-5">
+    <h2 className="text-base font-semibold text-ink">
+      {titulo} <span className="text-sm font-normal text-ink/50">({children.length})</span>
+    </h2>
+    <ul className="mt-3 divide-y divide-ink/10">
+      {children.length === 0 && <li className="py-3 text-sm text-ink/50">{vacio}</li>}
+      {children}
+    </ul>
+  </section>
+);
+
+
 export default async function SeguimientoPage() {
   const { supabase, membership, modulos } = await getPanelContext();
   if (!membership) return null;
@@ -28,17 +41,6 @@ export default async function SeguimientoPage() {
   const sinConsentimiento = (pendientes ?? []) as Pend[];
   const vencen = (porVencer ?? []) as Record<string, unknown>[];
 
-  const Lista = ({ titulo, vacio, children }: { titulo: string; vacio: string; children: React.ReactNode[] }) => (
-    <section className="rounded-2xl border border-ink/10 bg-card p-5">
-      <h2 className="text-base font-semibold text-ink">
-        {titulo} <span className="text-sm font-normal text-ink/50">({children.length})</span>
-      </h2>
-      <ul className="mt-3 divide-y divide-ink/10">
-        {children.length === 0 && <li className="py-3 text-sm text-ink/50">{vacio}</li>}
-        {children}
-      </ul>
-    </section>
-  );
 
   return (
     <main className="min-h-screen bg-cream">

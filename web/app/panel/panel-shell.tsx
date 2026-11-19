@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 export type ItemNav = { href: string; label: string };
 export type AreaNav = { id: string; titulo: string; items: ItemNav[]; badge?: number };
@@ -15,8 +15,10 @@ export default function PanelShell({
   usuario: { nombre: string; rol: string }; variosEstudios: boolean; salir: () => Promise<void>; avisos: string[]; children: ReactNode;
 }) {
   const ruta = usePathname() ?? "";
-  const [abierto, setAbierto] = useState(false);
-  useEffect(() => setAbierto(false), [ruta]);
+  // El cajón se cierra solo al cambiar de ruta: se guarda la ruta en la que se abrió.
+  const [abiertoEn, setAbiertoEn] = useState<string | null>(null);
+  const abierto = abiertoEn === ruta;
+  const setAbierto = (v: boolean) => setAbiertoEn(v ? ruta : null);
 
   // La pantalla activa es la de enlace más largo que coincide (p. ej. /panel/finanzas/registro antes que /panel/finanzas).
   const todos = areas.flatMap((a) => a.items.map((i) => ({ ...i, area: a.id })));

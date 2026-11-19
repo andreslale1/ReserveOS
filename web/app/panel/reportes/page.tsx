@@ -12,6 +12,7 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
   if (!puedeVer(membership.role, "/panel/reportes")) redirect("/panel/hoy");
 
   const tenantId = membership.tenant_id;
+  // eslint-disable-next-line react-hooks/purity -- componente de servidor: la hora de la petición es lo que se quiere
   const desde = hoyGT(new Date(Date.now() - 30 * 86400000));
 
   const [{ data: afluencia }, { data: mensual }, { data: recientes }] =

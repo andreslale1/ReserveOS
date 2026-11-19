@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { EnlaceDescarga } from "@/components/enlace-descarga";
 import { useMemo, useState, useTransition } from "react";
 import { crearCliente, crearInvitacionClienta, obtenerDetalleCliente } from "./actions";
 
@@ -127,12 +128,12 @@ export default function ClientesView({
         </div>
         <div className="flex items-center gap-3">
           {puedeExportar && (
-            <a
+            <EnlaceDescarga
               href="/panel/clientes/export"
               className="rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/70 hover:text-ink"
             >
               Exportar CSV
-            </a>
+            </EnlaceDescarga>
           )}
           {puedeCrear && (
             <Link href="/panel/clientes/importar" className="rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/70 hover:text-ink">

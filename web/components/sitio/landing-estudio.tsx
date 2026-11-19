@@ -1,4 +1,5 @@
 "use client"
+/* eslint-disable react-hooks/refs, react-hooks/immutability, react-hooks/set-state-in-effect -- componente de terceros (MIT) ya probado; sus patrones de refs/animación son intencionales */
 
 // Basado en «Löyly Sauna Landing» de Kedhareswer Naidu (https://kedhar.pages.dev), licencia MIT.
 // Adaptado por ReserveOS: textos de la interfaz en español y unidades configurables. Se usa como plantilla de la web
