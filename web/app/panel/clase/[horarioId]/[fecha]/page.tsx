@@ -23,6 +23,9 @@ export default async function ClasePage({
     .eq("tenant_id", membership.tenant_id)
     .maybeSingle();
   if (!h) notFound();
+  // Cupo de ESTA fecha (si el estudio lo cambió solo para este día); si falla o no existe, el de la serie.
+  const { data: ef } = await supabase.rpc("cupos_efectivos", { p_horario_ids: [horarioId], p_fecha: fecha });
+  const cupoDia = ((ef ?? []) as { horario_id: string; cupo: number }[])[0]?.cupo ?? h.cupo_maximo;
 
   const [{ data: reservas }, { data: espera }, { data: cancelada }, { data: clientas }, { data: salas }] =
     await Promise.all([
@@ -60,7 +63,7 @@ export default async function ClasePage({
       clase={{
         nombre: h.nombre_clase,
         hora: `${h.hora_inicio.slice(0, 5)}–${h.hora_fin.slice(0, 5)}`,
-        cupo: h.cupo_maximo,
+        cupo: cupoDia,
         sede: (h.sedes as unknown as { name: string } | null)?.name ?? "",
         instructora:
           (h.tenant_memberships as unknown as { nombre: string } | null)

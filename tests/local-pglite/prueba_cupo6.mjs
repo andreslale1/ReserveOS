@@ -1,0 +1,43 @@
+import { fileURLToPath } from "node:url";
+import { crearDb } from "./cargar.mjs";
+const U = (n) => `00000000-0000-4000-8000-0000000000${String(n).padStart(2, "0")}`;
+const sumar = (n) => { const d = new Date(); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const F1 = sumar(5), F2 = sumar(12), DOW = new Date(F1 + "T00:00:00Z").getUTCDay();
+async function como(db, uid, fn) { await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub','${uid}',false); select set_config('request.jwt.claim.role','authenticated',false)`); try { return await fn(); } finally { await db.exec("reset role"); } }
+const intenta = async (f) => { try { return { ok: true, v: await f() }; } catch (e) { return { ok: false, e: String(e.message).slice(0, 110) }; } };
+const { db, fallos } = await crearDb();
+if (fallos.length) console.log("fallos de carga (estricto):", fallos.join(" | "));
+const R = []; const ok = (n, b, x = "") => R.push(`${b ? "OK   " : "FALLA"}  ${n}${x ? "  → " + x : ""}`);
+await db.exec(`
+  insert into auth.users(id,email) values ('${U(1)}','d@t.test'),('${U(2)}','a@t.test'),('${U(3)}','b@t.test'),('${U(4)}','c@t.test');
+  insert into tenants(id,slug,name) values ('${U(10)}','t','T');
+  insert into tenant_entitlements(tenant_id,module_key,enabled,reason,effective_at) select '${U(10)}', key, true, 't', now() from module_catalog on conflict (tenant_id,module_key) do update set enabled=true, effective_at=now();
+  insert into sedes(id,tenant_id,name) values ('${U(11)}','${U(10)}','Centro');
+  insert into tenant_memberships(tenant_id,user_id,role,nombre) values ('${U(10)}','${U(1)}','duena','D');
+  insert into configuracion_reservas(tenant_id,anticipacion_maxima_dias,max_reservas_dia_por_clienta) values ('${U(10)}',60,5) on conflict (tenant_id) do update set anticipacion_maxima_dias=60;
+  insert into paquetes(id,tenant_id,nombre,precio,num_clases,vigencia_dias,cobertura) values ('${U(31)}','${U(10)}','8',700,8,60,'todas');
+  insert into clientes(id,tenant_id,nombre,telefono,user_id) values ('${U(21)}','${U(10)}','A','1','${U(2)}'),('${U(22)}','${U(10)}','B','2','${U(3)}'),('${U(23)}','${U(10)}','C','3','${U(4)}');
+  insert into membresias(tenant_id,cliente_id,paquete_id,sede_venta_id,cobertura_tipo,estado,clases_totales,clases_usadas,fecha_inicio,fecha_vencimiento,pagada,precio_final,confirmado_at,metodo_pago)
+    select '${U(10)}', c,'${U(31)}','${U(11)}','todas','activa',8,0,current_date-1,current_date+60,true,700,now(),'efectivo' from (values ('${U(21)}'::uuid),('${U(22)}'::uuid),('${U(23)}'::uuid)) v(c);
+  insert into horarios(id,tenant_id,sede_id,dia_semana,hora_inicio,hora_fin,nombre_clase,cupo_maximo) values ('${U(41)}','${U(10)}','${U(11)}',${DOW},'07:00','08:00','Clase',8);`);
+const fijar = await intenta(() => como(db, U(1), () => db.query(`select fijar_cupo_fecha('${U(41)}','${F1}',2)`)));
+ok("la dueña fija el cupo de SOLO el día " + F1 + " en 2", fijar.ok, fijar.e);
+const a = await intenta(() => como(db, U(2), () => db.query(`select agendar_clase('${U(41)}','${F1}')`)));
+const b = await intenta(() => como(db, U(3), () => db.query(`select agendar_clase('${U(41)}','${F1}')`)));
+const c = await intenta(() => como(db, U(4), () => db.query(`select agendar_clase('${U(41)}','${F1}')`)));
+ok("ese día entran 2 personas y la 3.ª se rechaza (cupo del día)", a.ok && b.ok && !c.ok, c.e);
+const d = await intenta(() => como(db, U(4), () => db.query(`select agendar_clase('${U(41)}','${F2}')`)));
+ok("la semana siguiente (serie) sigue con su cupo de 8", d.ok, d.e);
+const ef = await como(db, U(4), () => db.query(`select horario_id, cupo from cupos_efectivos(array['${U(41)}'::uuid], '${F1}')`));
+const ef2 = await como(db, U(4), () => db.query(`select cupo from cupos_efectivos(array['${U(41)}'::uuid], '${F2}')`));
+ok("cupos_efectivos: 2 ese día y 8 en la serie", ef.rows[0].cupo === 2 && ef2.rows[0].cupo === 8, `${ef.rows[0].cupo}/${ef2.rows[0].cupo}`);
+const bajo = await intenta(() => como(db, U(1), () => db.query(`select fijar_cupo_fecha('${U(41)}','${F1}',1)`)));
+ok("no se puede bajar el cupo del día por debajo de lo reservado (2 reservas)", !bajo.ok, bajo.e?.slice(0, 80));
+const mal = await intenta(() => como(db, U(1), () => db.query(`select fijar_cupo_fecha('${U(41)}','${sumar(6)}',3)`)));
+ok("una fecha que no corresponde a la clase se rechaza", !mal.ok, mal.e);
+const cli = await intenta(() => como(db, U(2), () => db.query(`select fijar_cupo_fecha('${U(41)}','${F1}',5)`)));
+ok("una clienta no puede cambiar el cupo", !cli.ok);
+const base = (await db.query(`select cupo_maximo from horarios where id='${U(41)}'`)).rows[0].cupo_maximo;
+ok("la serie semanal no cambió (sigue en 8)", base === 8, String(base));
+for (const r of R) console.log(r);
+await db.close();

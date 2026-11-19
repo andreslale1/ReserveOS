@@ -71,15 +71,13 @@ export async function anotarEnEspera(
 }
 
 // P14
-export async function cambiarCupo(
-  horarioId: string,
-  fecha: string,
-  cupo: number,
-) {
-  return llamar(horarioId, fecha, "actualizar_horario", {
-    p_horario_id: horarioId,
-    p_cupo_maximo: cupo,
-  });
+// Solo esta clase (esta fecha): no toca el resto de la serie semanal.
+export async function cambiarCupoFecha(horarioId: string, fecha: string, cupo: number) {
+  return llamar(horarioId, fecha, "fijar_cupo_fecha", { p_horario_id: horarioId, p_fecha: fecha, p_cupo: cupo });
+}
+// Toda la serie semanal.
+export async function cambiarCupo(horarioId: string, fecha: string, cupo: number) {
+  return llamar(horarioId, fecha, "actualizar_horario", { p_horario_id: horarioId, p_cupo_maximo: cupo });
 }
 
 export async function cancelarClase(horarioId: string, fecha: string) {

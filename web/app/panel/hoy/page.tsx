@@ -53,6 +53,9 @@ export default async function HoyPage({ searchParams }: { searchParams: Promise<
   const reservas = (roster ?? []) as { horario_id: string; nombre: string }[];
   const ocup = (ocupacion ?? []) as { horario_id: string; ocupados: number }[];
 
+  const { data: efs } = horarioIds.length ? await supabase.rpc("cupos_efectivos", { p_horario_ids: horarioIds, p_fecha: fecha }) : { data: [] };
+  const cupoDe = new Map(((efs ?? []) as { horario_id: string; cupo: number }[]).map((x) => [x.horario_id, x.cupo] as const));
+
   const clases = delDia.map((h) => {
     const ocupantes = (reservas ?? []).filter((r) => r.horario_id === h.id);
     return {
@@ -60,7 +63,7 @@ export default async function HoyPage({ searchParams }: { searchParams: Promise<
       nombre: h.nombre_clase,
       horaInicio: h.hora_inicio.slice(0, 5),
       horaFin: h.hora_fin.slice(0, 5),
-      cupoMaximo: h.cupo_maximo,
+      cupoMaximo: cupoDe.get(h.id) ?? h.cupo_maximo,
       sede: (h.sedes as unknown as { name: string } | null)?.name ?? "",
       instructora:
         (h.tenant_memberships as unknown as { nombre: string } | null)

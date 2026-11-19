@@ -6,6 +6,7 @@ import {
   agregarAsistente,
   anotarEnEspera,
   cambiarCupo,
+  cambiarCupoFecha,
   asignarSala,
   cancelarClase,
   corregirAsistencia,
@@ -229,15 +230,22 @@ export default function ClaseView({
             <h2 className="text-base font-semibold text-ink">Administrar la clase</h2>
             <div className="mt-3 flex flex-wrap items-end gap-3">
               <label className="text-sm text-ink/60">
-                Cupo máximo (aplica a todas las semanas)
+                Cupo máximo
                 <input type="number" min={1} value={cupo} onChange={(e) => setCupo(e.target.value)} className={`${input} w-32`} />
               </label>
               <button
                 className={boton}
                 disabled={isPending || Number(cupo) < 1 || Number(cupo) === clase.cupo}
-                onClick={() => correr(() => cambiarCupo(horarioId, fecha, Number(cupo)), "Cupo actualizado.")}
+                onClick={() => correr(() => cambiarCupoFecha(horarioId, fecha, Number(cupo)), "Cupo de esta clase actualizado.")}
               >
-                Guardar cupo
+                Solo esta clase
+              </button>
+              <button
+                className={boton}
+                disabled={isPending || Number(cupo) < 1}
+                onClick={() => correr(() => cambiarCupo(horarioId, fecha, Number(cupo)), "Cupo de toda la serie actualizado.")}
+              >
+                Toda la serie semanal
               </button>
             </div>
             {salas.length > 0 && (
