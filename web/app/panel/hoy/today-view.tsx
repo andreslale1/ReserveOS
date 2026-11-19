@@ -92,7 +92,7 @@ export default function TodayView({
                   className={`px-4 py-1.5 ${vista === v ? "bg-ink text-cream" : "text-ink/60 hover:text-ink"}`}>{etiqueta}</Link>
               ))}
             </div>
-            <Link href="/panel/calendario" className="press-spring rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-cream shadow-[0_8px_20px_-6px_rgba(17,17,17,0.35)] transition-colors duration-200 hover:bg-ink/90">
+            <Link href="/panel/reservar" className="press-spring rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-cream shadow-[0_8px_20px_-6px_rgba(17,17,17,0.35)] transition-colors duration-200 hover:bg-ink/90">
               + Nueva reserva
             </Link>
           </div>

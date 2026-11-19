@@ -17,7 +17,7 @@ export default function Resumen({ estudio, rol, fecha, alcance, kpis, atencion }
           <h1 id="resumen-h" className="text-[clamp(30px,3.2vw,47px)] leading-[1.07] tracking-[-0.05em]">{titulo}</h1>
           <p className="mt-2 text-[13px] text-ink-soft first-letter:uppercase">{fecha} · {alcance}</p>
         </div>
-        <Link href="/panel/calendario" className="press-spring inline-flex h-[42px] items-center gap-4 border border-ink bg-ink px-4 text-[12px] font-medium text-void hover:border-lime hover:bg-lime">Nueva reserva <span aria-hidden>↗</span></Link>
+        <Link href="/panel/reservar" className="press-spring inline-flex h-[42px] items-center gap-4 border border-ink bg-ink px-4 text-[12px] font-medium text-void hover:border-lime hover:bg-lime">Nueva reserva <span aria-hidden>↗</span></Link>
       </div>
 
       <dl className="mb-8 grid border-b border-line border-t border-t-ink sm:grid-cols-2 lg:grid-cols-4">

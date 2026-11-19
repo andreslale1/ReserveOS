@@ -6,6 +6,7 @@ import { getPanelContext, ROLE_LABEL, puedeVer, rutaHabilitada } from "@/lib/pan
 const ALL_LINKS = [
   { href: "/panel/hoy", label: "Hoy" },
   { href: "/panel/calendario", label: "Calendario" },
+  { href: "/panel/reservar", label: "Nueva reserva" },
   { href: "/panel/checkin", label: "Check-in" },
   { href: "/panel/historial", label: "Historial de reservas" },
   { href: "/panel/instructoras", label: "Clases por instructora" },
@@ -45,7 +46,7 @@ const ALL_LINKS = [
 // Áreas del panel (propuesta de diseño): pocos destinos estables; cada una agrupa sus pantallas.
 const AREAS: { id: string; titulo: string; rutas: string[] }[] = [
   { id: "resumen", titulo: "Resumen", rutas: ["/panel/hoy"] },
-  { id: "agenda", titulo: "Agenda", rutas: ["/panel/calendario", "/panel/checkin", "/panel/historial", "/panel/instructoras", "/panel/privadas", "/panel/agenda-personal", "/panel/salas", "/panel/carriles", "/panel/cierres"] },
+  { id: "agenda", titulo: "Agenda", rutas: ["/panel/calendario", "/panel/reservar", "/panel/checkin", "/panel/historial", "/panel/instructoras", "/panel/privadas", "/panel/agenda-personal", "/panel/salas", "/panel/carriles", "/panel/cierres"] },
   { id: "clientes", titulo: "Clientes", rutas: ["/panel/clientes", "/panel/seguimiento"] },
   { id: "pagos", titulo: "Pagos", rutas: ["/panel/cobrar", "/panel/pagos-pendientes", "/panel/pagos", "/panel/caja", "/panel/paquetes", "/panel/tienda", "/panel/productos", "/panel/gift-cards", "/panel/descuentos"] },
   { id: "finanzas", titulo: "Finanzas", rutas: ["/panel/finanzas", "/panel/finanzas/registro", "/panel/facturacion", "/panel/negocio", "/panel/reportes"] },

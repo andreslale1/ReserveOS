@@ -26,7 +26,7 @@ const POR_ROL: Record<string, { saludo: string; acciones: Accion[] }> = {
     { href: "/panel/checkin", titulo: "Check-in de clientas", detalle: "Escanea el QR o busca por nombre." },
     { href: "/panel/cobrar", titulo: "Cobrar", detalle: "Vender un paquete o producto." },
     { href: "/panel/clientes", titulo: "Buscar una clienta", detalle: "Ficha, paquetes y reservas." },
-    { href: "/panel/calendario", titulo: "Reservar por una clienta", detalle: "Desde el calendario." } ] },
+    { href: "/panel/reservar", titulo: "Reservar por una clienta", detalle: "Asistente en 3 pasos." } ] },
   instructora: { saludo: "Tus clases", acciones: [
     { href: "/panel/instructoras", titulo: "Mis clases y asistencia", detalle: "Pasa lista de tu clase." },
     { href: "/panel/checkin", titulo: "Check-in", detalle: "Quién llegó." },

@@ -52,6 +52,7 @@ const TODAS_LAS_RUTAS = [
   "/panel/privadas",
   "/panel/cuentas",
   "/panel/carriles",
+  "/panel/reservar",
 ];
 
 // Visibilidad por rol -- mismo criterio que la matriz de permisos del
@@ -62,6 +63,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
   duena: TODAS_LAS_RUTAS,
   gerente_general: TODAS_LAS_RUTAS,
   admin_sede: [
+    "/panel/reservar",
     "/panel/carriles",
     "/panel/hoy",
     "/panel/negocio",
@@ -91,6 +93,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/privadas",
   ],
   gerente_regional: [
+    "/panel/reservar",
     "/panel/carriles",
     "/panel/cobrar",
     "/panel/pagos",
@@ -120,6 +123,7 @@ export const NAV_POR_ROL: Record<string, string[]> = {
   ],
   marketing: ["/panel/hoy", "/panel/seguimiento", "/panel/campanas"],
   recepcion: [
+    "/panel/reservar",
     "/panel/hoy",
     "/panel/calendario",
     "/panel/clientes",
