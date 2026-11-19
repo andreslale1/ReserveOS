@@ -13,7 +13,8 @@ for (const [archivo, conAntes] of pruebas) {
   const r = spawnSync("node", [archivo], { cwd: aqui, encoding: "utf8", timeout: 280_000 });
   let salida = (r.stdout || "") + (r.stderr || "");
   if (conAntes) salida = salida.split(/=== DESPU/)[1] ?? salida;   // solo la parte «después»
-  const lineas = salida.split("\n").filter((l) => MALO.test(l) && !/^\s*\(avisos/.test(l));
+  // Pruebas «antes/después»: se buscan frases de defecto. Pruebas OK/FALLA: solo cuenta una línea que EMPIECE con FALLA.
+  const lineas = salida.split("\n").filter((l) => (conAntes ? MALO.test(l) : /^\s*(FALLA|fallos de carga \(estricto\): (?!ninguno))/.test(l)) && !/^\s*\(avisos/.test(l));
   const bien = r.status === 0 && lineas.length === 0 && salida.length > 40;
   console.log(`${bien ? "OK   " : "FALLA"}  ${archivo}${bien ? "" : "\n      " + (lineas.slice(0, 4).join("\n      ") || salida.slice(-300))}`);
   if (!bien) fallos++;
