@@ -40,6 +40,8 @@ const fallos = [];
 for (const f of archivos) {
   if (f.startsWith("20261005180000")) await db.exec(catalogo).catch((e) => fallos.push("catalogo: " + e.message.slice(0, 100)));
   const ruta = f.startsWith("/") ? f : `${MIG}/${f}`;
+  // Las migraciones nuevas (20261018*) se validan como en Supabase: con la sintaxis de las funciones comprobada.
+  await db.exec(f.includes("20261018") ? "set check_function_bodies = on" : "set check_function_bodies = off");
   try {
     let sql = readFileSync(ruta, "utf8").replace(/create extension if not exists pg_cron[^;]*;/gi, "").replace(/create extension if not exists pg_net[^;]*;/gi, "");
     await db.exec("set search_path = public, extensions;\n" + sql);

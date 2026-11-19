@@ -83,14 +83,21 @@ select public._parchear_funcion('promover_lista_espera',
   'update public.reservas set membresia_id = v_membresia_id, credito_devuelto_at = null where id = v_nueva_reserva_id;',
   'membresia_id = v_membresia_id, credito_devuelto_at = null');
 -- ESP-03: cada candidato se intenta de forma aislada; si uno no puede (límite diario, etc.), se salta y la cancelación original se conserva.
-select public._parchear_funcion('promover_lista_espera',
-  'select id into v_reserva_existente from public.reservas',
-  E'begin\n    select id into v_reserva_existente from public.reservas',
-  'exception when others then');
-select public._parchear_funcion('promover_lista_espera',
-  E'    exit;',
-  E'    exit;\n    exception when others then\n      continue;\n    end;',
-  'exception when others then');
+-- Se aplica en UN solo paso (un begin sin su end haría fallar la validación de sintaxis de Supabase).
+do $$
+declare v_oid oid; v_def text; v_a1 text; v_a2 text; v_n1 integer; v_n2 integer;
+begin
+  select p.oid into v_oid from pg_proc p where p.pronamespace = 'public'::regnamespace and p.proname = 'promover_lista_espera';
+  if v_oid is null then raise exception 'Se detiene: no existe promover_lista_espera'; end if;
+  v_def := pg_get_functiondef(v_oid);
+  if position('exception when others then' in v_def) > 0 then return; end if;
+  v_a1 := 'select id into v_reserva_existente from public.reservas';
+  v_a2 := '    exit;';
+  v_n1 := (length(v_def) - length(replace(v_def, v_a1, ''))) / length(v_a1);
+  v_n2 := (length(v_def) - length(replace(v_def, v_a2, ''))) / length(v_a2);
+  if v_n1 <> 1 or v_n2 <> 1 then raise exception 'Se detiene: en promover_lista_espera el texto cambió (% / %)', v_n1, v_n2; end if;
+  execute replace(replace(v_def, v_a1, E'begin\n    select id into v_reserva_existente from public.reservas'), v_a2, E'    exit;\n    exception when others then\n      continue;\n    end;');
+end $$;
 
 -- ───────── TEN-01 · Un estudio suspendido tampoco admite REACTIVAR una reserva cancelada ─────────
 drop trigger if exists guard_estado_tx_reactivar on public.reservas;
