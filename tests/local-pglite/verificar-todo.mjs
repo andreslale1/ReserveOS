@@ -3,10 +3,10 @@
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 const aqui = fileURLToPath(new URL(".", import.meta.url));
-const MALO = /FALLA|PERMITIDA|DOBLE|REACTIVADA|por error|NO aparece|DUPLICADA|EXTENDIÓ|CONFIRMÓ la compra|ANULÓ el paquete|ERROR de prueba|SÍ, activo|NO: |NO \(|NUEVA reserva ya|PROMOVIDA con|DOBLE CONTEO|sin carril|PERMITIDO/;
+const MALO = /FALLA|PERMITIDA|DOBLE|REACTIVADA|por error|NO aparece|DUPLICADA|EXTENDIÓ|CONFIRMÓ la compra|ANULÓ el paquete|ERROR de prueba|SÍ, activo|NO: |NO \(|NUEVA reserva ya|PROMOVIDA con|DOBLE CONTEO|sin carril|PERMITIDO|SE ENVÍA|atascado para siempre|NO resta|INCORRECTO|ANULADA entera|cuenta la reserva futura|NO aparece/;
 const pruebas = [
   ["humo.mjs", false], ["prueba_dinero1.mjs", true], ["prueba_reservas2.mjs", true],
-  ["prueba_pagos3.mjs", true], ["prueba_choques4.mjs", true], ["prueba_carriles5.mjs", false],
+  ["prueba_pagos3.mjs", true], ["prueba_choques4.mjs", true], ["prueba_carriles5.mjs", false], ["prueba_tanda5.mjs", true],
 ];
 let fallos = 0;
 for (const [archivo, conAntes] of pruebas) {
