@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { destinoSeguro, slugSeguro } from "@/lib/destino";
+import { destinoPlataforma } from "@/lib/destinos";
 
 type Pendiente = { tenant_id: string; nombre: string; telefono: string; genero?: string; como?: string; ref?: string };
 
@@ -36,11 +37,11 @@ export async function login(formData: FormData) {
   // Sin destino explícito, cada persona llega a lo suyo: operador, personal del estudio o clienta.
   if (next === "/panel" && user) {
     const [{ data: esOperador }, { data: esStaff }, { data: esClienta }] = await Promise.all([
-      supabase.from("plataforma_staff").select("id").eq("user_id", user.id).maybeSingle(),
+      supabase.from("plataforma_staff").select("rol").eq("user_id", user.id).maybeSingle(),
       supabase.from("tenant_memberships").select("id").eq("user_id", user.id).limit(1).maybeSingle(),
       supabase.from("clientes").select("id").eq("user_id", user.id).limit(1).maybeSingle(),
     ]);
-    if (esOperador) redirect("/owner/direccion");
+    if (esOperador) redirect(destinoPlataforma((esOperador as { rol?: string }).rol));
     if (!esStaff && esClienta) redirect("/cuenta");
   }
 

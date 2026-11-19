@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import Reveal from "@/components/reveal";
 
 type Clase = {
@@ -46,6 +47,7 @@ export default function TodayView({
   tenantName,
   fecha,
   clases,
+  encabezado,
 }: {
   vista: "dia" | "semana" | "mes";
   hoy: string;
@@ -56,6 +58,7 @@ export default function TodayView({
   tenantName: string;
   fecha: string;
   clases: Clase[];
+  encabezado?: ReactNode;
 }) {
   const fechaLegible = new Date(fecha + "T00:00:00").toLocaleDateString(
     "es-GT",
@@ -70,6 +73,7 @@ export default function TodayView({
 
   return (
     <main className="min-h-screen bg-cream">
+      {encabezado ?? (
       <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <div>
@@ -94,8 +98,9 @@ export default function TodayView({
           </div>
         </div>
       </header>
+      )}
 
-      <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
+      <div className={encabezado ? "px-5 pb-10 pt-3 md:px-10" : "mx-auto max-w-5xl px-6 py-8 md:px-10"}>
         <div className="mb-4 flex items-center gap-2 text-sm">
           <Link href={`/panel/hoy?vista=${vista}&f=${vista === "mes" ? sumarMes(fecha, -1) : sumarDias(fecha, vista === "semana" ? -7 : -1)}`} className="rounded-full border border-ink/15 px-3 py-1 text-ink/70 hover:text-ink" aria-label="Anterior">←</Link>
           <Link href={`/panel/hoy?vista=${vista}&f=${hoy}`} className="rounded-full border border-ink/15 px-3 py-1 text-ink/70 hover:text-ink">Hoy</Link>
@@ -118,7 +123,7 @@ export default function TodayView({
 
         {vista === "mes" && (
           <div>
-            <h2 className="mb-3 font-serif text-xl capitalize text-ink">{new Date(fecha + "T00:00:00").toLocaleDateString("es-GT", { month: "long", year: "numeric" })}</h2>
+            <h2 className="mb-3 text-xl capitalize text-ink">{new Date(fecha + "T00:00:00").toLocaleDateString("es-GT", { month: "long", year: "numeric" })}</h2>
             <div className="grid grid-cols-7 gap-1 text-center text-xs text-ink/50">{DIAS.map((d) => <span key={d}>{d}</span>)}</div>
             <div className="mt-1 grid grid-cols-7 gap-1">
               {mes.map((c, i) => c ? (

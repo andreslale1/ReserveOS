@@ -89,6 +89,12 @@ export const NAV_POR_ROL: Record<string, string[]> = {
     "/panel/privadas",
   ],
   gerente_regional: [
+    "/panel/cobrar",
+    "/panel/pagos",
+    "/panel/productos",
+    "/panel/gift-cards",
+    "/panel/descuentos",
+    "/panel/checkin",
     "/panel/hoy",
     "/panel/negocio",
     "/panel/calendario",
@@ -151,7 +157,8 @@ export function rutaHabilitada(modulos: string[], ruta: string) {
 }
 
 export function puedeVer(role: string, ruta: string) {
-  return (NAV_POR_ROL[role] ?? TODAS_LAS_RUTAS).includes(ruta);
+  // Rol desconocido: sin rutas (denegar por defecto). Antes devolvía todas las pantallas.
+  return (NAV_POR_ROL[role] ?? []).includes(ruta);
 }
 
 type Sede = { id: string; name: string; timezone: string };
@@ -195,8 +202,9 @@ export async function getPanelContext() {
   });
   const modulos = (modulosData as string[] | null) ?? [];
 
+  // La contadora lee finanzas de todo el estudio (sin acceso a clientas ni agenda): necesita todas las sedes para ver la caja.
   const esDuenaOGerente =
-    membership.role === "duena" || membership.role === "gerente_general";
+    membership.role === "duena" || membership.role === "gerente_general" || membership.role === "contadora";
 
   const sedeQuery = esDuenaOGerente
     ? supabase

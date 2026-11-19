@@ -25,6 +25,13 @@ const PROHIBIDAS_PARA_AUTENTICADO: [string, Record<string, unknown>][] = [
   ["confirmar_transaccion_carrito", { p_transaccion_id: "00000000-0000-0000-0000-000000000000" }],
   ["devolver_clase_a_membresia", { p_cliente_id: "00000000-0000-0000-0000-000000000000" }],
   ["liberar_cupos_no_confirmados", {}],
+  // Auditoría SEC-01..06: funciones internas que NO deben poder ejecutar ni clientas ni personal de otro estudio.
+  ["cola_resultado", { p_id: "00000000-0000-0000-0000-000000000000", p_ok: true, p_error: null }],
+  ["fiscal_resultado", { p_id: "00000000-0000-0000-0000-000000000000", p_ok: true, p_serie: null, p_numero: null, p_uuid: null, p_error: null }],
+  ["devolver_credito_reserva", { p_reserva_id: "00000000-0000-0000-0000-000000000000" }],
+  ["_snapshot_cobertura_membresia", { p_membresia_id: "00000000-0000-0000-0000-000000000000", p_paquete_id: "00000000-0000-0000-0000-000000000000" }],
+  ["_segmento_clientes", { p_tenant_id: "00000000-0000-0000-0000-000000000000", p_criterio: {} }],
+  ["_cancelar_reservas_de_membresia_rechazada", { p_membresia_id: "00000000-0000-0000-0000-000000000000", p_cliente_id: "00000000-0000-0000-0000-000000000000", p_clases_usadas: 0, p_membresia_created_at: "2026-01-01T00:00:00Z" }],
 ];
 
 describe("superficie de funciones expuestas", () => {

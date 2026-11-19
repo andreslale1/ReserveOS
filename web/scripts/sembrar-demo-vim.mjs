@@ -78,7 +78,7 @@ const memb = clientes.map((c, i) => {
   const pendiente = i === 1 || i === 2;
   const inicio = i === 0 ? hoy : mas(-(i * 2));
   return { tenant_id: T, cliente_id: c.id, paquete_id: p.id, sede_venta_id: c.sede_habitual_id, cobertura_tipo: "todas", clases_totales: p.num_clases, clases_usadas: 0,
-    fecha_inicio: iso(inicio), fecha_vencimiento: iso(new Date(inicio.getTime() + p.vigencia_dias * 86400000)), estado: pendiente ? "pendiente_pago" : "activa",
+    fecha_inicio: iso(inicio), fecha_vencimiento: iso(new Date(inicio.getTime() + p.vigencia_dias * 86400000)), estado: "activa", referencia_pago: pendiente ? `TRF-${1000 + i}` : null,
     precio_final: p.precio, metodo_pago: pendiente ? "transferencia" : i % 2 ? "efectivo" : "tarjeta", pagada: !pendiente, confirmado_at: pendiente ? null : inicio.toISOString() };
 });
 const mem = ok(await rs.from("membresias").insert(memb).select("id"), "membresías");

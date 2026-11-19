@@ -20,6 +20,9 @@
   --color-neutral-tint: #e9e7e2;
   --color-sand: #e9e3d8;
   --color-line: #dcdfe3;
+  --color-good: #1f6b50; --color-good-wash: #e7f1eb;
+  --color-warn: #865818; --color-warn-wash: #f6eddc;
+  --color-bad: #a1362b; --color-bad-wash: #f8e9e6;
 }
 
 @theme inline {
@@ -39,6 +42,9 @@
   --color-sage-tint: var(--color-sage-tint);
   --color-neutral-tint: var(--color-neutral-tint);
   --color-sand: var(--color-sand);
+  --color-good: var(--color-good); --color-good-wash: var(--color-good-wash);
+  --color-warn: var(--color-warn); --color-warn-wash: var(--color-warn-wash);
+  --color-bad: var(--color-bad); --color-bad-wash: var(--color-bad-wash);
   --color-line: var(--color-line);
   --font-serif: var(--f-display);
   --font-sans: var(--f-body);
@@ -160,18 +166,34 @@ h1, h2, h3 { font-family: var(--f-display), system-ui, sans-serif; letter-spacin
   }
 }
 
-/* ───────── Tema de estudio: la estructura es de ReserveOS (nav agrupada, filas claras); el color y el logo son del estudio ─────────
-   Se aplica a lo que ve un estudio (panel, portal de la clienta, login del estudio). El acento del estudio se inyecta encima (lib/marca.ts). */
+/* ───────── Tema de estudio (propuesta de diseño de ReserveOS): papel, tinta, azul de marca y esquinas rectas ─────────
+   Se aplica a lo que ve un estudio (panel, portal de la clienta, login del estudio). Comparte lenguaje con la portada:
+   Helvetica, líneas finas y puntos de cupo. El acento del estudio se inyecta encima (lib/marca.ts); los colores de ESTADO
+   (verde, ámbar, rojo) no los reemplaza ningún color de marca. */
 .tema-estudio {
-  --color-void: #f7f6f3;
+  --color-void: #f2f3f1;
   --color-void-card: #ffffff;
-  --color-cream: #eef0f2;
+  --color-cream: #f2f3f1;
   --color-card: #ffffff;
+  --color-ink: #0d0d0d;
+  --color-ink-soft: #56585b;
+  --color-line: #d9dcda;
+  --color-lime: #2f5d8c; --color-lime-dim: #264b72;
+  --color-peach: #2f5d8c; --color-blue: #2f5d8c; --color-sage: #2f5d8c;
+  --color-peach-tint: #e4ebf2; --color-blue-tint: #e4ebf2; --color-sage-tint: #e4ebf2; --color-neutral-tint: #e9ebe8;
   background: var(--color-cream);
   color: var(--color-ink);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --f-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-.tema-estudio .rounded-3xl, .tema-estudio .rounded-\[2rem\] { border-radius: 16px; }
+.tema-estudio h1, .tema-estudio h2, .tema-estudio h3, .tema-estudio .font-serif { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: 550; letter-spacing: -0.03em; }
+.tema-estudio .rounded-3xl, .tema-estudio .rounded-2xl, .tema-estudio .rounded-xl, .tema-estudio .rounded-lg, .tema-estudio .rounded-md, .tema-estudio .rounded-\[2rem\] { border-radius: 3px; }
+.tema-estudio :is(a, button).rounded-full { border-radius: 2px; }
 .tema-estudio .bg-peach, .tema-estudio .bg-lime { color: #fff; }
+.tema-estudio ::selection { background: var(--color-ink); color: var(--color-void); }
+.tema-estudio :focus-visible { outline: 2px solid var(--color-lime); outline-offset: 3px; }
+.tema-estudio button:not(:disabled), .tema-estudio a, .tema-estudio select, .tema-estudio input { touch-action: manipulation; }
 
 /* Una sola entrada orquestada: las filas del horario aparecen en cascada. Parten visibles (opacity .0 solo durante la animación). */
 @keyframes fila-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }

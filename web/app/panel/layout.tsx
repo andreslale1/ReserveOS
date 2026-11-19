@@ -1,5 +1,4 @@
-import Link from "next/link";
-import MenuGrupo from "./menu-grupo";
+import PanelShell, { type AreaNav } from "./panel-shell";
 import { salir } from "@/components/owner/salir";
 import { estiloMarca, marcaPorSlug } from "@/lib/marca";
 import { getPanelContext, ROLE_LABEL, puedeVer, rutaHabilitada } from "@/lib/panel-context";
@@ -42,74 +41,67 @@ const ALL_LINKS = [
   { href: "/panel/automatizaciones", label: "Automatizaciones" },
 ];
 
-// Grupos del menú: el panel tenía una lista plana de más de veinte enlaces; así cada persona encuentra por tarea.
-const GRUPO: Record<string, string> = {
-  "/panel/hoy": "Día a día", "/panel/calendario": "Día a día", "/panel/checkin": "Día a día", "/panel/cobrar": "Día a día", "/panel/clientes": "Día a día", "/panel/pagos-pendientes": "Día a día", "/panel/privadas": "Día a día",
-  "/panel/historial": "Clases", "/panel/instructoras": "Clases", "/panel/agenda-personal": "Clases", "/panel/salas": "Clases", "/panel/cierres": "Clases",
-  "/panel/paquetes": "Ventas", "/panel/tienda": "Ventas", "/panel/productos": "Ventas", "/panel/gift-cards": "Ventas", "/panel/descuentos": "Ventas",
-  "/panel/caja": "Dinero", "/panel/pagos": "Dinero", "/panel/finanzas": "Dinero", "/panel/finanzas/registro": "Dinero", "/panel/facturacion": "Dinero",
-  "/panel/negocio": "Negocio", "/panel/reportes": "Negocio", "/panel/seguimiento": "Negocio", "/panel/campanas": "Negocio",
-};
-const ORDEN_GRUPOS = ["Día a día", "Clases", "Ventas", "Dinero", "Negocio", "Configuración"];
+// Áreas del panel (propuesta de diseño): pocos destinos estables; cada una agrupa sus pantallas.
+const AREAS: { id: string; titulo: string; rutas: string[] }[] = [
+  { id: "resumen", titulo: "Resumen", rutas: ["/panel/hoy"] },
+  { id: "agenda", titulo: "Agenda", rutas: ["/panel/calendario", "/panel/checkin", "/panel/historial", "/panel/instructoras", "/panel/privadas", "/panel/agenda-personal", "/panel/salas", "/panel/cierres"] },
+  { id: "clientes", titulo: "Clientes", rutas: ["/panel/clientes", "/panel/seguimiento"] },
+  { id: "pagos", titulo: "Pagos", rutas: ["/panel/cobrar", "/panel/pagos-pendientes", "/panel/pagos", "/panel/caja", "/panel/paquetes", "/panel/tienda", "/panel/productos", "/panel/gift-cards", "/panel/descuentos"] },
+  { id: "finanzas", titulo: "Finanzas", rutas: ["/panel/finanzas", "/panel/finanzas/registro", "/panel/facturacion", "/panel/negocio", "/panel/reportes"] },
+  { id: "campanas", titulo: "Campañas", rutas: ["/panel/campanas"] },
+  { id: "equipo", titulo: "Equipo y permisos", rutas: ["/panel/personal", "/panel/cuentas", "/panel/delegaciones", "/panel/auditoria"] },
+  { id: "config", titulo: "Configuración", rutas: ["/panel/configuracion", "/panel/sedes", "/panel/automatizaciones", "/panel/suscripcion", "/panel/soporte"] },
+];
 
 export default async function PanelLayout({
   children,
 }: LayoutProps<"/panel">) {
-  const { supabase, membership, tenantName, modulos, variosEstudios } = await getPanelContext();
+  const { supabase, membership, tenantName, modulos, variosEstudios, sedes } = await getPanelContext();
   const { data: incidentes } = membership
     ? await supabase.rpc("incidentes_activos", { p_tenant_id: membership.tenant_id })
     : { data: [] };
-  const avisos = (incidentes ?? []) as { titulo: string; severidad: string; estado: string }[];
+  const avisos = ((incidentes ?? []) as { titulo: string; severidad: string; estado: string }[]).map((a) => `Aviso de ReserveOS: ${a.titulo} · ${a.estado}`);
 
   const { data: slugRow } = membership ? await supabase.from("tenants").select("slug").eq("id", membership.tenant_id).maybeSingle() : { data: null };
   const conMarca = modulos.includes("portal_marca");
   const marca = conMarca ? await marcaPorSlug(slugRow?.slug) : null;
 
-  const links = membership
-    ? ALL_LINKS.filter(
-        (l) => puedeVer(membership.role, l.href) && rutaHabilitada(modulos, l.href),
-      )
-    : [];
+  const visibles = new Set(
+    membership ? ALL_LINKS.filter((l) => puedeVer(membership.role, l.href) && rutaHabilitada(modulos, l.href)).map((l) => l.href) : [],
+  );
+  const etiqueta = new Map(ALL_LINKS.map((l) => [l.href, l.label]));
 
-  const grupos = ORDEN_GRUPOS.map((g) => ({ titulo: g, enlaces: links.filter((l) => (GRUPO[l.href] ?? "Configuración") === g) })).filter((g) => g.enlaces.length > 0);
-  const plano = links.length <= 8;
+  // Pagos por revisar: se muestra como insignia en «Pagos» solo si el rol ve esa pantalla.
+  let pendientes = 0;
+  if (membership && visibles.has("/panel/pagos-pendientes")) {
+    const { count } = await supabase.from("membresias").select("id", { count: "exact", head: true }).eq("tenant_id", membership.tenant_id).eq("pagada", false).eq("estado", "activa");
+    pendientes = count ?? 0;
+  }
+
+  const areas: AreaNav[] = AREAS.map((a) => ({
+    id: a.id, titulo: a.titulo,
+    items: a.rutas.filter((r) => visibles.has(r)).map((r) => ({ href: r, label: etiqueta.get(r) ?? r })),
+    badge: a.id === "pagos" ? pendientes : undefined,
+  })).filter((a) => a.items.length > 0);
+
+  const alcance = !membership ? "" : ["duena", "gerente_general", "contadora"].includes(membership.role) || sedes.length === 0
+    ? "Todas las sedes" : sedes.length === 1 ? `Sede ${sedes[0].name}` : `${sedes.length} sedes`;
 
   return (
     <div className="tema-estudio min-h-screen bg-cream" style={estiloMarca(marca?.color)}>
-      <header className="bg-ink text-void">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-8 gap-y-1 px-5 py-3">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
-            <Link href="/panel/hoy" className="flex items-center py-1">
-              {marca?.logo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={marca.logo} alt={`Logo de ${tenantName}`} className="h-8 w-auto max-w-[10rem] object-contain" />
-              ) : (
-                <span className="font-serif text-2xl leading-none text-void">{marca ? tenantName : "ReserveOS"}</span>
-              )}
-            </Link>
-            <nav aria-label="Panel del estudio" className="flex flex-wrap items-center">
-              {plano
-                ? links.map((l) => <Link key={l.href} href={l.href} className="rounded-md px-3 py-2 text-sm font-medium text-void/90 hover:bg-void/10 hover:text-void">{l.label}</Link>)
-                : grupos.map((g) => <MenuGrupo key={g.titulo} titulo={g.titulo} enlaces={g.enlaces} />)}
-            </nav>
-          </div>
-          <div className="flex items-center gap-4 text-xs text-void/80">
-            <span>{membership?.nombre ?? "—"} · {membership ? ROLE_LABEL[membership.role] : ""}</span>
-            {variosEstudios && <Link href="/elegir-panel" className="underline hover:text-void">Cambiar estudio</Link>}
-            <form action={salir}><button className="underline hover:text-void">Cerrar sesión</button></form>
-          </div>
-        </div>
-      </header>
-
-      {avisos.length > 0 && (
-        <div className="border-b border-ink/15 bg-peach-tint px-6 py-3 text-sm text-ink md:px-10">
-          {avisos.map((a, i) => (
-            <p key={i}><strong>Aviso de ReserveOS:</strong> {a.titulo} · {a.estado}</p>
-          ))}
-        </div>
+      {membership && areas.length === 0 ? (
+        <main className="mx-auto max-w-2xl px-6 py-16 text-center" role="alert">
+          <h1 className="text-2xl text-ink">Tu acceso está pendiente.</h1>
+          <p className="mt-2 text-sm text-ink-soft">Tu cuenta todavía no tiene pantallas asignadas en este estudio. Pide a la dueña o a quien administra el estudio que revise tu rol.</p>
+        </main>
+      ) : (
+        <PanelShell areas={areas} marca={marca ? { logo: marca.logo } : null} estudio={tenantName || "ReserveOS"} alcance={alcance}
+          usuario={{ nombre: membership?.nombre ?? "—", rol: membership ? ROLE_LABEL[membership.role] : "" }}
+          variosEstudios={variosEstudios} salir={salir} avisos={avisos}>
+          {children}
+          {marca && <p className="px-5 py-8 text-[10px] uppercase tracking-[0.2em] text-ink/35 md:px-10">Con tecnología ReserveOS</p>}
+        </PanelShell>
       )}
-      <div className="mx-auto max-w-6xl">{children}</div>
-      {marca && <p className="pb-8 text-center text-[10px] uppercase tracking-[0.2em] text-ink/35">Con tecnología ReserveOS</p>}
     </div>
   );
 }
