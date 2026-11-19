@@ -3,11 +3,12 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { anotarEspera, cancelar, reservar, salirEspera } from "./actions";
+import { anotarEspera, cancelar, reservar, reservarCarril, salirEspera } from "./actions";
 
 export type Clase = {
   id: string; nombre: string; inicio: string; fin: string; instructora: string; lugares: number; reservaId: string | null; esperaId: string | null;
   elig: { puede: boolean; codigo: string; motivo?: string; puede_espera?: boolean; en_espera?: boolean };
+  modo?: "cupo" | "carril"; carriles?: { recurso_id: string; nombre: string; ocupado: boolean; mio: boolean }[];
 };
 
 export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, para, clases, horasCancelacion, vocab }: {
@@ -17,6 +18,7 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [msg, setMsg] = useState<{ ok: boolean; texto: string } | null>(null);
+  const [carril, setCarril] = useState<Record<string, string>>({});
   const indiceDia = Math.max(0, dias.findIndex((d) => d.fecha === dia));
   const [semana, setSemana] = useState(Math.floor(indiceDia / 7));
   const visibles = dias.slice(semana * 7, semana * 7 + 7);
@@ -83,7 +85,12 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
                   onClick={() => correr(() => cancelar(c.reservaId!), "Reserva cancelada.")}>Cancelar</button>
               ) : c.elig.puede ? (
                 <button className="shrink-0 rounded-full bg-ink px-4 py-2 text-sm font-medium text-cream disabled:opacity-50" disabled={isPending}
-                  onClick={() => correr(() => reservar(c.id, dia, para), "¡Reservada!")}>Reservar</button>
+                  onClick={() => {
+                    if (c.modo === "carril") {
+                      if (!carril[c.id]) { setMsg({ ok: false, texto: "Elige primero tu carril." }); return; }
+                      correr(() => reservarCarril(c.id, dia, carril[c.id], para), "¡Reservada! Tu carril está confirmado.");
+                    } else correr(() => reservar(c.id, dia, para), "¡Reservada!");
+                  }}>{c.modo === "carril" && carril[c.id] ? `Reservar ${c.carriles?.find((x) => x.recurso_id === carril[c.id])?.nombre ?? "carril"}` : "Reservar"}</button>
               ) : c.elig.codigo === "llena" && c.elig.puede_espera ? (
                 <button className="shrink-0 rounded-full border border-ink px-4 py-2 text-sm text-ink disabled:opacity-50" disabled={isPending}
                   onClick={() => correr(() => anotarEspera(c.id, dia, para), "Te anotamos en la lista de espera.")}>Lista de espera</button>
@@ -92,6 +99,24 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
                   onClick={() => correr(() => salirEspera(c.esperaId!), "Saliste de la lista de espera.")}>Salir de espera</button>
               ) : null}
             </div>
+            {c.modo === "carril" && (c.carriles ?? []).length > 0 && (c.elig.puede || c.reservaId) && (
+              <div className="mt-3" role="group" aria-label="Carriles de la clase">
+                <p className="mb-1.5 text-xs text-ink/55">{c.reservaId ? "Tu carril" : "Elige tu carril"}</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {c.carriles!.map((k) => {
+                    const sel = carril[c.id] === k.recurso_id;
+                    return (
+                      <button key={k.recurso_id} type="button" disabled={k.ocupado || !!c.reservaId || isPending} aria-pressed={k.mio || sel}
+                        aria-label={`${k.nombre}${k.ocupado ? (k.mio ? ", es tuyo" : ", ocupado") : ""}`}
+                        onClick={() => setCarril((m) => ({ ...m, [c.id]: sel ? "" : k.recurso_id }))}
+                        className={`press-spring tabular h-9 min-w-9 rounded-md border px-2 text-sm font-semibold ${k.mio ? "border-ink bg-ink text-cream" : k.ocupado ? "cursor-not-allowed border-transparent bg-ink/10 text-ink/35" : sel ? "border-lime bg-lime text-white" : "border-ink/20 text-ink hover:border-ink/50"}`}>
+                        {k.nombre.replace(/^\D+\s*/, "") || k.nombre}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {c.reservaId ? (
               <p className="mt-2 text-xs text-sage">✓ Tienes lugar. Cancela con al menos {horasCancelacion} h de anticipación para recuperar la clase.</p>
             ) : !c.elig.puede && c.elig.motivo ? (

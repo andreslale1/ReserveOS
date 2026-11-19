@@ -95,7 +95,7 @@ export default function LandingReserveOS({ acceso = { label: "Entrar", href: "/l
         items: [
           { name: "Estudio de Pilates", kind: "rest", temp: 8, text: "Clases con cupo por reformer o mat, instructora asignada y paquetes por número de clases que valen en una, varias o todas las sedes.", stay: "Reserva por cupo" },
           { name: "Gimnasio CrossFit", kind: "heat", temp: 14, text: "WOD del día, coach, cupo por clase y membresías. Tus atletas reservan y tú ves la asistencia de cada clase.", stay: "Reserva por cupo" },
-          { name: "Gimnasio HYROX", kind: "cold", temp: 8, text: "Sesiones por bloque horario con carriles o estaciones numeradas. También para gimnasios que tienen CrossFit y HYROX juntos. La reserva por carril está en desarrollo.", stay: "Carril o estación" },
+          { name: "Gimnasio HYROX", kind: "cold", temp: 8, text: "Sesiones por bloque horario con carriles o estaciones numeradas. Cada atleta elige su carril al reservar y nadie más puede tomarlo. También para gimnasios que tienen CrossFit y HYROX juntos.", stay: "Carril o estación" },
         ],
       }}
       ritual={null}
@@ -118,7 +118,7 @@ export default function LandingReserveOS({ acceso = { label: "Entrar", href: "/l
           { q: "¿Necesito tener página web?", a: "No. Podemos darte un link de reserva, un widget para pegar en tu web actual, o construir tu sitio completo con tu marca." },
           { q: "¿Mis clientes reservan desde el celular?", a: "Sí. Tienen un portal para reservar, ver su paquete, su historial y su código QR de entrada." },
           { q: "¿Funciona con varias sedes?", a: "Sí. Cada sede tiene sus horarios, su caja y su equipo, y el dueño ve todo el negocio. Un paquete puede valer en una, varias o todas las sedes." },
-          { q: "¿Y si reservamos por carril o estación?", a: "Estamos construyendo la reserva por carril para HYROX y natación. Dinos cómo trabajas y lo definimos contigo." },
+          { q: "¿Y si reservamos por carril o estación?", a: "Sí. En las clases por carril (HYROX, natación), cada persona elige su carril al reservar y nadie más puede tomarlo. Si se cancela, el carril queda libre para la siguiente persona." },
           { q: "¿Cómo se cobra?", a: "Hoy se registran cobros en efectivo, con tarjeta del estudio y por transferencia con aprobación. El pago en línea viene en una siguiente etapa." },
           { q: "¿Quién ve qué dentro del gimnasio?", a: "Cada persona ve solo lo suyo: dueño, gerente, administrador de sede, recepción, coach, contadora y marketing. Los permisos están en la base de datos, no solo en el menú." },
         ],

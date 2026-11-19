@@ -7,7 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const rs = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 const arg = (n, d) => { const i = process.argv.indexOf(`--${n}`); return i > 0 && process.argv[i + 1] ? process.argv[i + 1] : d; };
-const SLUG = arg("slug", "vim-demo"), NOMBRE = arg("nombre", "VIM Pilates (demo)"), PASS = "DemoVIM2026!", DOM = `${SLUG}.test`;
+const GIRO = arg("giro", "pilates"), SLUG = arg("slug", "vim-demo"), NOMBRE = arg("nombre", "VIM Pilates (demo)"), PASS = "DemoVIM2026!", DOM = `${SLUG}.test`;
 const ok = (r, ctx) => { if (r.error) throw new Error(`${ctx}: ${r.error.message}`); return r.data; };
 
 let { data: t } = await rs.from("tenants").select("id").eq("slug", SLUG).maybeSingle();
@@ -60,10 +60,20 @@ const paquetes = ok(await rs.from("paquetes").insert([
 ].map((p) => ({ tenant_id: T, featured: false, badge: null, ...p }))).select("id,nombre,precio,num_clases,vigencia_dias"), "paquetes");
 
 // Horarios: lunes a sábado, 3 sedes
-const franjas = [["07:00", "08:00", "Pilates Reformer"], ["09:00", "10:00", "Pilates Mat"], ["18:00", "19:00", "Pilates Reformer"], ["19:00", "20:00", "Pilates Flow"]];
+const franjas = GIRO === "hyrox"
+  ? [["06:00", "07:00", "Bloque A · Simulación"], ["07:30", "08:30", "Bloque B · Carrera y sled"], ["12:15", "13:15", "Bloque C · Estaciones"], ["18:00", "19:00", "Bloque D · Simulación"]]
+  : [["07:00", "08:00", "Pilates Reformer"], ["09:00", "10:00", "Pilates Mat"], ["18:00", "19:00", "Pilates Reformer"], ["19:00", "20:00", "Pilates Flow"]];
 const filasH = [];
-for (const s of sedes) for (let d = 1; d <= 6; d++) for (const [i, f, n] of franjas) filasH.push({ tenant_id: T, sede_id: s.id, instructor_membership_id: instructoraDe[s.name], dia_semana: d, hora_inicio: i, hora_fin: f, nombre_clase: n, cupo_maximo: 8, activo: true });
+for (const s of sedes) for (let d = 1; d <= 6; d++) for (const [i, f, n] of franjas) filasH.push({ tenant_id: T, sede_id: s.id, instructor_membership_id: instructoraDe[s.name], dia_semana: d, hora_inicio: i, hora_fin: f, nombre_clase: n, cupo_maximo: 8, activo: true, ...(GIRO === "hyrox" ? { categoria: "regular" } : {}) });
 const horarios = ok(await rs.from("horarios").insert(filasH).select("id,sede_id,dia_semana"), "horarios");
+
+// HYROX: carriles numerados por sede y clases por carril
+if (GIRO === "hyrox") {
+  await rs.from("tenants").update({ giro: "hyrox" }).eq("id", T);
+  const recs = ok(await rs.from("recursos").insert(sedes.flatMap((sd) => Array.from({ length: 8 }, (_, i) => ({ tenant_id: T, sede_id: sd.id, nombre: `Carril ${i + 1}`, tipo: "carril", orden: i + 1 })))).select("id,sede_id,nombre,orden"), "carriles");
+  ok(await rs.from("horarios").update({ modo_reserva: "carril" }).eq("tenant_id", T), "modo carril");
+  globalThis.__recs = recs;
+}
 
 // Clientas
 const nombres = ["Valeria Castillo", "Daniela Méndez", "Paola Ruiz", "Gabriela Soto", "Mónica Lemus", "Andrea Girón", "Karla Orellana", "Ximena Paz", "Fernanda Reyes", "Alejandra Cruz", "Diana Barrios", "Natalia Flores"];
@@ -88,7 +98,8 @@ const reservas = [];
 for (let n = 0; n < 7; n++) {
   const f = mas(n), dow = f.getDay(); if (dow === 0) continue;
   const delDia = horarios.filter((h) => h.dia_semana === dow);
-  delDia.forEach((h, j) => { const k = (j + n) % 6 + 3; for (let q = 0; q < Math.min(k, 7); q++) { const c = clientes[3 + ((j + q + n) % (clientes.length - 3))]; reservas.push({ tenant_id: T, sede_id: h.sede_id, horario_id: h.id, cliente_id: c.id, fecha: iso(f), estado: "confirmada", tipo: "regular" }); } });
+  delDia.forEach((h, j) => {
+    let sigCarril = 0; const k = (j + n) % 6 + 3; for (let q = 0; q < Math.min(k, 7); q++) { const c = clientes[3 + ((j + q + n) % (clientes.length - 3))]; const rec = GIRO === "hyrox" ? (globalThis.__recs ?? []).filter((r) => r.sede_id === h.sede_id).sort((a, b) => a.orden - b.orden)[sigCarril++ % 8] : null; reservas.push({ tenant_id: T, sede_id: h.sede_id, horario_id: h.id, cliente_id: c.id, fecha: iso(f), estado: "confirmada", tipo: "regular", ...(rec ? { recurso_id: rec.id } : {}) }); } });
 }
 const unicas = [...new Map(reservas.map((r) => [`${r.horario_id}|${r.cliente_id}|${r.fecha}`, r])).values()];
 for (let i = 0; i < unicas.length; i += 200) ok(await rs.from("reservas").insert(unicas.slice(i, i + 200)), "reservas");

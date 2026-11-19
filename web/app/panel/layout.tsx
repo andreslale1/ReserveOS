@@ -33,6 +33,7 @@ const ALL_LINKS = [
   { href: "/panel/agenda-personal", label: "Agenda del personal" },
   { href: "/panel/sedes", label: "Sedes" },
   { href: "/panel/salas", label: "Salas" },
+  { href: "/panel/carriles", label: "Carriles" },
   { href: "/panel/cierres", label: "Feriados y cierres" },
   { href: "/panel/reportes", label: "Reportes" },
   { href: "/panel/seguimiento", label: "Seguimiento" },
@@ -44,7 +45,7 @@ const ALL_LINKS = [
 // Áreas del panel (propuesta de diseño): pocos destinos estables; cada una agrupa sus pantallas.
 const AREAS: { id: string; titulo: string; rutas: string[] }[] = [
   { id: "resumen", titulo: "Resumen", rutas: ["/panel/hoy"] },
-  { id: "agenda", titulo: "Agenda", rutas: ["/panel/calendario", "/panel/checkin", "/panel/historial", "/panel/instructoras", "/panel/privadas", "/panel/agenda-personal", "/panel/salas", "/panel/cierres"] },
+  { id: "agenda", titulo: "Agenda", rutas: ["/panel/calendario", "/panel/checkin", "/panel/historial", "/panel/instructoras", "/panel/privadas", "/panel/agenda-personal", "/panel/salas", "/panel/carriles", "/panel/cierres"] },
   { id: "clientes", titulo: "Clientes", rutas: ["/panel/clientes", "/panel/seguimiento"] },
   { id: "pagos", titulo: "Pagos", rutas: ["/panel/cobrar", "/panel/pagos-pendientes", "/panel/pagos", "/panel/caja", "/panel/paquetes", "/panel/tienda", "/panel/productos", "/panel/gift-cards", "/panel/descuentos"] },
   { id: "finanzas", titulo: "Finanzas", rutas: ["/panel/finanzas", "/panel/finanzas/registro", "/panel/facturacion", "/panel/negocio", "/panel/reportes"] },

@@ -46,6 +46,15 @@ export default async function ClasesPage({ searchParams }: { searchParams: Promi
   ]);
   const elig = await Promise.all((horarios ?? []).map((h) => supabase.rpc("elegibilidad_clase", { p_horario_id: h.id, p_fecha: dia.fecha, p_cliente_id: para })));
 
+  // Reserva por carril: si la columna aún no existe (migración pendiente) o falla, todo sigue por cupo.
+  const { data: modos } = ids.length ? await supabase.from("horarios").select("id, modo_reserva").in("id", ids) : { data: [] };
+  const modoDe = new Map(((modos ?? []) as { id: string; modo_reserva?: string }[]).map((m) => [m.id, m.modo_reserva === "carril" ? "carril" : "cupo"] as const));
+  const carrilesPorClase = new Map<string, { recurso_id: string; nombre: string; ocupado: boolean; mio: boolean }[]>();
+  await Promise.all(ids.filter((id) => modoDe.get(id) === "carril").map(async (id) => {
+    const { data } = await supabase.rpc("carriles_de_clase", { p_horario_id: id, p_fecha: dia.fecha });
+    carrilesPorClase.set(id, (data ?? []) as { recurso_id: string; nombre: string; ocupado: boolean; mio: boolean }[]);
+  }));
+
   const clases: Clase[] = (horarios ?? []).map((h, i) => {
     const e = (elig[i].data ?? { puede: false, codigo: "error", motivo: "No pudimos revisar esta clase." }) as Clase["elig"];
     const reserva = ((mias ?? []) as { id: string; horario_id: string; cliente_id: string }[]).find((r) => r.horario_id === h.id && r.cliente_id === para);
@@ -54,7 +63,7 @@ export default async function ClasesPage({ searchParams }: { searchParams: Promi
     return {
       id: h.id, nombre: h.nombre_clase, inicio: h.hora_inicio.slice(0, 5), fin: h.hora_fin.slice(0, 5),
       instructora: (h.tenant_memberships as unknown as { nombre: string } | null)?.nombre ?? "", lugares: Math.max(h.cupo_maximo - ocupados, 0),
-      reservaId: reserva?.id ?? null, esperaId: en?.id ?? null, elig: e,
+      reservaId: reserva?.id ?? null, esperaId: en?.id ?? null, elig: e, modo: modoDe.get(h.id) ?? "cupo", carriles: carrilesPorClase.get(h.id) ?? [],
     };
   });
 

@@ -13,6 +13,9 @@ async function llamar(fn: string, args: Record<string, unknown>) {
 export async function reservar(horarioId: string, fecha: string, clienteId: string) {
   return llamar("agendar_clase", { p_horario_id: horarioId, p_fecha: fecha, p_cliente_id: clienteId });
 }
+export async function reservarCarril(horarioId: string, fecha: string, recursoId: string, clienteId: string) {
+  return llamar("agendar_clase_carril", { p_horario_id: horarioId, p_fecha: fecha, p_recurso_id: recursoId, p_cliente_id: clienteId });
+}
 export async function cancelar(reservaId: string) {
   const r = await llamar("cancelar_mi_reserva", { p_reserva_id: reservaId });
   return { error: r.error, penalizada: (r.data as { penalizada?: boolean } | null)?.penalizada ?? false };
