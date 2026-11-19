@@ -121,7 +121,7 @@ export default function RegistroForm({ tenantId, slug, nombre, color, next, refe
           <button disabled={cargando} className="press-spring w-full rounded-full py-2.5 text-sm font-bold uppercase tracking-wide text-void disabled:opacity-50" style={{ backgroundColor: color }}>
             {cargando ? "Creando…" : "Crear mi cuenta"}
           </button>
-          <p className="text-center text-sm text-ink/50">¿Ya tienes cuenta? <Link href={`/login?e=${slug}&next=${encodeURIComponent(next)}`} className="text-lime underline">Entrar</Link></p>
+          <p className="text-center text-sm text-ink/50">¿Ya tienes cuenta (también en otro gimnasio)? <Link href={`/login?e=${slug}&next=${encodeURIComponent(`/registro/${slug}?next=${encodeURIComponent(next)}`)}`} className="text-lime underline">Entra y únete a este estudio</Link></p>
         </form>
       </div>
     </main>
