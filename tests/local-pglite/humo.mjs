@@ -6,7 +6,7 @@ const sumar = (n) => { const d = new Date(); d.setUTCDate(d.getUTCDate() + n); r
 const F = sumar(5), DOW = new Date(F + "T00:00:00Z").getUTCDay();
 async function como(db, uid, fn) { await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub','${uid}',false); select set_config('request.jwt.claim.role','authenticated',false)`); try { return await fn(); } finally { await db.exec("reset role"); } }
 const { db, fallos } = await crearDb();   // TODAS las migraciones, incluidas las nuevas
-console.log("migraciones aplicadas sin fallos:", fallos.length === 0 ? "sí (113)" : fallos.join(" | "));
+console.log("migraciones aplicadas sin fallos:", fallos.length === 0 ? "sí" : fallos.join(" | "));
 await db.exec(`
   insert into auth.users(id,email) values ('${U(1)}','d@t.test'),('${U(2)}','a@t.test'),('${U(3)}','b@t.test');
   insert into tenants(id,slug,name) values ('${U(10)}','t','T');

@@ -50,7 +50,7 @@ export default async function ClasesPage({ searchParams }: { searchParams: Promi
     const e = (elig[i].data ?? { puede: false, codigo: "error", motivo: "No pudimos revisar esta clase." }) as Clase["elig"];
     const reserva = ((mias ?? []) as { id: string; horario_id: string; cliente_id: string }[]).find((r) => r.horario_id === h.id && r.cliente_id === para);
     const ocupados = ((ocup ?? []) as { horario_id: string; fecha: string; ocupados: number }[]).find((o) => o.horario_id === h.id)?.ocupados ?? 0;
-    const en = ((espera ?? []) as { id: string; horario_id: string; fecha: string; cliente_id?: string }[]).find((x) => x.horario_id === h.id && x.fecha === dia.fecha);
+    const en = ((espera ?? []) as { id: string; horario_id: string; fecha: string; cliente_id?: string }[]).find((x) => x.horario_id === h.id && x.fecha === dia.fecha && x.cliente_id === para);
     return {
       id: h.id, nombre: h.nombre_clase, inicio: h.hora_inicio.slice(0, 5), fin: h.hora_fin.slice(0, 5),
       instructora: (h.tenant_memberships as unknown as { nombre: string } | null)?.nombre ?? "", lugares: Math.max(h.cupo_maximo - ocupados, 0),
