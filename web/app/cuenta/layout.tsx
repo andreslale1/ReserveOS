@@ -60,7 +60,12 @@ export default async function CuentaLayout({ children }: { children: React.React
           </p>
         </div>
       )}
-      <main className="mx-auto max-w-4xl px-5 py-8">{children}</main>
+      <main className="mx-auto max-w-4xl px-5 py-8 pb-24 md:pb-8">{children}</main>
+      <nav aria-label="Navegación rápida" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-ink/15 bg-cream pb-[env(safe-area-inset-bottom)] md:hidden">
+        {[["/cuenta", "Inicio"], ["/cuenta/clases", "Reservar"], ["/cuenta/historial", `Mis ${v.clases}`], ["/cuenta/paquetes", "Paquete"], ["/cuenta/perfil", "Perfil"]].map(([href, label]) => (
+          <Link key={href} href={href} className="press-spring truncate px-1 py-3.5 text-center text-xs font-medium text-ink/75 active:bg-ink/5">{label}</Link>
+        ))}
+      </nav>
     </div>
   );
 }
