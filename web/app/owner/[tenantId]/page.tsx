@@ -3,7 +3,7 @@ import { getOwnerContext } from "@/lib/owner-context";
 import PlanModulos from "./plan-modulos";
 import AccesoExcepcional from "./acceso-excepcional";
 import GiroEstudio from "./giro-estudio";
-import { ESTADO_LABEL } from "../estado-modal";
+import { ESTADO_LABEL } from "@/lib/estados-estudio";
 
 const DIAS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 
