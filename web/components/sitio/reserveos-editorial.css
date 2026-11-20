@@ -177,3 +177,11 @@
  .ro-will-reveal,.ro-will-reveal.ro-inview{opacity:1;transform:none;transition:none}
  .ro-chapter-rail a,.ro-chapter-rail .ro-rail-label{transition:none}
 }
+
+/* Gentle ambient movement in the original halftone artwork; never replaces the artwork. */
+@keyframes ro-halftone-pulse{
+  0%,100%{transform:rotate(-16deg) scale(1.15);opacity:.72}
+  50%{transform:rotate(-13deg) scale(1.24);opacity:.94}
+}
+.ro-hero .ro-halftone{animation:ro-halftone-pulse 11s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.ro-hero .ro-halftone{animation:none}}
