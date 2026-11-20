@@ -4,8 +4,8 @@ export type Kpi = { etiqueta: string; valor: string; unidad?: string; nota: stri
 export type Atencion = { n: number | null; titulo: string; detalle: string; href: string };
 
 // «Resumen» de la propuesta de diseño: lo que necesita la dueña en una sola mirada, con datos reales.
-export default function Resumen({ estudio, rol, fecha, alcance, kpis, atencion }: {
-  estudio: string; rol: string; fecha: string; alcance: string; kpis: Kpi[]; atencion: Atencion[];
+export default function Resumen({ estudio, rol, fecha, alcance, kpis, atencion, tablero }: {
+  estudio: string; rol: string; fecha: string; alcance: string; kpis: Kpi[]; atencion: Atencion[]; tablero?: React.ReactNode;
 }) {
   const pendientes = atencion.filter((a) => (a.n ?? 0) > 0).length;
   const titulo = pendientes === 0 ? "Todo bajo control." : `Hoy hay ${pendientes} ${pendientes === 1 ? "cosa" : "cosas"} por atender.`;
@@ -50,6 +50,7 @@ export default function Resumen({ estudio, rol, fecha, alcance, kpis, atencion }
           ))}
         </ul>
       </div>
+      {tablero}
       <h2 className="mb-1 text-[22px] tracking-[-0.04em]">El día, en una vista.</h2>
     </section>
   );

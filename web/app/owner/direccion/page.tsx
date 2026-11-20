@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getOwnerContext } from "@/lib/owner-context";
 import { EstadoVacio } from "@/components/owner/estado-vacio";
+import Tendencias, { type Tend } from "./tendencias";
 
 type D = {
   tareas_vencidas: number; tareas_hoy: number; sin_proxima_accion: number; valor_pipeline: number; oportunidades_abiertas: number;
@@ -40,7 +41,7 @@ const Comp = ({ titulo, par, dinero }: { titulo: string; par: [number, number]; 
 
 export default async function DireccionPage() {
   const { supabase } = await getOwnerContext();
-  const [{ data, error }, { data: extraData }] = await Promise.all([supabase.rpc("plataforma_direccion"), supabase.rpc("owner_direccion_extra")]);
+  const [{ data, error }, { data: extraData }, { data: tendData }] = await Promise.all([supabase.rpc("plataforma_direccion"), supabase.rpc("owner_direccion_extra"), supabase.rpc("plataforma_tendencias")]);
   if (error) return <main className="mx-auto max-w-3xl px-6 py-16 text-center text-ink/70" role="alert">{error.message}</main>;
   const raw = data as Record<string, unknown>;
   const d = { seguimientos_vencidos: [], activaciones_en_curso: [], ...raw } as unknown as D;
@@ -53,6 +54,8 @@ export default async function DireccionPage() {
     <main className="mx-auto max-w-6xl px-6 py-8 md:px-10">
       <h1 className="text-2xl font-semibold">Dirección</h1>
       <p className="mt-1 text-sm text-ink/70">Qué necesita atención hoy{extra ? ` (${fecha(extra.hoy)}, hora de Guatemala)` : ""}. Cada tarjeta abre la lista que la causa, con la misma definición.</p>
+
+      {tendData ? <Tendencias t={tendData as Tend} /> : null}
 
       <section aria-labelledby="accion" className="mt-6 rounded-2xl border border-lime/30 bg-void-card p-5">
         <h2 id="accion" className="text-base font-semibold">Requiere mi acción {extra && extra.acciones.length > 0 && <span className="text-sm font-normal text-ink/65">· {extra.acciones.length}</span>}</h2>

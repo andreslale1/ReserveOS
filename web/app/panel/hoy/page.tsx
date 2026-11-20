@@ -1,9 +1,10 @@
 import { getPanelContext, ROLE_LABEL, fechaYDowEnSede } from "@/lib/panel-context";
 import TodayView from "./today-view";
 import QueHagoHoy from "./que-hago-hoy";
+import Tablero, { type Datos } from "./tablero";
 import Resumen, { type Atencion, type Kpi } from "./resumen";
 
-export default async function HoyPage({ searchParams }: { searchParams: Promise<{ vista?: string; f?: string }> }) {
+export default async function HoyPage({ searchParams }: { searchParams: Promise<{ vista?: string; f?: string; d?: string; sede?: string }> }) {
   const sp = await searchParams;
   const { supabase, user, membership, sedes, tenantName, modulos } =
     await getPanelContext();
@@ -127,8 +128,12 @@ export default async function HoyPage({ searchParams }: { searchParams: Promise<
       { n: porVencer.error ? null : porVencer.count ?? 0, titulo: "Paquetes por vencer en 7 días", detalle: "Ayúdales a seguir entrenando", href: "/panel/clientes" },
       { n: espera.error ? null : espera.count ?? 0, titulo: "Personas en lista de espera hoy", detalle: "Hay clases llenas con gente esperando", href: "/panel/calendario" },
     ];
+    const dTab = [30, 60, 90].includes(Number(sp.d)) ? Number(sp.d) : 30;
+    const sedeTab = sedes.find((x) => x.id === sp.sede)?.id ?? null;
+    const { data: tab } = await supabase.rpc("panel_dashboard", { p_tenant_id: membership.tenant_id, p_dias: dTab, p_sede_id: sedeTab });
+    const tablero = tab ? <Tablero datos={tab as Datos} dias={dTab} sedeId={sedeTab} sedes={sedes.map((x) => ({ id: x.id, name: x.name }))} /> : null;
     const fechaTxt = new Date(fecha + "T00:00:00").toLocaleDateString("es-GT", { weekday: "long", day: "numeric", month: "long" });
-    resumen = <Resumen estudio={tenantName} rol={ROLE_LABEL[membership.role] ?? membership.role} fecha={fechaTxt} alcance={sedes.length > 1 ? `${sedes.length} sedes` : sedes[0] ? `Sede ${sedes[0].name}` : "Todas las sedes"} kpis={kpis} atencion={atencion} />;
+    resumen = <Resumen tablero={tablero} estudio={tenantName} rol={ROLE_LABEL[membership.role] ?? membership.role} fecha={fechaTxt} alcance={sedes.length > 1 ? `${sedes.length} sedes` : sedes[0] ? `Sede ${sedes[0].name}` : "Todas las sedes"} kpis={kpis} atencion={atencion} />;
   }
 
   return (
