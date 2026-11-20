@@ -1,3 +1,4 @@
+import "@/styles/internal-editorial.css";
 import { getOwnerContext } from "@/lib/owner-context";
 import { OwnerShell } from "@/components/owner/owner-shell";
 
