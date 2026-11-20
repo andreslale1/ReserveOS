@@ -46,5 +46,8 @@ ok("una clienta de A no puede reservar en el estudio B", !x3.ok, x3.e);
 // 3) Personal de ReserveOS: sin datos de los estudios por defecto
 const sop = await como(db, U(4), () => db.query(`select (select count(*) from clientes) c, (select count(*) from membresias) m, (select count(*) from reservas) r`));
 ok("soporte de ReserveOS no ve clientas, membresías ni reservas de los estudios", Number(sop.rows[0].c) + Number(sop.rows[0].m) + Number(sop.rows[0].r) === 0, JSON.stringify(sop.rows[0]));
+// 4) La API no debe ver dos relaciones entre las mismas tablas (si no, deja de poder traer datos relacionados).
+const dup = await db.query(`select c.conrelid::regclass::text a, c.confrelid::regclass::text b, count(*) n from pg_constraint c where c.contype='f' and c.connamespace='public'::regnamespace and c.conrelid::regclass::text in ('membresias','reservas') and c.confrelid::regclass::text in ('clientes','paquetes','horarios','sedes','membresias') group by 1,2 having count(*) > 1`);
+ok("membresías y reservas no tienen dos claves foráneas hacia la misma tabla (evita romper las consultas de la API)", dup.rows.length === 0, dup.rows.map((r) => `${r.a}->${r.b}`).join(", "));
 for (const r of R) console.log(r);
 await db.close();
