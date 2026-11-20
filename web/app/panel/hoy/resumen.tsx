@@ -20,7 +20,7 @@ export default function Resumen({ estudio, rol, fecha, alcance, kpis, atencion, 
         <Link href="/panel/reservar" className="press-spring inline-flex h-[42px] items-center gap-4 border border-ink bg-ink px-4 text-[12px] font-medium text-void hover:border-lime hover:bg-lime">Nueva reserva <span aria-hidden>↗</span></Link>
       </div>
 
-      <dl className="mb-8 grid border-b border-line border-t border-t-ink sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="ro-dashboard-kpis mb-8 grid border-b border-line border-t border-t-ink sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((k, i) => (
           <Link key={k.etiqueta} href={k.href} className={`press-spring block border-line px-0 py-5 sm:px-[23px] ${i > 0 ? "sm:border-l" : "sm:pl-0"} ${i > 0 ? "border-t sm:border-t-0" : ""} hover:bg-ink/[0.03]`}>
             <dt className="flex items-center justify-between text-[11px] text-ink-soft">{k.etiqueta}<span aria-hidden>↗</span></dt>
@@ -36,7 +36,7 @@ export default function Resumen({ estudio, rol, fecha, alcance, kpis, atencion, 
         ))}
       </dl>
 
-      <div className="mb-8 border border-line bg-void-card" aria-labelledby="atencion-h">
+      <div className="ro-priority-card mb-8 border border-line bg-void-card" aria-labelledby="atencion-h">
         <h2 id="atencion-h" className="border-b border-line px-5 py-3 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Necesita tu atención</h2>
         <ul className="divide-y divide-line">
           {atencion.map((a) => (
