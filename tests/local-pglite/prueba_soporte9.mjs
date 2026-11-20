@@ -1,0 +1,41 @@
+// Invariante 12: el personal de ReserveOS solo ve datos de un estudio con acceso autorizado, con caducidad y registro.
+import { crearDb } from "./cargar.mjs";
+const U = (n) => `00000000-0000-4000-8000-0000000000${String(n).padStart(2, "0")}`;
+async function como(db, uid, fn) { await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub','${uid}',false); select set_config('request.jwt.claim.role','authenticated',false)`); try { return await fn(); } finally { await db.exec("reset role"); } }
+const intenta = async (f) => { try { return { ok: true, v: await f() }; } catch (e) { return { ok: false, e: String(e.message).slice(0, 100) }; } };
+const { db, fallos } = await crearDb();
+if (fallos.length) console.log("fallos de carga (estricto):", fallos.join(" | "));
+const R = []; const ok = (n, b, x = "") => R.push(`${b ? "OK   " : "FALLA"}  ${n}${x ? "  → " + x : ""}`);
+await db.exec(`
+  insert into auth.users(id,email) values ('${U(1)}','d@t.test'),('${U(2)}','sop@t.test'),('${U(3)}','ven@t.test');
+  insert into tenants(id,slug,name) values ('${U(10)}','ta','A');
+  insert into sedes(id,tenant_id,name) values ('${U(11)}','${U(10)}','SA');
+  insert into tenant_memberships(tenant_id,user_id,role,nombre) values ('${U(10)}','${U(1)}','duena','D');
+  insert into clientes(id,tenant_id,nombre,telefono) values ('${U(41)}','${U(10)}','CA','5551'),('${U(42)}','${U(10)}','CB','5552');
+  insert into plataforma_staff(user_id,rol) values ('${U(2)}','soporte'),('${U(3)}','ventas');
+  insert into plataforma_tickets(id,tenant_id,asunto,estado,prioridad,sla_vence) values ('${U(70)}','${U(10)}','No puedo ver mis pagos','abierto','normal',now()+interval '1 day');`);
+const leer = () => como(db, U(2), () => db.query(`select owner_tenant_datos_sensibles('${U(10)}','clientas',10,0) r`));
+const sin = await intenta(leer); ok("sin acceso otorgado, soporte NO puede leer datos sensibles", !sin.ok, sin.e);
+const vend = await intenta(() => como(db, U(3), () => db.query(`select acceso_excepcional_otorgar('${U(10)}','${U(70)}','Investigar fallo de pagos del estudio',array['clientas'],2)`)));
+ok("ventas no puede otorgarse acceso", !vend.ok, vend.e);
+const corto = await intenta(() => como(db, U(2), () => db.query(`select acceso_excepcional_otorgar('${U(10)}','${U(70)}','corto',array['clientas'],2)`)));
+ok("el motivo debe describirse (mínimo 15 caracteres)", !corto.ok, corto.e);
+const largo = await intenta(() => como(db, U(2), () => db.query(`select acceso_excepcional_otorgar('${U(10)}','${U(70)}','Investigar fallo de pagos del estudio',array['clientas'],100)`)));
+ok("la duración máxima es 72 horas", !largo.ok, largo.e);
+const ot = await intenta(() => como(db, U(2), () => db.query(`select acceso_excepcional_otorgar('${U(10)}','${U(70)}','Investigar fallo de pagos del estudio',array['clientas'],2) id`)));
+ok("soporte con ticket abierto y motivo obtiene acceso de 2 horas", ot.ok, ot.e);
+const id = ot.v?.rows?.[0]?.id;
+const l1 = await intenta(leer); ok("con acceso vigente puede leer", l1.ok, l1.e);
+const fin = await intenta(() => como(db, U(2), () => db.query(`select owner_tenant_datos_sensibles('${U(10)}','finanzas',10,0)`)));
+ok("el alcance es solo 'clientas': finanzas se rechaza", !fin.ok, fin.e);
+const lg = (await db.query(`select count(*) n from admin_acciones_log where tenant_id='${U(10)}' and tabla like 'plataforma_%'`)).rows[0].n;
+ok("cada otorgamiento y lectura queda registrado", Number(lg) >= 2, String(lg));
+const ver = await como(db, U(1), () => db.query(`select count(*) n from acceso_excepcional_tenant`));
+ok("la dueña del estudio ve quién accedió a sus datos", Number(ver.rows[0].n) === 1);
+await db.exec(`update acceso_excepcional_tenant set expira_at = now() - interval '1 minute'`);
+const l2 = await intenta(leer); ok("al vencer el plazo, el acceso se corta solo", !l2.ok, l2.e);
+await db.exec(`update acceso_excepcional_tenant set expira_at = now() + interval '1 hour'`);
+await como(db, U(2), () => db.query(`select acceso_excepcional_revocar('${id}')`));
+const l3 = await intenta(leer); ok("al revocarlo, se corta de inmediato", !l3.ok, l3.e);
+for (const r of R) console.log(r);
+await db.close();
