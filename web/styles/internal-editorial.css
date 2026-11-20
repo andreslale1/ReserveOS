@@ -228,3 +228,48 @@
  .ro-workspace.ro-workspace-account .ro-account-main{animation:none}
  .ro-workspace :is(a,button){transition:none}
 }
+
+/* Client portal: preserve tenant branding while giving the interior its own editorial rhythm. */
+.ro-workspace.ro-workspace-account .ro-account-intro-inner {
+  border-top:1px solid var(--ro-rule);
+  border-bottom:1px solid var(--ro-rule);
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:24px;
+  padding:27px 0 30px;
+}
+.ro-workspace.ro-workspace-account .ro-account-intro-inner .ro-workspace-title{
+  font-size:clamp(38px,6vw,70px);
+  text-transform:uppercase;
+  line-height:.96;
+  max-width:750px;
+  margin:12px 0;
+}
+.ro-workspace.ro-workspace-account .ro-account-intro-inner .ro-workspace-quick{
+  flex-shrink:0;
+  justify-content:flex-end;
+  padding-bottom:7px;
+}
+.ro-workspace.ro-workspace-account .ro-account-intro-inner .ro-workspace-quick a:first-child{
+  background:var(--color-lime);
+  border-color:var(--color-lime);
+  color:white;
+}
+.ro-workspace.ro-workspace-account .ro-account-intro-inner .ro-workspace-quick a:first-child:hover{
+  background:var(--color-lime-dim);
+}
+@media(max-width:800px){
+ .ro-workspace.ro-workspace-account .ro-account-intro-inner{
+  align-items:start;
+  flex-direction:column;
+  gap:20px;
+  padding:22px 0 25px;
+ }
+ .ro-workspace.ro-workspace-account .ro-account-intro-inner .ro-workspace-title{font-size:clamp(36px,9vw,56px)}
+ .ro-workspace.ro-workspace-account .ro-account-intro-inner .ro-workspace-quick{
+  justify-content:flex-start;
+  width:100%;
+  padding-bottom:0;
+ }
+}
