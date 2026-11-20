@@ -56,6 +56,19 @@ export default async function CuentaLayout({ children }: { children: React.React
           {grupos.map((g) => <MenuGrupo key={g.titulo} titulo={g.titulo} enlaces={g.enlaces} tono="claro" />)}
         </nav>
       </header>
+      <section className="ro-account-intro mx-auto max-w-4xl px-5 pt-6" aria-label="Tu espacio">
+        <div className="ro-account-intro-inner">
+          <div>
+            <span className="ro-workspace-eyebrow">RESERVEOS / PORTAL DE CLIENTES / {actual.estudio.toUpperCase()}</span>
+            <h2 className="ro-workspace-title">TUS CLASES.<br/>A TU RITMO.</h2>
+            <p className="ro-workspace-subtitle">Reservas, paquetes y tu historial, en un solo espacio.</p>
+          </div>
+          <div className="ro-workspace-quick">
+            <Link href="/cuenta/clases">RESERVAR CLASE ↗</Link>
+            <Link href="/cuenta/paquetes">MIS PAQUETES ↗</Link>
+          </div>
+        </div>
+      </section>
       {pendiente && (
         <div className="mx-auto max-w-4xl px-5 pt-5">
           <p className="border border-peach/40 bg-peach-tint px-4 py-3 text-sm text-ink">
