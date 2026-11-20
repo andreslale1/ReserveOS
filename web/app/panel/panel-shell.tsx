@@ -89,6 +89,7 @@ export default function PanelShell({
             <span className="hidden text-[12px] text-ink-soft sm:block">{alcance}</span>
           </div>
           <span className="ml-auto hidden items-center gap-1.5 text-[12px] text-ink-soft sm:flex"><i aria-hidden className="h-[5px] w-[5px] rounded-full bg-good" />{usuario.rol}</span>
+          <form action={salir} className="ml-auto sm:ml-0"><button className="press-spring border border-line px-3 py-2 text-[12px] font-medium text-ink hover:border-ink/40">Cerrar sesión</button></form>
         </header>
 
         {avisos.length > 0 && (

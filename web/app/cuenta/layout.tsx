@@ -4,6 +4,7 @@ import { getCuenta } from "@/lib/cuenta-context";
 import RegistrarSw from "./registrar-sw";
 import MenuGrupo from "../panel/menu-grupo";
 import { vocab } from "@/lib/giros";
+import { salir } from "@/components/owner/salir";
 
 export default async function CuentaLayout({ children }: { children: React.ReactNode }) {
   const { supabase, actual, contextos, todos, dominioEstudio } = await getCuenta();
@@ -46,6 +47,7 @@ export default async function CuentaLayout({ children }: { children: React.React
           <span className="flex items-center gap-4 text-xs text-ink/60">
             {contextos.length > 1 && !dominioEstudio && <Link href="/elegir-estudio" className="border-b border-ink/20 pb-0.5 hover:text-ink">Cambiar estudio</Link>}
             {todos.some((c) => c.tenant_id === actual.tenant_id && c.rol_staff) && <Link href="/panel" className="border-b border-ink/20 pb-0.5 hover:text-ink">Panel</Link>}
+            <form action={salir}><button className="press-spring border border-ink/25 px-3 py-1.5 font-medium text-ink hover:bg-ink/5">Cerrar sesión</button></form>
           </span>
         </div>
         <nav aria-label="Mi cuenta" className="mx-auto flex max-w-4xl flex-wrap items-center gap-1 px-3 pb-2">
