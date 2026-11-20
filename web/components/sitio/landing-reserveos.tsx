@@ -1,132 +1,144 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import LandingEstudio, { type LylDay } from "./landing-estudio"
+import { useState, type FormEvent } from "react";
+import "./reserveos-editorial.css";
 
-// Semanas de ejemplo para la demostración. Cada gimnasio es de UN solo giro: nunca se mezclan Pilates con CrossFit/HYROX.
-type Giro = "pilates" | "crossfit" | "hyrox" | "crossfit_hyrox"
-const GIROS_DEMO: { id: Giro; nombre: string }[] = [
-  { id: "pilates", nombre: "Estudio de Pilates" },
-  { id: "crossfit", nombre: "Gimnasio CrossFit" },
-  { id: "hyrox", nombre: "Gimnasio HYROX" },
-  { id: "crossfit_hyrox", nombre: "CrossFit + HYROX" },
-]
-const DIAS = [
-  ["Mié 18", "Miércoles 18 de noviembre"], ["Jue 19", "Jueves 19 de noviembre"], ["Vie 20", "Viernes 20 de noviembre"],
-  ["Sáb 21", "Sábado 21 de noviembre"], ["Dom 22", "Domingo 22 de noviembre"], ["Lun 23", "Lunes 23 de noviembre"], ["Mar 24", "Martes 24 de noviembre"],
-]
-type Franja = { time: string; name: string; note: string; minutes: number; capacity: number; price: number }
-const FRANJAS: Record<Giro, Franja[]> = {
-  pilates: [
-    { time: "06:30", name: "Pilates Reformer", note: "Sofía R. · Sede Centro", minutes: 55, capacity: 8, price: 100 },
-    { time: "08:00", name: "Pilates Mat", note: "Paula A. · Sede Norte", minutes: 55, capacity: 10, price: 90 },
-    { time: "12:15", name: "Reformer Express", note: "Renata S. · Sede Centro", minutes: 40, capacity: 8, price: 90 },
-    { time: "18:00", name: "Pilates Reformer", note: "Sofía R. · Sede Centro", minutes: 55, capacity: 8, price: 100 },
-    { time: "19:30", name: "Pilates Flow", note: "Paula A. · Sede Norte", minutes: 55, capacity: 10, price: 90 },
-  ],
-  crossfit: [
-    { time: "06:00", name: "WOD", note: "Coach Diego", minutes: 60, capacity: 14, price: 90 },
-    { time: "07:00", name: "Fuerza + WOD", note: "Coach Ana", minutes: 75, capacity: 14, price: 90 },
-    { time: "12:00", name: "Open Gym", note: "Coach Luis", minutes: 60, capacity: 10, price: 70 },
-    { time: "18:30", name: "WOD", note: "Coach Diego", minutes: 60, capacity: 14, price: 90 },
-    { time: "19:30", name: "WOD Competidores", note: "Coach Ana", minutes: 75, capacity: 12, price: 100 },
-  ],
-  hyrox: [
-    { time: "06:00", name: "Bloque A · Simulación", note: "Coach Mario · Carriles 1 a 8", minutes: 60, capacity: 8, price: 110 },
-    { time: "07:30", name: "Bloque B · Carrera y sled", note: "Coach Mario · Carriles 1 a 8", minutes: 60, capacity: 8, price: 110 },
-    { time: "12:15", name: "Bloque C · Estaciones", note: "Coach Elena · Carriles 1 a 8", minutes: 60, capacity: 8, price: 110 },
-    { time: "18:00", name: "Bloque D · Simulación", note: "Coach Elena · Carriles 1 a 8", minutes: 60, capacity: 8, price: 110 },
-    { time: "19:30", name: "Bloque E · Estaciones", note: "Coach Mario · Carriles 1 a 8", minutes: 60, capacity: 8, price: 110 },
-  ],
-  crossfit_hyrox: [
-    { time: "06:00", name: "WOD", note: "Coach Diego", minutes: 60, capacity: 14, price: 90 },
-    { time: "07:30", name: "HYROX · Bloque de carriles", note: "Coach Mario · Carriles 1 a 8", minutes: 60, capacity: 8, price: 110 },
-    { time: "12:00", name: "Open Gym", note: "Coach Luis", minutes: 60, capacity: 10, price: 70 },
-    { time: "18:00", name: "WOD", note: "Coach Ana", minutes: 60, capacity: 14, price: 90 },
-    { time: "19:30", name: "HYROX · Bloque de carriles", note: "Coach Elena · Carriles 1 a 8", minutes: 60, capacity: 8, price: 110 },
-  ],
-}
-const OCUPADOS = [[6, 11, 5, 6, 13], [4, 9, 8, 10, 14], [8, 6, 3, 7, 9], [3, 5, 6, 4, 8], [2, 4, 2, 3, 5], [5, 12, 7, 8, 14], [6, 10, 4, 9, 11]]
-const diasDe = (g: Giro): LylDay[] => DIAS.map(([label, full], d) => ({
-  label, full, sessions: FRANJAS[g].map((f, i) => ({ ...f, id: `${g}-${d}-${i}`, booked: Math.min(f.capacity, Math.round((OCUPADOS[d][i] * f.capacity) / 14)) })),
-}))
-
-export default function LandingReserveOS({ acceso = { label: "Entrar", href: "/login" } }: { acceso?: { label: string; href: string } }) {
-  const [giro, setGiro] = useState<Giro>("pilates")
-  const control = (
-    <div role="tablist" aria-label="Tipo de negocio de la demostración" style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-      {GIROS_DEMO.map((g) => (
-        <button key={g.id} role="tab" aria-selected={giro === g.id} onClick={() => setGiro(g.id)} className={"lyl-btn lyl-sm " + (giro === g.id ? "lyl-solid" : "lyl-line")}>
-          {g.nombre}
-        </button>
-      ))}
-    </div>
-  )
-  return (
-    <LandingEstudio
-      brand="ReserveOS"
-      tagline="Reservas para gimnasios y estudios"
-      ink={{ accent: "#2f5d8c", onAccent: "#ffffff" }}
-      theme="light"
-      themeToggle={false}
-      access={acceso}
-      currency="Q"
-      links={[
-        { label: "Reservas", href: "#sessions" },
-        { label: "Giros", href: "#rooms" },
-        { label: "Formas de usar", href: "#membership" },
-        { label: "Preguntas", href: "/contacto" },
-      ]}
-      hero={{
-        title: "Tu gimnasio, reservado.",
-        text: "ReserveOS es una plataforma de reservas para estudios de Pilates y gimnasios de CrossFit y HYROX. Tu gimnasio tiene su propio espacio dentro de ReserveOS, con su horario, paquetes, equipo y clientes. Sin programar nada.",
-        cta: "Pedir una demo", ctaHref: "/contacto", secondary: "Ver cómo funciona", secondaryHref: "#sessions",
-      }}
-      heat={{ label: "Ocupación de hoy", base: 64, rise: 9, unit: "%", button: "Abrir las reservas", hint: "O toca cualquier punto del calor.", said: "Se abren las reservas. La ocupación sube a cerca de {n} por ciento." }}
-      sessions={{
-        title: "Reserva una clase, como lo haría tu cliente.",
-        text: "Elige el tipo de negocio y mira cómo se reserva: un día, los lugares libres, y reserva o entra a la lista de espera. Cada cliente de ReserveOS es de un solo giro. Es una demostración, no una compra real.",
-        days: diasDe(giro),
-      }}
-      sessionsControl={control}
-      rooms={{
-        title: "Un sistema, el giro que tú tienes.",
-        unit: "lugares",
-        items: [
-          { name: "Estudio de Pilates", kind: "rest", temp: 8, text: "Clases con cupo por reformer o mat, instructora asignada y paquetes por número de clases que valen en una, varias o todas las sedes.", stay: "Reserva por cupo" },
-          { name: "Gimnasio CrossFit", kind: "heat", temp: 14, text: "WOD del día, coach, cupo por clase y membresías. Tus atletas reservan y tú ves la asistencia de cada clase.", stay: "Reserva por cupo" },
-          { name: "Gimnasio HYROX", kind: "cold", temp: 8, text: "Sesiones por bloque horario con carriles o estaciones numeradas. Cada atleta elige su carril al reservar y nadie más puede tomarlo. También para gimnasios que tienen CrossFit y HYROX juntos.", stay: "Carril o estación" },
-        ],
-      }}
-      ritual={null}
-      plans={{
-        title: "Tres formas de usar ReserveOS.",
-        text: "Las tres usan el mismo sistema por dentro: tus clientes, reservas y pagos en un solo lugar. Elige cuánto quieres que se vea tu marca.",
-        items: [
-          { name: "Dentro de ReserveOS", price: 0, priceLabel: "La más rápida", unit: "tu gimnasio en nuestra plataforma", text: "Tu gimnasio se suma a ReserveOS. Tiene su espacio con su nombre, y la marca visible es la de ReserveOS.", features: ["Tu espacio en reserveos.app con el nombre de tu gimnasio", "Horarios, paquetes, equipo y clientes cargados por nosotros", "Portal para tus clientes y panel para tu equipo", "Opcional: tu logo, tu color y tu propio dominio"], cta: "Pedir una demo", href: "/contacto", featured: true, badge: "Lo más común" },
-          { name: "Widget en tu web", price: 0, priceLabel: "Si ya tienes página", unit: "reservas dentro de tu sitio", text: "Pegas una línea de código en tu web y aparecen tu horario y el botón de reservar.", features: ["Horario y paquetes dentro de tu sitio", "Con tus colores", "Tus clientes se registran y quedan en tu base de datos", "Funciona en cualquier web"], cta: "Pedir una demo", href: "/contacto" },
-          { name: "Web propia a tu medida", price: 0, priceLabel: "Si no tienes página", unit: "sitio completo con tu marca", text: "Construimos tu página con tu manual de marca y las reservas ya integradas.", features: ["Diseño con tu marca", "Reservas integradas", "En tu propio dominio", "Sedes, equipo y clientes incluidos"], cta: "Pedir una demo", href: "/contacto" },
-        ],
-      }}
-      quotes={null}
-      faq={{
-        title: "Antes de empezar.",
-        items: [
-          { q: "¿Qué es ReserveOS?", a: "Es una plataforma de reservas para estudios de Pilates y gimnasios de CrossFit y HYROX. Cada gimnasio tiene su propio espacio dentro de ReserveOS, con su horario, sus paquetes, su equipo y sus clientes. No necesitas desarrollar nada." },
-          { q: "¿Mi gimnasio aparece con mi nombre?", a: "Sí. Tu espacio lleva el nombre de tu gimnasio y la marca visible es ReserveOS. Si quieres tu logo y tu color, o tu propio dominio, se agrega. Y si prefieres tu propia página web, también la construimos." },
-          { q: "¿Se adapta a mi tipo de negocio?", a: "Sí. Cada gimnasio se configura con su giro: estudio de Pilates, gimnasio CrossFit, gimnasio HYROX, o un gimnasio con CrossFit y HYROX. Las pantallas, las palabras y las reservas usan el idioma de tu giro." },
-          { q: "¿Necesito tener página web?", a: "No. Podemos darte un link de reserva, un widget para pegar en tu web actual, o construir tu sitio completo con tu marca." },
-          { q: "¿Mis clientes reservan desde el celular?", a: "Sí. Tienen un portal para reservar, ver su paquete, su historial y su código QR de entrada." },
-          { q: "¿Funciona con varias sedes?", a: "Sí. Cada sede tiene sus horarios, su caja y su equipo, y el dueño ve todo el negocio. Un paquete puede valer en una, varias o todas las sedes." },
-          { q: "¿Y si reservamos por carril o estación?", a: "Sí. En las clases por carril (HYROX, natación), cada persona elige su carril al reservar y nadie más puede tomarlo. Si se cancela, el carril queda libre para la siguiente persona." },
-          { q: "¿Cómo se cobra?", a: "Hoy se registran cobros en efectivo, con tarjeta del estudio y por transferencia con aprobación. El pago en línea viene en una siguiente etapa." },
-          { q: "¿Quién ve qué dentro del gimnasio?", a: "Cada persona ve solo lo suyo: dueño, gerente, administrador de sede, recepción, coach, contadora y marketing. Los permisos están en la base de datos, no solo en el menú." },
-        ],
-      }}
-      visit={null}
-      newsletter={{ title: "¿Lo vemos con tu gimnasio?", text: "Déjanos tu correo y te escribimos para armar una demo con tus sedes y horarios.", button: "Pedir demo", done: "Gracias. Te escribimos pronto." }}
-      onSubscribe={(email) => fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) }).then((r) => r.ok)}
-      footer={{ links: [{ label: "Entrar", href: "/login" }, { label: "Abrir mi estudio", href: "/registro" }, { label: "Pedir una demo", href: "/contacto" }], note: "ReserveOS. Reservas para gimnasios y estudios." }}
-    />
-  )
+type Access = { label: string; href: string };
+type Discipline = "pilates" | "crossfit" | "hyrox";
+type Slot = { hour: string; title: string; coach: string; booked: number; capacity: number };
+const DEMOS: Record<Discipline,{name:string;heading:string;description:string;details:string[];slots:Slot[]}> = {
+  pilates: {
+    name: "PILATES", heading: "Cada reformer. Cada clase. Bajo control.",
+    description: "Gestiona cupos por reformer, instructores, paquetes de clases y asistencia desde un solo lugar.",
+    details:["CAPACIDAD POR REFORMER","PAQUETES DE CLASES","INSTRUCTORAS Y ASISTENCIA"],
+    slots:[{hour:"07:00",title:"Pilates Reformer",coach:"Instructora Sofía",booked:7,capacity:8},{hour:"09:00",title:"Pilates Mat",coach:"Instructora Paula",booked:8,capacity:10},{hour:"18:00",title:"Reformer Express",coach:"Instructora Sofía",booked:6,capacity:8}]
+  },
+  crossfit: {
+    name:"CROSSFIT",heading:"Más entrenamiento. Menos administración.",
+    description:"Planifica tus WOD, controla asistencia, organiza coaches y gestiona membresías.",
+    details:["WOD Y OPEN GYM","CONTROL DE CUPOS","MEMBRESÍAS Y COACHES"],
+    slots:[{hour:"06:00",title:"WOD del día",coach:"Coach Diego",booked:13,capacity:14},{hour:"12:00",title:"Open Gym",coach:"Coach Ana",booked:6,capacity:12},{hour:"19:00",title:"Fuerza + WOD",coach:"Coach Diego",booked:10,capacity:14}]
+  },
+  hyrox: {
+    name:"HYROX",heading:"Control total, hasta la última estación.",
+    description:"Organiza bloques, estaciones y carriles sin perder el seguimiento de entrenamientos y atletas.",
+    details:["BLOQUES HORARIOS","CARRILES Y ESTACIONES","ENTRENADORES Y CUPOS"],
+    slots:[{hour:"06:30",title:"HYROX Simulation",coach:"Coach Mario",booked:7,capacity:8},{hour:"12:15",title:"Sled + Run",coach:"Coach Elena",booked:6,capacity:8},{hour:"18:30",title:"Training Stations",coach:"Coach Mario",booked:8,capacity:8}]
+  }
+};
+const features=[
+ ["01","RESERVAS","Horarios, cupos, listas de espera y asistencia en una sola operación."],
+ ["02","MEMBRESÍAS","Paquetes, créditos, vigencias y reglas ajustadas a cada estudio."],
+ ["03","CLIENTES","Perfiles e historial de cada persona, sin hojas de cálculo dispersas."],
+ ["04","COBROS","Registra y controla pagos presenciales y transferencias. Pagos online: próxima etapa."],
+ ["05","EQUIPO","Roles diferenciados para gerencia, recepción, coaches y administración."],
+ ["06","SEDES","Controla varias ubicaciones, su capacidad y sus equipos sin mezclar información."]
+];
+const MODES=[
+ {id:"01",name:"DENTRO DE RESERVEOS",body:"Tu estudio tiene su propio espacio dentro de la plataforma. Una sola operación para horarios, paquetes, clientes y equipo.",example:"reserveos.app / tu-estudio",caption:"PLATAFORMA LISTA PARA USAR"},
+ {id:"02",name:"EN TU PÁGINA WEB",body:"Conserva tu identidad y tu sitio web. Integramos el sistema de reservas para que tus clientes reserven desde donde ya te conocen.",example:"tuestudio.com / reservar",caption:"WIDGET E INTEGRACIÓN"},
+ {id:"03",name:"DESARROLLO A MEDIDA",body:"Necesitas una experiencia personalizada. LL Agency diseña tu sitio o solución digital, con ReserveOS integrado según el alcance acordado.",example:"tu marca / tu experiencia",caption:"IMPLEMENTACIÓN PERSONALIZADA"}
+];
+export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}:{acceso?:Access}){
+ const [menu,setMenu]=useState(false);
+ const [discipline,setDiscipline]=useState<Discipline>("pilates");
+ const [day,setDay]=useState(0);
+ const [selected,setSelected]=useState<string[]>([]);
+ const [email,setEmail]=useState("");
+ const [leadState,setLeadState]=useState<"idle"|"sending"|"done"|"error">("idle");
+ const demo=DEMOS[discipline];
+ const days=["LUN 23","MAR 24","MIÉ 25","JUE 26"];
+ const scopedKey=(slot:Slot)=>discipline+"-"+day+"-"+slot.hour;
+ const toggleDemo=(slot:Slot)=>{
+   const key=scopedKey(slot);
+   setSelected(prev=>prev.includes(key)?prev.filter(x=>x!==key):[...prev,key]);
+ };
+ const sendLead=async(e:FormEvent<HTMLFormElement>)=>{
+   e.preventDefault();
+   if(!email.trim())return;
+   setLeadState("sending");
+   try{
+     const r=await fetch("/api/lead",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:email.trim()})});
+     setLeadState(r.ok?"done":"error");
+   }catch{setLeadState("error")}
+ };
+ return <div className="ro-page" id="top">
+   <header className="ro-nav ro-wrap">
+      <a className="ro-logo" href="#top" aria-label="ReserveOS, inicio">reserveos<span>.</span></a>
+      <div className="ro-tag">SISTEMA DE RESERVAS<br/>Y OPERACIÓN</div>
+      <nav className="ro-navlinks" aria-label="Principal">
+        <a href="#producto">PRODUCTO</a><a href="#modalidades">MODALIDADES</a><a href="#soluciones">SOLUCIONES</a><a href="#como-empezar">CÓMO EMPEZAR</a>
+        <a href={acceso.href}>{acceso.label}</a>
+        <a className="ro-button" href="/contacto">SOLICITAR DEMO <span aria-hidden="true">↗</span></a>
+      </nav>
+      <button type="button" className="ro-mobile-nav" onClick={()=>setMenu(!menu)} aria-expanded={menu} aria-controls="ro-menu">{menu?"CERRAR":"MENÚ"}</button>
+      {menu&&<nav className="ro-mobile-panel" id="ro-menu" aria-label="Móvil">
+       {[["Producto","#producto"],["Modalidades","#modalidades"],["Soluciones","#soluciones"],["Cómo empezar","#como-empezar"],[acceso.label,acceso.href],["Solicitar demo","/contacto"]].map(([name,href])=><a key={name} href={href} onClick={()=>setMenu(false)}>{name}</a>)}
+      </nav>}
+   </header>
+   <main>
+     <section className="ro-hero ro-wrap">
+       <div className="ro-hero-grid">
+         <div className="ro-hero-copy">
+           <p className="ro-eyebrow">01 / EL SISTEMA DETRÁS DE TU ESTUDIO</p>
+           <h1 className="ro-h1"><span>TODO</span><span>CONÉC-</span><span className="ro-blue">TADO.</span></h1>
+           <p className="ro-lead">Reservas, clientes, membresías y operación. Un solo sistema para estudios de Pilates, CrossFit y HYROX.</p>
+           <div className="ro-ctas">
+             <a className="ro-button" href="/contacto">SOLICITAR DEMO <span aria-hidden="true">↗</span></a>
+             <a className="ro-button ro-outline" href="#soluciones">VER CÓMO FUNCIONA <span aria-hidden="true">↘</span></a>
+           </div>
+         </div>
+         <div className="ro-hero-aside">
+           <div className="ro-halftone" aria-hidden="true"/>
+           <div className="ro-orbit" aria-hidden="true">◎</div>
+           <div className="ro-panel" aria-label="Demostración ilustrativa del panel de ReserveOS">
+             <div className="ro-panel-top"><span><i className="ro-panel-dot"/>reserveos / PANEL</span><span>DEMO · NO DATOS REALES</span></div>
+             <div className="ro-panel-main">
+               <div className="ro-panel-head"><h3>Tu estudio, hoy.</h3><span className="ro-pill">EN TIEMPO REAL*</span></div>
+               <div className="ro-metrics"><div className="ro-metric"><small>Ocupación</small><strong>87%</strong></div><div className="ro-metric"><small>Reservas</small><strong>42</strong></div><div className="ro-metric"><small>Clases</small><strong>12</strong></div></div>
+               {[{hour:"07:00",title:"Pilates Reformer",coach:"Instructora Sofía",booked:7,capacity:8},{hour:"09:00",title:"Pilates Mat",coach:"Instructora Paula",booked:8,capacity:10},{hour:"18:00",title:"HYROX Training",coach:"Coach Mario",booked:6,capacity:8}].map(s=><div className="ro-class" key={s.hour}><time>{s.hour}</time><div><b>{s.title}</b><span>{s.coach}</span></div><div className="ro-capacity">{s.booked}/{s.capacity}<i style={{"--fill":(s.booked/s.capacity*100)+"%"} as React.CSSProperties}/></div></div>)}
+               <p className="ro-panel-foot">* DEMOSTRACIÓN VISUAL CON DATOS SIMULADOS</p>
+             </div>
+           </div>
+         </div>
+       </div>
+     </section>
+     <div className="ro-strip ro-wrap"><span>DISEÑADO PARA ESTUDIOS Y GIMNASIOS</span><span>PILATES / CROSSFIT / HYROX</span><span>UN SISTEMA. TU OPERACIÓN.</span></div>
+     <section className="ro-section ro-wrap" id="producto">
+       <div className="ro-heading-row"><div><p className="ro-eyebrow">02 / TODO EN UN SOLO LUGAR</p><h2 className="ro-h2">MENOS CAOS.<br/>MÁS CONTROL.</h2></div><p className="ro-section-desc">Deja de coordinar cada parte de tu negocio en una herramienta diferente. El trabajo diario debe sentirse simple.</p></div>
+       <div className="ro-feature-grid">{features.map(([id,name,desc])=><article className="ro-feature" key={id}><span className="ro-feature-num">{id} / FUNCIÓN</span><h3>{name}</h3><p>{desc}</p></article>)}</div>
+     </section>
+     <section className="ro-section ro-wrap" id="modalidades">
+       <div className="ro-heading-row"><div><p className="ro-eyebrow">03 / FORMAS DE IMPLEMENTARLO</p><h2 className="ro-h2">TU NEGOCIO.<br/>TUS REGLAS.</h2></div><p className="ro-section-desc">No necesitas cambiar la forma en la que te presentas. Tenemos tres maneras de llevar ReserveOS a tu operación.</p></div>
+       <div className="ro-modes">{MODES.map(m=><article className="ro-mode" key={m.id}>
+         <div className="ro-mode-id">{m.id}</div>
+         <div><h3>{m.name}</h3><p>{m.body}</p><a href="/contacto" className="ro-eyebrow" style={{display:"inline-block",marginTop:20,color:"var(--blue)"}}>CONOCER ESTA MODALIDAD ↗</a></div>
+         <div className="ro-mode-visual"><div className="ro-mode-screen"><div className="ro-mini-header">{m.caption}</div><div className="ro-mini-line"/><div className="ro-mini-line"/><div className="ro-mini-accent"/><p style={{fontSize:10,fontFamily:"monospace",marginTop:8}}>{m.example}</p></div></div>
+       </article>)}</div>
+     </section>
+     <section className="ro-section ro-demo ro-wrap" id="soluciones">
+       <div className="ro-heading-row"><div><p className="ro-eyebrow">04 / PRUÉBALO EN ESTA PÁGINA</p><h2 className="ro-h2">HECHO PARA<br/>TU RITMO.</h2></div><p className="ro-section-desc">No todos los negocios reservan de la misma manera. Cambia de disciplina y explora una simulación del calendario.</p></div>
+       <div className="ro-tabs" role="tablist" aria-label="Tipo de estudio">
+         {(["pilates","crossfit","hyrox"] as Discipline[]).map(d=><button key={d} role="tab" aria-selected={discipline===d} onClick={()=>{setDiscipline(d);setDay(0)}}>{DEMOS[d].name}</button>)}
+       </div>
+       <div className="ro-demo-layout">
+         <div className="ro-demo-copy"><h3>{demo.heading}</h3><p>{demo.description}</p><div className="ro-demo-list">{demo.details.map(t=><span key={t}>↗ {t}</span>)}</div></div>
+         <div className="ro-schedule"><h4>Reserva una clase.</h4><div className="ro-daybar">{days.map((label,i)=><button key={label} aria-pressed={day===i} onClick={()=>setDay(i)}>{label}</button>)}</div>
+           {demo.slots.map(slot=>{const key=scopedKey(slot);const mine=selected.includes(key);const full=slot.booked>=slot.capacity;return <div className="ro-slot" key={key}><time>{slot.hour}</time><div><b>{slot.title}</b><small>{slot.coach} · {slot.booked}/{slot.capacity} lugares</small></div><button type="button" aria-pressed={mine} onClick={()=>toggleDemo(slot)}>{mine?"✓ LISTO":full?"ESPERA":"RESERVAR"}</button></div>})}
+           <p className="ro-disclaimer" style={{color:"#6b7280"}}>DEMO INTERACTIVA · NO GENERA RESERVAS NI COBROS REALES</p>
+         </div>
+       </div>
+     </section>
+     <section className="ro-section ro-wrap" id="como-empezar">
+       <div className="ro-heading-row"><div><p className="ro-eyebrow">05 / IMPLEMENTACIÓN</p><h2 className="ro-h2">EMPEZAR ES<br/>SENCILLO.</h2></div><p className="ro-section-desc">Tú conoces tu negocio. Nosotros te ayudamos a configurar la tecnología alrededor de tus necesidades.</p></div>
+       <div className="ro-process"><article><strong>01</strong><h3>CONVERSEMOS</h3><p>Entendemos tus sedes, horarios, paquetes y operación actual.</p></article><article><strong>02</strong><h3>CONFIGURAMOS</h3><p>Elegimos la modalidad adecuada y preparamos tu espacio de trabajo.</p></article><article><strong>03</strong><h3>COMIENZAS</h3><p>Tu equipo trabaja con la plataforma y tus clientes pueden gestionar sus clases.</p></article></div>
+     </section>
+     <section className="ro-final ro-wrap" id="contacto"><p className="ro-eyebrow">06 / EL SIGUIENTE PASO</p><h2>HAGAMOS QUE<br/>TODO FLUYA.</h2><p>Cuéntanos sobre tu estudio y te mostramos cómo ReserveOS puede adaptarse a tu operación.</p>
+       <div className="ro-ctas"><a className="ro-button" href="/contacto">PEDIR UNA DEMOSTRACIÓN ↗</a></div>
+       <form className="ro-leadbox" onSubmit={sendLead}><label className="ro-eyebrow" htmlFor="ro-email" style={{alignSelf:"center"}}>O DÉJANOS TU CORREO</label><input id="ro-email" type="email" required value={email} onChange={e=>{setEmail(e.target.value);setLeadState("idle")}} placeholder="tu@estudio.com" aria-label="Correo electrónico"/><button disabled={leadState==="sending"||leadState==="done"} type="submit">{leadState==="sending"?"ENVIANDO…":leadState==="done"?"ENVIADO ✓":"CONTACTARME ↗"}</button></form>
+       <p className="ro-leadstatus" aria-live="polite">{leadState==="done"?"Recibimos tu correo. Gracias por tu interés.":leadState==="error"?"No se pudo enviar el formulario. Intenta nuevamente.":""}</p>
+     </section>
+   </main>
+   <footer className="ro-footer ro-wrap"><a className="ro-logo" href="#top">reserveos<span>.</span></a><small>DESARROLLADO POR LL AGENCY · RESERVAS PARA ESTUDIOS Y GIMNASIOS</small><nav><a href="/contacto">CONTACTO</a><a href={acceso.href}>{acceso.label.toUpperCase()}</a></nav></footer>
+ </div>;
 }
