@@ -17,6 +17,7 @@ export default function PanelShell({
   const ruta = usePathname() ?? "";
   // El cajón se cierra solo al cambiar de ruta: se guarda la ruta en la que se abrió.
   const [abiertoEn, setAbiertoEn] = useState<string | null>(null);
+  const [moduloExpandido, setModuloExpandido] = useState<string | null>(null);
   const abierto = abiertoEn === ruta;
   const setAbierto = (v: boolean) => setAbiertoEn(v ? ruta : null);
 
@@ -40,17 +41,50 @@ export default function PanelShell({
     </Link>
   );
 
+  // Los módulos son la navegación primaria. Las pestañas quedan visualmente
+  // anidadas y solo se expanden en el módulo activo (o al elegir otro módulo).
   const Lista = (
-    <nav aria-label="Áreas del panel" className="grid gap-0.5">
+    <nav aria-label="Módulos del panel" className="flex flex-col gap-1">
       {areas.map((a) => {
         const on = a.id === areaActiva?.id;
+        const expandido = moduloExpandido === a.id || (moduloExpandido === null && on);
+        const panelId = `modulo-${a.id}`;
         return (
-          <Link key={a.id} href={a.items[0].href} aria-current={on ? "page" : undefined}
-            className={`press-spring relative flex min-h-[42px] items-center justify-between px-2.5 text-[14px] ${on ? "bg-[#e5e8e5] font-semibold text-ink" : "text-[#545b58] hover:bg-ink/5 hover:text-ink"}`}>
-            {on && <span aria-hidden className="absolute -left-[23px] h-5 w-[3px] bg-lime" />}
-            {a.titulo}
-            {a.badge ? <small aria-label={`${a.badge} por revisar`} className="min-w-[19px] rounded-[3px] bg-peach-tint px-1.5 py-px text-center text-[10px] font-semibold text-lime">{a.badge}</small> : null}
-          </Link>
+          <div key={a.id} className={`border-b border-line/70 pb-1.5 last:border-b-0 ${on ? "border-lime/40" : ""}`}>
+            <div className="flex min-h-[44px] items-center gap-1">
+              <Link href={a.items[0].href} aria-label={`Ir a ${a.titulo}`}
+                className={`press-spring relative flex min-w-0 flex-1 items-center gap-2 px-2 py-2 text-[13px] font-bold tracking-[-0.01em] ${on ? "text-ink" : "text-[#404845] hover:text-ink"}`}>
+                {on && <span aria-hidden className="absolute -left-[23px] h-5 w-[3px] bg-lime" />}
+                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${on ? "bg-lime" : "bg-ink/20"}`} aria-hidden />
+                <span className="truncate">{a.titulo}</span>
+              </Link>
+              {a.badge ? <small aria-label={`${a.badge} por revisar`} className="shrink-0 rounded-[3px] bg-peach-tint px-1.5 py-px text-[10px] font-semibold text-lime">{a.badge}</small> : null}
+              {a.items.length > 1 && (
+                <button type="button" aria-label={`${expandido ? "Contraer" : "Expandir"} pestañas de ${a.titulo}`}
+                  aria-expanded={expandido} aria-controls={panelId}
+                  onClick={() => setModuloExpandido(expandido ? "" : a.id)}
+                  className="grid h-9 w-9 shrink-0 place-items-center text-ink-soft hover:bg-ink/5 hover:text-ink">
+                  <span aria-hidden className={`inline-block text-[14px] transition-transform duration-150 ${expandido ? "rotate-90" : ""}`}>›</span>
+                </button>
+              )}
+            </div>
+            {a.items.length > 1 && expandido && (
+              <ul id={panelId} className="mb-1 ml-[13px] border-l border-line pl-3" aria-label={`Pestañas de ${a.titulo}`}>
+                {a.items.map((i) => {
+                  const seleccionado = i.href === activa?.href;
+                  return (
+                    <li key={i.href}>
+                      <Link href={i.href} aria-current={seleccionado ? "page" : undefined}
+                        className={`press-spring relative block py-2 pl-2 pr-1 text-[12px] leading-snug ${seleccionado ? "bg-ink/[0.055] font-semibold text-ink" : "text-ink-soft hover:bg-ink/[0.035] hover:text-ink"}`}>
+                        {seleccionado && <span aria-hidden className="absolute -left-[13px] top-0 h-full w-[2px] bg-lime" />}
+                        {i.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
         );
       })}
     </nav>
@@ -74,7 +108,10 @@ export default function PanelShell({
       <aside className="sticky top-0 hidden h-screen flex-col border-r border-line px-[23px] py-7 md:flex">
         {Marca}
         <p className="mb-7 ml-[38px] mt-1 text-[10px] uppercase tracking-[0.14em] text-ink-soft">Menos fricción. Más movimiento.</p>
-        {Lista}
+        <div className="min-h-0 flex-1 overflow-y-auto pb-5 pr-1 [scrollbar-width:thin]">
+          <p className="mb-3 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-soft">Módulos</p>
+          {Lista}
+        </div>
         {Persona}
       </aside>
 
@@ -118,14 +155,19 @@ export default function PanelShell({
           <button aria-label="Cerrar el menú" className="absolute inset-0 bg-ink/40" onClick={() => setAbierto(false)} />
           <div className="menu-in absolute inset-y-0 left-0 flex w-[86%] max-w-[320px] flex-col overflow-y-auto bg-void px-5 py-6">
             <div className="mb-6 flex items-center justify-between">{Marca}<button className="press-spring px-2 py-1 text-sm text-ink-soft" onClick={() => setAbierto(false)}>Cerrar</button></div>
-            <div className="grid gap-5">
+            <p className="mb-3 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-soft">Módulos</p>
+            <div className="grid gap-3">
               {areas.map((a) => (
-                <div key={a.id}>
-                  <p className="px-2 text-[10px] uppercase tracking-[0.12em] text-ink-soft">{a.titulo}</p>
-                  <div className="mt-1 grid">
-                    {a.items.map((i) => <Link key={i.href} href={i.href} className={`px-2 py-2.5 text-[15px] ${i.href === activa?.href ? "font-semibold text-ink" : "text-ink/75"}`}>{i.label}</Link>)}
+                <section key={a.id} className="border-b border-line pb-3">
+                  <Link href={a.items[0].href}
+                    className={`block px-2 py-2 text-[14px] font-bold ${a.id === areaActiva?.id ? "text-ink" : "text-ink/75"}`}>{a.titulo}
+                    {a.badge ? <span className="ml-2 text-[11px] text-lime">({a.badge})</span> : null}
+                  </Link>
+                  <div className="ml-3 grid border-l border-line pl-3">
+                    {a.items.map((i) => <Link key={i.href} href={i.href} aria-current={i.href === activa?.href ? "page" : undefined}
+                      className={`px-2 py-2 text-[13px] ${i.href === activa?.href ? "border-l-2 border-lime bg-ink/5 font-semibold text-ink" : "text-ink/65"}`}>{i.label}</Link>)}
                   </div>
-                </div>
+                </section>
               ))}
             </div>
             {Persona}
