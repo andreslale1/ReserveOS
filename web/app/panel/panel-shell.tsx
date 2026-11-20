@@ -70,8 +70,8 @@ export default function PanelShell({
   );
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[220px_1fr]">
-      <aside className="sticky top-0 hidden h-screen flex-col border-r border-line px-[23px] py-7 md:flex">
+    <div className="ro-workspace-body min-h-screen md:grid md:grid-cols-[240px_1fr]">
+      <aside className="ro-workspace-side sticky top-0 hidden h-screen flex-col border-r border-line px-[23px] py-7 md:flex">
         {Marca}
         <p className="mb-7 ml-[38px] mt-1 text-[10px] uppercase tracking-[0.14em] text-ink-soft">Menos fricción. Más movimiento.</p>
         {Lista}
@@ -79,7 +79,7 @@ export default function PanelShell({
       </aside>
 
       <div className="min-w-0">
-        <header className="flex min-h-[64px] items-center gap-4 border-b border-line px-5 md:min-h-[76px] md:px-10">
+        <header className="ro-workspace-bar flex min-h-[64px] items-center gap-4 border-b border-line px-5 md:min-h-[76px] md:px-10">
           <button type="button" className="press-spring grid h-10 w-10 place-items-center border border-line md:hidden" aria-expanded={abierto} aria-controls="drawer-panel" aria-label="Abrir el menú" onClick={() => setAbierto(true)}>
             <span aria-hidden className="grid gap-1"><i className="block h-px w-4 bg-ink" /><i className="block h-px w-4 bg-ink" /><i className="block h-px w-4 bg-ink" /></span>
           </button>
@@ -99,7 +99,7 @@ export default function PanelShell({
         )}
 
         {areaActiva && areaActiva.items.length > 1 && (
-          <nav aria-label={`Pantallas de ${areaActiva.titulo}`} className="flex gap-1 overflow-x-auto border-b border-line px-3 md:px-9">
+          <nav aria-label={`Pantallas de ${areaActiva.titulo}`} className="ro-workspace-tabs flex gap-1 overflow-x-auto border-b border-line px-3 md:px-9">
             {areaActiva.items.map((i) => {
               const on = i.href === activa?.href;
               return (
@@ -110,7 +110,19 @@ export default function PanelShell({
           </nav>
         )}
 
-        {children}
+        <section className="ro-workspace-heading" aria-label="Área actual">
+          <div>
+            <span className="ro-workspace-eyebrow">RESERVEOS / PANEL DE ESTUDIO / {areaActiva?.titulo ?? "OPERACIÓN"}</span>
+            <h1 className="ro-workspace-title">{activa?.label ?? areaActiva?.titulo ?? "Panel"}</h1>
+            <p className="ro-workspace-subtitle">{estudio} · {alcance} · {usuario.rol}</p>
+          </div>
+          <nav className="ro-workspace-quick" aria-label="Accesos de esta área">
+            {(areaActiva?.items ?? []).filter(i => i.href !== activa?.href).slice(0,3).map(i=>(
+              <Link href={i.href} key={i.href}>{i.label} <span aria-hidden="true">↗</span></Link>
+            ))}
+          </nav>
+        </section>
+        <div className="ro-route-content" key={ruta}>{children}</div>
       </div>
 
       {abierto && (
