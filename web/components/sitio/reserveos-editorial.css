@@ -141,3 +141,39 @@
 .ro-journey small{margin-top:auto;padding-top:20px;color:#5e6672}
 .ro-disclosure{font:500 12px/1.6 "Courier New",monospace;color:var(--dim);margin-top:20px;max-width:850px}
 @media(max-width:1000px){.ro-journey{grid-template-columns:1fr}.ro-journey article,.ro-journey article:first-child{padding:25px 0;min-height:0;border-right:0;border-bottom:1px solid var(--line)}.ro-journey article:last-child{border-bottom:0}.ro-journey h3{margin:18px 0 12px}.ro-journey small{margin-top:15px}}
+
+
+/* Scroll chapters: same editorial design, stronger section rhythm. */
+.ro-page{scroll-behavior:smooth}
+.ro-chapter{position:relative;isolation:isolate}
+.ro-chapter::before{content:"";position:absolute;inset:0 calc(50% - 50vw);z-index:-1;pointer-events:none}
+.ro-chapter-light::before{background:var(--paper)}
+.ro-chapter-dark{color:#f5f5f1;--ink:#f5f5f1;--line:#4d525b;--dim:#bcc1ca}
+.ro-chapter-dark::before{background:#14171c}
+.ro-chapter-dark .ro-eyebrow{color:#9cafef}
+.ro-chapter-dark .ro-h2,.ro-chapter-dark .ro-section-desc,.ro-chapter-dark .ro-feature h3,.ro-chapter-dark .ro-mode h3,.ro-chapter-dark .ro-process h3{color:#f6f6f1}
+.ro-chapter-dark .ro-feature p,.ro-chapter-dark .ro-process p{color:#bec4cf}
+.ro-chapter-dark .ro-feature:hover{background:#232a3d}
+.ro-chapter-dark .ro-feature .ro-feature-num,.ro-chapter-dark .ro-process strong{color:#98afff}
+.ro-chapter-dark .ro-process article,.ro-chapter-dark .ro-feature{border-color:#414752}
+.ro-chapter-blue::before{background:var(--blue)}
+.ro-chapter-blue{--ink:#fff;--line:#b7c6ff;--dim:#fff}
+.ro-page .ro-final{background:transparent}
+.ro-page .ro-demo{background:transparent}
+.ro-page .ro-chapter{scroll-margin-top:0}
+.ro-scroll-progress{position:fixed;top:0;left:0;right:0;height:4px;background:var(--blue);z-index:100;transform-origin:left center;pointer-events:none}
+.ro-chapter-rail{position:fixed;top:50%;right:16px;transform:translateY(-50%);z-index:60;display:flex;flex-direction:column;gap:5px}
+.ro-chapter-rail a{display:flex;flex-direction:row-reverse;align-items:center;gap:7px;padding:7px;color:#383d47;font:700 10px/1 "Courier New",monospace;transition:transform .25s ease}
+.ro-chapter-rail a:hover{transform:translateX(-4px)}
+.ro-chapter-rail .ro-rail-index{display:grid;place-items:center;width:31px;height:31px;border:1px solid #858b95;background:#f3f3f0;color:#14171c;transition:background .25s,color .25s,border-color .25s}
+.ro-chapter-rail .ro-rail-label{opacity:0;max-width:0;overflow:hidden;white-space:nowrap;transition:opacity .25s ease,max-width .25s ease}
+.ro-chapter-rail a:hover .ro-rail-label,.ro-chapter-rail .ro-current .ro-rail-label,.ro-chapter-rail a:focus-visible .ro-rail-label{opacity:1;max-width:120px;background:#f3f3f0;padding:7px}
+.ro-chapter-rail .ro-current .ro-rail-index{background:var(--blue);color:#fff;border-color:var(--blue)}
+.ro-will-reveal{opacity:0;transform:translateY(25px);transition:opacity .7s cubic-bezier(.18,.8,.2,1),transform .7s cubic-bezier(.18,.8,.2,1)}
+.ro-will-reveal.ro-inview{opacity:1;transform:translateY(0)}
+@media(max-width:1100px){.ro-chapter-rail{display:none}}
+@media(prefers-reduced-motion:reduce){
+ .ro-page{scroll-behavior:auto}
+ .ro-will-reveal,.ro-will-reveal.ro-inview{opacity:1;transform:none;transition:none}
+ .ro-chapter-rail a,.ro-chapter-rail .ro-rail-label{transition:none}
+}
