@@ -17,7 +17,7 @@ const q = (n: number) => `Q${Number(n).toLocaleString("es-GT")}`;
 const fecha = (iso: string | null) => (iso ? iso.split("-").reverse().join("/") : "sin fecha");
 
 const Card = ({ href, titulo, valor, sub, def, alerta }: { href: string; titulo: string; valor: string; sub?: string; def: string; alerta?: boolean }) => (
-  <Link href={href} className="rounded-2xl border border-ink/15 bg-void-card p-5 outline-none transition hover:border-lime/60 focus-visible:ring-2 focus-visible:ring-lime/70">
+  <Link href={href} className="ro-analytic-card rounded-2xl border border-ink/15 bg-void-card p-5 outline-none transition hover:border-lime/60 focus-visible:ring-2 focus-visible:ring-lime/70">
     <p className="text-xs font-medium text-ink/70">{titulo}</p>
     <p className={`mt-2 text-3xl font-semibold ${alerta ? "text-[#8f2f1f]" : "text-ink"}`}>{valor}</p>
     {sub && <p className="mt-1 text-xs text-ink/70">{sub}</p>}
@@ -30,7 +30,7 @@ const Comp = ({ titulo, par, dinero }: { titulo: string; par: [number, number]; 
   const dif = b === 0 ? null : Math.round(((a - b) / b) * 100);
   const f = (n: number) => (dinero ? q(n) : String(n));
   return (
-    <div className="rounded-2xl border border-ink/15 bg-void-card p-4">
+    <div className="ro-analytic-card rounded-2xl border border-ink/15 bg-void-card p-4">
       <p className="text-xs font-medium text-ink/70">{titulo}</p>
       <p className="mt-1 text-2xl font-semibold">{f(a)}</p>
       <p className="text-xs text-ink/65">Mes anterior: {f(b)}{dif !== null && <span className={dif >= 0 ? "text-lime" : "text-[#8f2f1f]"}> · {dif >= 0 ? "▲" : "▼"} {Math.abs(dif)}%</span>}</p>
@@ -51,13 +51,13 @@ export default async function DireccionPage() {
 
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-8 md:px-10">
+    <main className="ro-screen ro-screen-owner mx-auto max-w-6xl px-6 py-8 md:px-10">
       <h1 className="text-2xl font-semibold">Dirección</h1>
       <p className="mt-1 text-sm text-ink/70">Qué necesita atención hoy{extra ? ` (${fecha(extra.hoy)}, hora de Guatemala)` : ""}. Cada tarjeta abre la lista que la causa, con la misma definición.</p>
 
       {tendData ? <Tendencias t={tendData as Tend} /> : null}
 
-      <section aria-labelledby="accion" className="mt-6 rounded-2xl border border-lime/30 bg-void-card p-5">
+      <section aria-labelledby="accion" className="ro-priority-card mt-6 rounded-2xl border border-lime/30 bg-void-card p-5">
         <h2 id="accion" className="text-base font-semibold">Requiere mi acción {extra && extra.acciones.length > 0 && <span className="text-sm font-normal text-ink/65">· {extra.acciones.length}</span>}</h2>
         {!extra || extra.acciones.length === 0 ? (
           <div className="mt-3"><EstadoVacio titulo="Nada urgente por resolver" texto="No hay propuestas sin seguimiento, activaciones detenidas, cobros vencidos, incidentes críticos ni dominios pendientes." href="/owner/pipeline" accion="Registrar un prospecto" /></div>
