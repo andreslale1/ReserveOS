@@ -1,3 +1,4 @@
+import "@/styles/internal-editorial.css";
 import Link from "next/link";
 import { estiloMarca, marcaPorSlug } from "@/lib/marca";
 import { getCuenta } from "@/lib/cuenta-context";
@@ -32,9 +33,9 @@ export default async function CuentaLayout({ children }: { children: React.React
     { titulo: "Mi cuenta", enlaces: [{ href: "/cuenta/perfil", label: "Mis datos" }, { href: "/cuenta/perfil#familia", label: "Mi familia" }, { href: "/cuenta/perfil#inv-t", label: "Invitar y ganar" }, { href: "/cuenta/perfil#avisos-t", label: "Avisos del estudio" }] },
   ];
   return (
-    <div className="tema-estudio min-h-screen bg-cream" style={estiloMarca(marca?.color)}>
+    <div className="tema-estudio ro-workspace ro-workspace-account min-h-screen bg-cream" style={estiloMarca(marca?.color)}>
       <RegistrarSw />
-      <header className="border-b border-ink/15 bg-cream">
+      <header className="ro-account-head border-b border-ink/15 bg-cream">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-5 py-4">
           <Link href="/cuenta" className="flex items-center">
             {marca?.logo ? (
@@ -50,7 +51,7 @@ export default async function CuentaLayout({ children }: { children: React.React
             <form action={salir}><button className="press-spring border border-ink/25 px-3 py-1.5 font-medium text-ink hover:bg-ink/5">Cerrar sesión</button></form>
           </span>
         </div>
-        <nav aria-label="Mi cuenta" className="mx-auto flex max-w-4xl flex-wrap items-center gap-1 px-3 pb-2">
+        <nav aria-label="Mi cuenta" className="ro-workspace-navigation mx-auto flex max-w-4xl flex-wrap items-center gap-1 px-3 pb-2">
           <Link href="/cuenta" className="press-spring rounded-md px-3 py-2 text-sm font-medium text-ink/75 hover:bg-ink/5 hover:text-ink">Inicio</Link>
           {grupos.map((g) => <MenuGrupo key={g.titulo} titulo={g.titulo} enlaces={g.enlaces} tono="claro" />)}
         </nav>
@@ -62,8 +63,8 @@ export default async function CuentaLayout({ children }: { children: React.React
           </p>
         </div>
       )}
-      <main className="mx-auto max-w-4xl px-5 py-8 pb-24 md:pb-8">{children}</main>
-      <nav aria-label="Navegación rápida" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-ink/15 bg-cream pb-[env(safe-area-inset-bottom)] md:hidden">
+      <main className="ro-account-main mx-auto max-w-4xl px-5 py-8 pb-24 md:pb-8">{children}</main>
+      <nav aria-label="Navegación rápida" className="ro-account-bottom fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-ink/15 bg-cream pb-[env(safe-area-inset-bottom)] md:hidden">
         {[["/cuenta", "Inicio"], ["/cuenta/clases", "Reservar"], ["/cuenta/historial", `Mis ${v.clases}`], ["/cuenta/paquetes", "Paquete"], ["/cuenta/perfil", "Perfil"]].map(([href, label]) => (
           <Link key={href} href={href} className="press-spring truncate px-1 py-3.5 text-center text-xs font-medium text-ink/75 active:bg-ink/5">{label}</Link>
         ))}
