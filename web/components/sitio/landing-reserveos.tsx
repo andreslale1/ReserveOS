@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type CSSProperties } from "react";
+import { useEffect, useState, type FormEvent, type CSSProperties } from "react";
 import "./reserveos-editorial.css";
 
 type Access = { label: string; href: string };
@@ -26,6 +26,15 @@ const DEMOS: Record<Discipline,{name:string;heading:string;description:string;de
     slots:[{hour:"06:30",title:"HYROX Simulation",coach:"Coach Mario",booked:7,capacity:8},{hour:"12:15",title:"Sled + Run",coach:"Coach Elena",booked:6,capacity:8},{hour:"18:30",title:"Training Stations",coach:"Coach Mario",booked:8,capacity:8}]
   }
 };
+const chapters = [
+ {id:"top",label:"INICIO"},
+ {id:"producto",label:"PRODUCTO"},
+ {id:"modalidades",label:"MODALIDADES"},
+ {id:"soluciones",label:"DEMO"},
+ {id:"dia-a-dia",label:"OPERACIÓN"},
+ {id:"como-empezar",label:"IMPLEMENTACIÓN"},
+ {id:"contacto",label:"CONTACTO"}
+] as const;
 const features=[
  ["01","RESERVAS","Calendario, cupos, asistencia, confirmaciones, cancelaciones y listas de espera."],
  ["02","MEMBRESÍAS","Paquetes por clases, vigencias, saldo de créditos y cobertura por sede."],
@@ -46,6 +55,38 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
  const [selected,setSelected]=useState<string[]>([]);
  const [email,setEmail]=useState("");
  const [leadState,setLeadState]=useState<"idle"|"sending"|"done"|"error">("idle");
+ const [activeChapter,setActiveChapter]=useState("top");
+ const [scrollProgress,setScrollProgress]=useState(0);
+ useEffect(()=>{
+   const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+   const chapterNodes=chapters.map(c=>document.getElementById(c.id)).filter((el):el is HTMLElement=>Boolean(el));
+   const elements=Array.from(document.querySelectorAll<HTMLElement>(".ro-page .ro-reveal"));
+   let revealObserver:IntersectionObserver | undefined;
+   if(!reduce && "IntersectionObserver" in window){
+     revealObserver=new IntersectionObserver(entries=>{
+       for(const entry of entries) if(entry.isIntersecting){
+         entry.target.classList.add("ro-inview");
+         revealObserver?.unobserve(entry.target);
+       }
+     },{rootMargin:"0px 0px -7% 0px",threshold:.12});
+     elements.forEach(el=>{el.classList.add("ro-will-reveal");revealObserver?.observe(el)});
+   }
+   let pending=false;
+   const update=()=>{
+     pending=false;
+     const maximum=document.documentElement.scrollHeight-window.innerHeight;
+     setScrollProgress(maximum>0?Math.min(1,Math.max(0,window.scrollY/maximum)):0);
+     const mark=window.innerHeight*.42;
+     let current="top";
+     for(const item of chapterNodes) if(item.getBoundingClientRect().top<=mark) current=item.id;
+     setActiveChapter(prev=>prev===current?prev:current);
+   };
+   const onScroll=()=>{if(!pending){pending=true;window.requestAnimationFrame(update)}};
+   update();
+   window.addEventListener("scroll",onScroll,{passive:true});
+   window.addEventListener("resize",onScroll);
+   return ()=>{revealObserver?.disconnect();window.removeEventListener("scroll",onScroll);window.removeEventListener("resize",onScroll)};
+ },[]);
  const demo=DEMOS[discipline];
  const days=["DÍA 1","DÍA 2","DÍA 3","DÍA 4"];
  const scopedKey=(slot:Slot)=>discipline+"-"+day+"-"+slot.hour;
@@ -64,6 +105,8 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
    }catch{setLeadState("error")}
  };
  return <div className="ro-page" id="top">
+   <div className="ro-scroll-progress" aria-hidden="true" style={{transform:`scaleX(${scrollProgress})`}} />
+   <nav className="ro-chapter-rail" aria-label="Navegación por secciones">{chapters.map((c,i)=><a key={c.id} href={`#${c.id}`} className={activeChapter===c.id?"ro-current":""} aria-label={`Ir a ${c.label}`} aria-current={activeChapter===c.id?"location":undefined}><span className="ro-rail-index">{String(i+1).padStart(2,"0")}</span><span className="ro-rail-label">{c.label}</span></a>)}</nav>
    <header className="ro-nav ro-wrap">
       <a className="ro-logo" href="#top" aria-label="ReserveOS, inicio">reserveos<span>.</span></a>
       <div className="ro-tag">SISTEMA DE RESERVAS<br/>Y OPERACIÓN</div>
@@ -78,9 +121,9 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
       </nav>}
    </header>
    <main>
-     <section className="ro-hero ro-wrap">
+     <section className="ro-hero ro-wrap ro-chapter ro-chapter-light">
        <div className="ro-hero-grid">
-         <div className="ro-hero-copy">
+         <div className="ro-hero-copy ro-reveal">
            <p className="ro-eyebrow">01 / EL SISTEMA DETRÁS DE TU ESTUDIO</p>
            <h1 className="ro-h1"><span>TODO</span><span>CONÉC-</span><span className="ro-blue">TADO.</span></h1>
            <p className="ro-lead">Reservas, paquetes, clientes, caja y personal conectados. Una plataforma para operar estudios de Pilates, CrossFit y HYROX, incluso con varias sedes.</p>
@@ -89,7 +132,7 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
              <a className="ro-button ro-outline" href="#soluciones">VER CÓMO FUNCIONA <span aria-hidden="true">↘</span></a>
            </div>
          </div>
-         <div className="ro-hero-aside">
+         <div className="ro-hero-aside ro-reveal">
            <div className="ro-halftone" aria-hidden="true"/>
            <div className="ro-orbit" aria-hidden="true">◎</div>
            <div className="ro-panel" aria-label="Demostración ilustrativa del panel de ReserveOS">
@@ -105,24 +148,24 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
        </div>
      </section>
      <div className="ro-strip ro-wrap"><span>DISEÑADO PARA ESTUDIOS Y GIMNASIOS</span><span>PILATES / CROSSFIT / HYROX</span><span>UN SISTEMA. TU OPERACIÓN.</span></div>
-     <section className="ro-section ro-wrap" id="producto">
-       <div className="ro-heading-row"><div><p className="ro-eyebrow">02 / TODO EN UN SOLO LUGAR</p><h2 className="ro-h2">MENOS CAOS.<br/>MÁS CONTROL.</h2></div><p className="ro-section-desc">Deja de coordinar cada parte de tu negocio en una herramienta diferente. El trabajo diario debe sentirse simple.</p></div>
-       <div className="ro-feature-grid">{features.map(([id,name,desc])=><article className="ro-feature" key={id}><span className="ro-feature-num">{id} / FUNCIÓN</span><h3>{name}</h3><p>{desc}</p></article>)}</div>
+     <section className="ro-section ro-wrap ro-chapter ro-chapter-dark" id="producto">
+       <div className="ro-heading-row ro-reveal"><div><p className="ro-eyebrow">02 / TODO EN UN SOLO LUGAR</p><h2 className="ro-h2">MENOS CAOS.<br/>MÁS CONTROL.</h2></div><p className="ro-section-desc">Deja de coordinar cada parte de tu negocio en una herramienta diferente. El trabajo diario debe sentirse simple.</p></div>
+       <div className="ro-feature-grid ro-reveal">{features.map(([id,name,desc])=><article className="ro-feature" key={id}><span className="ro-feature-num">{id} / FUNCIÓN</span><h3>{name}</h3><p>{desc}</p></article>)}</div>
      </section>
-     <section className="ro-section ro-wrap" id="modalidades">
+     <section className="ro-section ro-wrap ro-chapter ro-chapter-light" id="modalidades">
        <div className="ro-heading-row"><div><p className="ro-eyebrow">03 / FORMAS DE IMPLEMENTARLO</p><h2 className="ro-h2">TU NEGOCIO.<br/>TUS REGLAS.</h2></div><p className="ro-section-desc">La misma plataforma, tres formas de presencia digital. Algunas funciones varían según el plan y la configuración del estudio.</p></div>
-       <div className="ro-modes">{MODES.map(m=><article className="ro-mode" key={m.id}>
+       <div className="ro-modes ro-reveal">{MODES.map(m=><article className="ro-mode" key={m.id}>
          <div className="ro-mode-id">{m.id}</div>
          <div><h3>{m.name}</h3><p>{m.body}</p><a href="/contacto" className="ro-eyebrow" style={{display:"inline-block",marginTop:20,color:"var(--blue)"}}>CONOCER ESTA MODALIDAD ↗</a></div>
          <div className="ro-mode-visual"><div className="ro-mode-screen"><div className="ro-mini-header">{m.caption}</div><div className="ro-mini-line"/><div className="ro-mini-line"/><div className="ro-mini-accent"/><p style={{fontSize:10,fontFamily:"monospace",marginTop:8}}>{m.example}</p></div></div>
        </article>)}</div>
      </section>
-     <section className="ro-section ro-demo ro-wrap" id="soluciones">
+     <section className="ro-section ro-demo ro-wrap ro-chapter ro-chapter-dark" id="soluciones">
        <div className="ro-heading-row"><div><p className="ro-eyebrow">04 / PRUÉBALO EN ESTA PÁGINA</p><h2 className="ro-h2">HECHO PARA<br/>TU RITMO.</h2></div><p className="ro-section-desc">Cambia de disciplina y prueba una simulación local de horarios. Los cupos mostrados son ficticios y no generan reservas.</p></div>
        <div className="ro-tabs" role="tablist" aria-label="Tipo de estudio">
          {(["pilates","crossfit","hyrox"] as Discipline[]).map(d=><button key={d} role="tab" aria-selected={discipline===d} onClick={()=>{setDiscipline(d);setDay(0)}}>{DEMOS[d].name}</button>)}
        </div>
-       <div className="ro-demo-layout">
+       <div className="ro-demo-layout ro-reveal">
          <div className="ro-demo-copy"><h3>{demo.heading}</h3><p>{demo.description}</p><div className="ro-demo-list">{demo.details.map(t=><span key={t}>↗ {t}</span>)}</div></div>
          <div className="ro-schedule"><h4>Reserva una clase.</h4><div className="ro-daybar">{days.map((label,i)=><button key={label} aria-pressed={day===i} onClick={()=>setDay(i)}>{label}</button>)}</div>
            {demo.slots.map(slot=>{const key=scopedKey(slot);const mine=selected.includes(key);const full=slot.booked>=slot.capacity;return <div className="ro-slot" key={key}><time>{slot.hour}</time><div><b>{slot.title}</b><small>{slot.coach} · {slot.booked+(!full?bookingsFor(slot):0)}/{slot.capacity} ocupados</small></div><button type="button" aria-pressed={mine} onClick={()=>toggleDemo(slot)}>{mine?(full?"✓ EN ESPERA":"✓ RESERVADO"):full?"LISTA DE ESPERA":"RESERVAR"}</button></div>})}
@@ -130,20 +173,20 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
          </div>
        </div>
      </section>
-     <section className="ro-section ro-wrap" id="dia-a-dia">
+     <section className="ro-section ro-wrap ro-chapter ro-chapter-light" id="dia-a-dia">
        <div className="ro-heading-row"><div><p className="ro-eyebrow">05 / FLUJOS DE TRABAJO REALES</p><h2 className="ro-h2">DEL PRIMER<br/>DÍA AL SIGUIENTE.</h2></div><p className="ro-section-desc">Los módulos no están aislados. Un estudio necesita conectar sus clases, las membresías de sus clientes, la recepción y su caja.</p></div>
-       <div className="ro-journey">
+       <div className="ro-journey ro-reveal">
          <article><span>CLIENTE / 01</span><h3>CONSULTA Y RESERVA.</h3><p>Ve clases y paquetes publicados. Ingresa a su cuenta, elige horario y usa un paquete válido o se apunta a una lista de espera.</p><small>Portal de clienta · /cuenta/clases</small></article>
          <article><span>ESTUDIO / 02</span><h3>GESTIONA EL DÍA.</h3><p>Recepción controla reservas, cupos, asistencias y check-in con QR. Las instructoras consultan sus clases dentro de su alcance.</p><small>Panel · /panel/hoy · /panel/checkin</small></article>
          <article><span>ADMINISTRACIÓN / 03</span><h3>CONTROLA LA OPERACIÓN.</h3><p>Revisa paquetes, pagos pendientes, caja, reembolsos, actividad por sede y permisos del equipo.</p><small>Panel · cobros · finanzas · personal</small></article>
        </div>
        <p className="ro-disclosure">La disponibilidad de cada módulo depende de los permisos, las funciones contratadas y la configuración de cada estudio. Los pagos online requieren un proveedor habilitado.</p>
      </section>
-     <section className="ro-section ro-wrap" id="como-empezar">
+     <section className="ro-section ro-wrap ro-chapter ro-chapter-dark" id="como-empezar">
        <div className="ro-heading-row"><div><p className="ro-eyebrow">06 / IMPLEMENTACIÓN</p><h2 className="ro-h2">EMPEZAR ES<br/>SENCILLO.</h2></div><p className="ro-section-desc">Desde una demostración hasta la configuración de sedes, paquetes, roles y enlace público de reservas.</p></div>
-       <div className="ro-process"><article><strong>01</strong><h3>CONVERSEMOS</h3><p>Revisamos tus sedes, tipos de clase, paquetes, personal y necesidades.</p></article><article><strong>02</strong><h3>CONFIGURAMOS</h3><p>Preparamos tu tenant, horarios, sedes, accesos y modalidad de publicación.</p></article><article><strong>03</strong><h3>COMIENZAS</h3><p>Tu equipo gestiona la operación y tus clientes consultan sus paquetes y clases desde el portal.</p></article></div>
+       <div className="ro-process ro-reveal"><article><strong>01</strong><h3>CONVERSEMOS</h3><p>Revisamos tus sedes, tipos de clase, paquetes, personal y necesidades.</p></article><article><strong>02</strong><h3>CONFIGURAMOS</h3><p>Preparamos tu tenant, horarios, sedes, accesos y modalidad de publicación.</p></article><article><strong>03</strong><h3>COMIENZAS</h3><p>Tu equipo gestiona la operación y tus clientes consultan sus paquetes y clases desde el portal.</p></article></div>
      </section>
-     <section className="ro-final ro-wrap" id="contacto"><p className="ro-eyebrow">07 / EL SIGUIENTE PASO</p><h2>HAGAMOS QUE<br/>TODO FLUYA.</h2><p>Cuéntanos sobre tu estudio y te mostramos cómo ReserveOS puede adaptarse a tu operación.</p>
+     <section className="ro-final ro-wrap ro-chapter ro-chapter-blue" id="contacto"><p className="ro-eyebrow">07 / EL SIGUIENTE PASO</p><h2>HAGAMOS QUE<br/>TODO FLUYA.</h2><p>Cuéntanos sobre tu estudio y te mostramos cómo ReserveOS puede adaptarse a tu operación.</p>
        <div className="ro-ctas"><a className="ro-button" href="/contacto">PEDIR UNA DEMOSTRACIÓN ↗</a></div>
        <form className="ro-leadbox" onSubmit={sendLead}><label className="ro-eyebrow" htmlFor="ro-email" style={{alignSelf:"center"}}>O DÉJANOS TU CORREO</label><input id="ro-email" type="email" required value={email} onChange={e=>{setEmail(e.target.value);setLeadState("idle")}} placeholder="tu@estudio.com" aria-label="Correo electrónico"/><button disabled={leadState==="sending"||leadState==="done"} type="submit">{leadState==="sending"?"ENVIANDO…":leadState==="done"?"ENVIADO ✓":"CONTACTARME ↗"}</button></form>
        <p className="ro-leadstatus" aria-live="polite">{leadState==="done"?"Recibimos tu correo. Gracias por tu interés.":leadState==="error"?"No se pudo enviar el formulario. Intenta nuevamente.":""}</p>
