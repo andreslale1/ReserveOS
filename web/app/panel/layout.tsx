@@ -1,3 +1,4 @@
+import "@/styles/internal-editorial.css";
 import PanelShell, { type AreaNav } from "./panel-shell";
 import { salir } from "@/components/owner/salir";
 import { estiloMarca, marcaPorSlug } from "@/lib/marca";
@@ -90,7 +91,7 @@ export default async function PanelLayout({
     ? "Todas las sedes" : sedes.length === 1 ? `Sede ${sedes[0].name}` : `${sedes.length} sedes`;
 
   return (
-    <div className="tema-estudio min-h-screen bg-cream" style={estiloMarca(marca?.color)}>
+    <div className="tema-estudio ro-workspace min-h-screen bg-cream" style={estiloMarca(marca?.color)}>
       {membership && areas.length === 0 ? (
         <main className="mx-auto max-w-2xl px-6 py-16 text-center" role="alert">
           <h1 className="text-2xl text-ink">Tu acceso está pendiente.</h1>
