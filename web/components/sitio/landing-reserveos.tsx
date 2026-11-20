@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type CSSProperties } from "react";
 import "./reserveos-editorial.css";
 
 type Access = { label: string; href: string };
@@ -96,7 +96,7 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
              <div className="ro-panel-main">
                <div className="ro-panel-head"><h3>Tu estudio, hoy.</h3><span className="ro-pill">EN TIEMPO REAL*</span></div>
                <div className="ro-metrics"><div className="ro-metric"><small>Ocupación</small><strong>87%</strong></div><div className="ro-metric"><small>Reservas</small><strong>42</strong></div><div className="ro-metric"><small>Clases</small><strong>12</strong></div></div>
-               {[{hour:"07:00",title:"Pilates Reformer",coach:"Instructora Sofía",booked:7,capacity:8},{hour:"09:00",title:"Pilates Mat",coach:"Instructora Paula",booked:8,capacity:10},{hour:"18:00",title:"HYROX Training",coach:"Coach Mario",booked:6,capacity:8}].map(s=><div className="ro-class" key={s.hour}><time>{s.hour}</time><div><b>{s.title}</b><span>{s.coach}</span></div><div className="ro-capacity">{s.booked}/{s.capacity}<i style={{"--fill":(s.booked/s.capacity*100)+"%"} as React.CSSProperties}/></div></div>)}
+               {[{hour:"07:00",title:"Pilates Reformer",coach:"Instructora Sofía",booked:7,capacity:8},{hour:"09:00",title:"Pilates Mat",coach:"Instructora Paula",booked:8,capacity:10},{hour:"18:00",title:"HYROX Training",coach:"Coach Mario",booked:6,capacity:8}].map(s=><div className="ro-class" key={s.hour}><time>{s.hour}</time><div><b>{s.title}</b><span>{s.coach}</span></div><div className="ro-capacity">{s.booked}/{s.capacity}<i style={{"--fill":(s.booked/s.capacity*100)+"%"} as CSSProperties}/></div></div>)}
                <p className="ro-panel-foot">* DEMOSTRACIÓN VISUAL CON DATOS SIMULADOS</p>
              </div>
            </div>
