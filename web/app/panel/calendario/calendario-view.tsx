@@ -97,8 +97,8 @@ export default function CalendarioView({
   }
 
   return (
-    <main className="min-h-screen bg-cream">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
+    <main className="ro-screen ro-screen-calendar min-h-screen bg-cream">
+      <header className="ro-screen-header flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div>
           <h1 className="font-serif text-2xl text-ink md:text-3xl">
             Calendario
@@ -230,7 +230,7 @@ export default function CalendarioView({
       <div className="overflow-x-auto px-6 pb-8 md:px-10">
         <Reveal>
           <div
-            className="grid min-w-[720px] gap-px overflow-hidden rounded-2xl border border-ink/10 bg-ink/10"
+            className="ro-calendar-grid grid min-w-[720px] gap-px overflow-hidden rounded-2xl border border-ink/10 bg-ink/10"
             style={{
               gridTemplateColumns: `88px repeat(${recursos.length || 1}, 1fr)`,
             }}
