@@ -68,13 +68,13 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
       <a className="ro-logo" href="#top" aria-label="ReserveOS, inicio">reserveos<span>.</span></a>
       <div className="ro-tag">SISTEMA DE RESERVAS<br/>Y OPERACIÓN</div>
       <nav className="ro-navlinks" aria-label="Principal">
-        <a href="#producto">PRODUCTO</a><a href="#modalidades">MODALIDADES</a><a href="#soluciones">SOLUCIONES</a><a href="#como-empezar">CÓMO EMPEZAR</a>
+        <a href="#producto">PRODUCTO</a><a href="#modalidades">MODALIDADES</a><a href="#soluciones">SOLUCIONES</a><a href="#dia-a-dia">OPERACIÓN</a>
         <a href={acceso.href}>{acceso.label}</a>
         <a className="ro-button" href="/contacto">SOLICITAR DEMO <span aria-hidden="true">↗</span></a>
       </nav>
       <button type="button" className="ro-mobile-nav" onClick={()=>setMenu(!menu)} aria-expanded={menu} aria-controls="ro-menu">{menu?"CERRAR":"MENÚ"}</button>
       {menu&&<nav className="ro-mobile-panel" id="ro-menu" aria-label="Móvil">
-       {[["Producto","#producto"],["Modalidades","#modalidades"],["Soluciones","#soluciones"],["Cómo empezar","#como-empezar"],[acceso.label,acceso.href],["Solicitar demo","/contacto"]].map(([name,href])=><a key={name} href={href} onClick={()=>setMenu(false)}>{name}</a>)}
+       {[["Producto","#producto"],["Modalidades","#modalidades"],["Soluciones","#soluciones"],["Operación","#dia-a-dia"],["Cómo empezar","#como-empezar"],[acceso.label,acceso.href],["Solicitar demo","/contacto"]].map(([name,href])=><a key={name} href={href} onClick={()=>setMenu(false)}>{name}</a>)}
       </nav>}
    </header>
    <main>
@@ -130,11 +130,20 @@ export default function LandingReserveOS({acceso={label:"Entrar",href:"/login"}}
          </div>
        </div>
      </section>
+     <section className="ro-section ro-wrap" id="dia-a-dia">
+       <div className="ro-heading-row"><div><p className="ro-eyebrow">05 / FLUJOS DE TRABAJO REALES</p><h2 className="ro-h2">DEL PRIMER<br/>DÍA AL SIGUIENTE.</h2></div><p className="ro-section-desc">Los módulos no están aislados. Un estudio necesita conectar sus clases, las membresías de sus clientes, la recepción y su caja.</p></div>
+       <div className="ro-journey">
+         <article><span>CLIENTE / 01</span><h3>CONSULTA Y RESERVA.</h3><p>Ve clases y paquetes publicados. Ingresa a su cuenta, elige horario y usa un paquete válido o se apunta a una lista de espera.</p><small>Portal de clienta · /cuenta/clases</small></article>
+         <article><span>ESTUDIO / 02</span><h3>GESTIONA EL DÍA.</h3><p>Recepción controla reservas, cupos, asistencias y check-in con QR. Las instructoras consultan sus clases dentro de su alcance.</p><small>Panel · /panel/hoy · /panel/checkin</small></article>
+         <article><span>ADMINISTRACIÓN / 03</span><h3>CONTROLA LA OPERACIÓN.</h3><p>Revisa paquetes, pagos pendientes, caja, reembolsos, actividad por sede y permisos del equipo.</p><small>Panel · cobros · finanzas · personal</small></article>
+       </div>
+       <p className="ro-disclosure">La disponibilidad de cada módulo depende de los permisos, las funciones contratadas y la configuración de cada estudio. Los pagos online requieren un proveedor habilitado.</p>
+     </section>
      <section className="ro-section ro-wrap" id="como-empezar">
-       <div className="ro-heading-row"><div><p className="ro-eyebrow">05 / IMPLEMENTACIÓN</p><h2 className="ro-h2">EMPEZAR ES<br/>SENCILLO.</h2></div><p className="ro-section-desc">Desde una demostración hasta la configuración de sedes, paquetes, roles y enlace público de reservas.</p></div>
+       <div className="ro-heading-row"><div><p className="ro-eyebrow">06 / IMPLEMENTACIÓN</p><h2 className="ro-h2">EMPEZAR ES<br/>SENCILLO.</h2></div><p className="ro-section-desc">Desde una demostración hasta la configuración de sedes, paquetes, roles y enlace público de reservas.</p></div>
        <div className="ro-process"><article><strong>01</strong><h3>CONVERSEMOS</h3><p>Revisamos tus sedes, tipos de clase, paquetes, personal y necesidades.</p></article><article><strong>02</strong><h3>CONFIGURAMOS</h3><p>Preparamos tu tenant, horarios, sedes, accesos y modalidad de publicación.</p></article><article><strong>03</strong><h3>COMIENZAS</h3><p>Tu equipo gestiona la operación y tus clientes consultan sus paquetes y clases desde el portal.</p></article></div>
      </section>
-     <section className="ro-final ro-wrap" id="contacto"><p className="ro-eyebrow">06 / EL SIGUIENTE PASO</p><h2>HAGAMOS QUE<br/>TODO FLUYA.</h2><p>Cuéntanos sobre tu estudio y te mostramos cómo ReserveOS puede adaptarse a tu operación.</p>
+     <section className="ro-final ro-wrap" id="contacto"><p className="ro-eyebrow">07 / EL SIGUIENTE PASO</p><h2>HAGAMOS QUE<br/>TODO FLUYA.</h2><p>Cuéntanos sobre tu estudio y te mostramos cómo ReserveOS puede adaptarse a tu operación.</p>
        <div className="ro-ctas"><a className="ro-button" href="/contacto">PEDIR UNA DEMOSTRACIÓN ↗</a></div>
        <form className="ro-leadbox" onSubmit={sendLead}><label className="ro-eyebrow" htmlFor="ro-email" style={{alignSelf:"center"}}>O DÉJANOS TU CORREO</label><input id="ro-email" type="email" required value={email} onChange={e=>{setEmail(e.target.value);setLeadState("idle")}} placeholder="tu@estudio.com" aria-label="Correo electrónico"/><button disabled={leadState==="sending"||leadState==="done"} type="submit">{leadState==="sending"?"ENVIANDO…":leadState==="done"?"ENVIADO ✓":"CONTACTARME ↗"}</button></form>
        <p className="ro-leadstatus" aria-live="polite">{leadState==="done"?"Recibimos tu correo. Gracias por tu interés.":leadState==="error"?"No se pudo enviar el formulario. Intenta nuevamente.":""}</p>
