@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getPanelContext, puedeVer } from "@/lib/panel-context";
 import { REPORTES } from "@/lib/reportes-catalogo";
 import { hoyGT, primerDiaMesGT } from "@/lib/fechas";
+import { Anillo, BarrasH, Distribucion, Tendencia } from "@/components/graficas/graficas";
 
 const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
@@ -52,7 +53,6 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
   const grupos = [...new Set(mios.map((r) => r.grupo))];
   const veAsistencia = membership.role !== "contadora";
   const meses = (mensual ?? []) as { mes: string; reservas_real: number }[];
-  const maxMes = Math.max(1, ...meses.map((m) => Number(m.reservas_real)));
 
   return (
     <main className="min-h-screen bg-cream">
@@ -93,52 +93,19 @@ export default async function ReportesPage({ searchParams }: { searchParams: Pro
         </section>
 
         {veAsistencia && <>
-        <section className="grid gap-4 sm:grid-cols-4">
-          {[
-            ["Asistencia", tasa === null ? "—" : `${tasa}%`],
-            ["Asistieron", String(asistieron)],
-            ["No vinieron", String(noShows)],
-            ["Sin marcar", String(sinMarcar)],
-          ].map(([l, v]) => (
-            <div key={l} className="rounded-2xl border border-ink/10 bg-card p-5">
-              <p className="text-xs uppercase tracking-wide text-ink/45">{l}</p>
-              <p className="mt-1 font-serif text-3xl text-ink">{v}</p>
-            </div>
-          ))}
+        <section className="grid gap-4 lg:grid-cols-3">
+          <div className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Asistencia</h2><Anillo pct={tasa} etiqueta={tasa === null ? "Aún sin asistencia marcada" : `${asistieron} de ${marcadas.length} reservas marcadas`} /></div>
+          <div className="border border-line bg-void-card p-5 lg:col-span-2"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Qué pasó con las reservas (30 días)</h2><Distribucion partes={[{ nombre: "Asistieron", valor: asistieron, tono: "bueno" }, { nombre: "No vinieron", valor: noShows, tono: "malo" }, { nombre: "Sin marcar", valor: sinMarcar, tono: "gris" }]} vacio="Aún no hay reservas en estos 30 días." /></div>
         </section>
 
-        <section className="rounded-2xl border border-ink/10 bg-card p-5">
-          <h2 className="text-base font-semibold text-ink">Reservas por mes</h2>
-          <ul className="mt-4 space-y-2">
-            {meses.length === 0 && <li className="text-sm text-ink/50">Sin datos todavía.</li>}
-            {meses.map((m) => (
-              <li key={m.mes} className="flex items-center gap-3 text-sm">
-                <span className="w-20 text-ink/60">{String(m.mes).slice(0, 7)}</span>
-                <span
-                  className="h-3 rounded-full bg-peach"
-                  style={{ width: `${(Number(m.reservas_real) / maxMes) * 100}%`, minWidth: 4 }}
-                />
-                <span className="text-ink">{m.reservas_real}</span>
-              </li>
-            ))}
-          </ul>
+        <section className="border border-line bg-void-card p-5">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Reservas por mes</h2>
+          {meses.length === 0 ? <p className="text-sm text-ink-soft">Sin datos todavía.</p> : <Tendencia puntos={meses.map((m) => ({ etiqueta: String(m.mes).slice(0, 7), valor: Number(m.reservas_real) }))} nombre="Reservas" alto={200} />}
         </section>
 
-        <section className="rounded-2xl border border-ink/10 bg-card p-5">
-          <h2 className="text-base font-semibold text-ink">Ocupación por horario</h2>
-          <ul className="mt-3 divide-y divide-ink/10">
-            {filas.length === 0 && <li className="py-3 text-sm text-ink/50">Sin datos todavía.</li>}
-            {filas.map((f) => (
-              <li key={f.horario_id} className="flex items-center justify-between py-2.5 text-sm">
-                <span className="text-ink">
-                  {DIAS[f.dia_semana]} {f.hora_inicio.slice(0, 5)} · {f.nombre_clase}
-                </span>
-                <span className="text-ink/70">
-                  {f.ocupacion_pct === null ? "—" : `${Math.round(Number(f.ocupacion_pct))}%`} de {f.cupo_maximo} lugares
-                </span>
-              </li>
-            ))}
-          </ul>
+        <section className="border border-line bg-void-card p-5">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Ocupación por horario</h2>
+          <BarrasH max={100} filas={filas.slice(0, 12).map((f) => ({ nombre: f.nombre_clase, detalle: `${DIAS[f.dia_semana].slice(0, 3)} ${f.hora_inicio.slice(0, 5)}`, valor: Number(f.ocupacion_pct ?? 0), texto: f.ocupacion_pct === null ? "—" : `${Math.round(Number(f.ocupacion_pct))}% de ${f.cupo_maximo}` }))} vacio="Sin datos todavía." />
         </section>
         </>}
       </div>

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { BarrasH, Distribucion } from "@/components/graficas/graficas";
 import CampoFecha from "@/lib/campo-fecha";
 import { formatoFecha, hoyGT } from "@/lib/fechas";
 import { borrarCosto, guardarCosto } from "./actions";
@@ -46,6 +47,22 @@ export default function RentabilidadView({ mes, rent, costos, estudios }: { mes:
             <p className={`mt-1 text-2xl font-semibold ${cl}`}>{v}</p>
           </div>
         ))}
+      </section>
+
+      <section aria-label="Gráficas de rentabilidad" className="mt-4 grid gap-4 lg:grid-cols-3">
+        <div className="border border-ink/15 bg-void-card p-5">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">De cada quetzal cobrado</h2>
+          <Distribucion partes={[{ nombre: "Queda como margen", valor: Math.max(Math.round(rent.margen), 0), tono: "bueno" }, { nombre: "Se va en costos", valor: Math.round(Math.min(rent.costos, rent.ingresos)), tono: "malo" }]} vacio="Aún no hay ingresos este mes." />
+          <p className="mt-3 text-[12px] text-ink/60">{rent.margen_pct === null ? "Sin ingresos para calcular el margen." : `Margen: ${Number(rent.margen_pct)}%`}</p>
+        </div>
+        <div className="border border-ink/15 bg-void-card p-5">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Costos por categoría</h2>
+          <BarrasH formato="quetzales" filas={rent.costos_por_categoria.map((c) => ({ nombre: c.categoria, valor: Number(c.monto) }))} vacio="No hay costos este mes." />
+        </div>
+        <div className="border border-ink/15 bg-void-card p-5">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Margen por estudio</h2>
+          <BarrasH formato="quetzales" filas={[...rent.por_estudio].sort((a, b) => b.margen - a.margen).slice(0, 6).map((e) => ({ nombre: e.estudio, valor: Math.max(Number(e.margen), 0), texto: q(Number(e.margen)) }))} vacio="Sin estudios con ingresos." />
+        </div>
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">

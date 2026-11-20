@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getOwnerContext } from "@/lib/owner-context";
 import VerificarBoton from "./verificar-boton";
+import { BarrasH, Distribucion, type Tono } from "@/components/graficas/graficas";
 
 type Estado = "sano" | "degradado" | "caido" | "sin_evidencia";
 type Salud = {
@@ -26,6 +27,11 @@ export default async function SaludPage() {
   const peor = (l: Estado[]): Estado => (l.includes("caido") ? "caido" : l.includes("degradado") ? "degradado" : l.includes("sano") ? "sano" : "sin_evidencia");
   const general = peor([...s.cron.map((c) => c.estado), ...s.checks.map((c) => c.estado), ...s.estudios.filter((e) => e.status === "activo").map((e) => e.estado)]);
 
+  const TONO: Record<Estado, Tono> = { sano: "bueno", degradado: "aviso", caido: "malo", sin_evidencia: "gris" };
+  const contar = (l: Estado[]) => (["sano", "degradado", "caido", "sin_evidencia"] as Estado[]).map((e) => ({ nombre: ETIQ[e], valor: l.filter((x) => x === e).length, tono: TONO[e] }));
+  const activos = s.estudios.filter((e) => e.status === "activo");
+  const erroresPorEstudio = activos.filter((e) => e.errores_24h > 0).sort((a, b) => b.errores_24h - a.errores_24h).slice(0, 6).map((e) => ({ nombre: e.estudio, valor: e.errores_24h }));
+
   return (
     <main className="mx-auto max-w-5xl px-6 py-8 md:px-10">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -39,6 +45,13 @@ export default async function SaludPage() {
         Estado general: <Chip e={general} /> <span className="text-xs text-ink/50">Medido {fecha(s.medido_at)} · última verificación guardada {fecha(s.ultima_verificacion)} · migración {s.ultima_migracion}</span>
       </p>
       <p className="mt-1 text-xs text-ink/50">La prueba sintética de reserva en un estudio de prueba no está activa: todavía no hay un estudio marcado como de pruebas.</p>
+
+      <section aria-label="Resumen visual" className="mt-6 grid gap-4 lg:grid-cols-3">
+        <div className="border border-ink/15 bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Servicios</h2><Distribucion partes={contar(s.checks.map((c) => c.estado))} /></div>
+        <div className="border border-ink/15 bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Tareas automáticas</h2><Distribucion partes={contar(s.cron.map((c) => c.estado))} /></div>
+        <div className="border border-ink/15 bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Estudios activos</h2><Distribucion partes={contar(activos.map((e) => e.estado))} /></div>
+        <div className="border border-ink/15 bg-void-card p-5 lg:col-span-3"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Errores en las últimas 24 horas por estudio</h2><BarrasH filas={erroresPorEstudio} vacio="Ningún estudio con errores en 24 horas." /></div>
+      </section>
 
       <section className="mt-6 rounded-2xl border border-ink/10 bg-void-card p-5" aria-labelledby="chk">
         <h2 id="chk" className="text-base font-semibold">Servicios</h2>

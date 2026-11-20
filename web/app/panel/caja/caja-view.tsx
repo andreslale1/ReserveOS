@@ -1,5 +1,7 @@
 "use client";
 
+import { Distribucion, Tendencia } from "@/components/graficas/graficas";
+
 import { useMemo, useState, useTransition } from "react";
 import { cerrarCaja } from "./actions";
 
@@ -162,6 +164,17 @@ export default function CajaView({
           Total esperado hoy: <span className="text-ink">{fmt(totalEsperado)}</span>
         </p>
 
+        {totalEsperado > 0 && (
+          <div className="mt-4 border border-line bg-void-card p-5">
+            <h3 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Cómo entró el dinero hoy</h3>
+            <Distribucion partes={[
+              { nombre: "Efectivo", valor: Math.round(montoDe(sede.esperado, "efectivo")), tono: "bueno" },
+              { nombre: "Tarjeta", valor: Math.round(montoDe(sede.esperado, "tarjeta_estudio")), tono: "marca" },
+              { nombre: "Transferencia", valor: Math.round(montoDe(sede.esperado, "transferencia")), tono: "gris" },
+            ]} unidad="" />
+          </div>
+        )}
+
         <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink-soft">
           Detalle del día
         </h2>
@@ -257,6 +270,12 @@ export default function CajaView({
               </div>
             </div>
 
+            {sede.historial.length > 1 && (
+              <div className="mt-10 border border-line bg-void-card p-5">
+                <h3 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Diferencia de caja por cierre (contado − sistema)</h3>
+                <Tendencia nombre="Diferencia absoluta" formato="quetzales" alto={170} puntos={[...sede.historial].reverse().map((h) => ({ etiqueta: h.fecha.slice(5), valor: Math.abs(h.efectivo_contado - h.efectivo_sistema + (h.tarjeta_contado - h.tarjeta_sistema) + (h.transferencia_contado - h.transferencia_sistema)) }))} />
+              </div>
+            )}
             <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink-soft">
               Historial de cierres
             </h2>

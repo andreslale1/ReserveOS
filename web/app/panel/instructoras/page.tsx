@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getPanelContext, puedeVer } from "@/lib/panel-context";
 import { DIAS } from "../historial/filtros";
+import { BarrasH, Distribucion } from "@/components/graficas/graficas";
 import ClasesView, { type Clase } from "./clases-view";
 
 type Filtros = { desde?: string; hasta?: string; sede?: string; dia?: string; hora?: string; instructora?: string };
@@ -55,6 +56,17 @@ export default async function InstructorasPage({ searchParams }: { searchParams:
         </form>
         {error && <p role="alert" className="rounded-xl bg-peach-tint px-4 py-3 text-sm text-ink">{error}</p>}
         <p className="text-xs text-ink/55">Sin fechas se muestran los últimos 30 días. Máximo 3 meses por consulta.</p>
+
+        {filas.length > 0 && (
+          <div className="grid gap-4 lg:grid-cols-3">
+            <section className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Clases dictadas</h2>
+              <BarrasH filas={[...filas].sort((a, b) => b.clases - a.clases).map((r) => ({ nombre: r.instructora, valor: r.clases, texto: `${r.clases} · ${r.alumnas} alumnas` }))} /></section>
+            <section className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Ocupación de sus clases</h2>
+              <BarrasH max={100} filas={[...filas].sort((a, b) => Number(b.ocupacion_pct) - Number(a.ocupacion_pct)).map((r) => ({ nombre: r.instructora, valor: Number(r.ocupacion_pct), texto: `${Number(r.ocupacion_pct)}%` }))} /></section>
+            <section className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Qué pasó con las alumnas</h2>
+              <Distribucion partes={[{ nombre: "Asistieron", valor: filas.reduce((a, r) => a + r.asistieron, 0), tono: "bueno" }, { nombre: "No vinieron", valor: filas.reduce((a, r) => a + r.no_vinieron, 0), tono: "malo" }, { nombre: "Sin marcar", valor: filas.reduce((a, r) => a + r.sin_marcar, 0), tono: "gris" }]} /></section>
+          </div>
+        )}
 
         <section className="overflow-x-auto rounded-2xl border border-ink/10 bg-card p-5" aria-label="Resumen por instructora">
           <h2 className="text-base font-semibold text-ink">Resumen</h2>

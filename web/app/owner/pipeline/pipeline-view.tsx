@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
+import { Anillo, BarrasH } from "@/components/graficas/graficas";
 import CampoFecha from "@/lib/campo-fecha";
 import { formatoFecha, hoyGT } from "@/lib/fechas";
 import { cambiarEtapa, crearProspecto, eliminarLead } from "./actions";
@@ -97,6 +98,18 @@ export default function PipelineView({ leads, resumen }: { leads: Lead[]; resume
           + Nuevo prospecto
         </button>
       </div>
+
+      {leads.length > 0 && (() => {
+        const ganados = leads.filter((l) => l.etapa === "ganado").length, perdidos = leads.filter((l) => l.etapa === "perdido").length;
+        const conv = ganados + perdidos > 0 ? Math.round((ganados / (ganados + perdidos)) * 100) : null;
+        const filas = ETAPAS.map(([k, n]) => { const l = leads.filter((x) => x.etapa === k); return { nombre: n, valor: l.length, texto: `${l.length} · ${q(l.reduce((a, x) => a + Number(x.valor_mensual), 0))}/mes` }; });
+        return (
+          <section aria-label="Embudo de ventas" className="mt-6 grid gap-4 lg:grid-cols-3">
+            <div className="border border-ink/15 bg-void-card p-5 lg:col-span-2"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Embudo por etapa</h2><BarrasH filas={filas} /></div>
+            <div className="border border-ink/15 bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Cierre de negocios</h2><Anillo pct={conv} etiqueta={conv === null ? "Aún sin negocios cerrados" : `${ganados} ganados · ${perdidos} perdidos`} /></div>
+          </section>
+        );
+      })()}
 
       {msg && <p role="status" className={`mt-4 rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-lime/15 text-lime" : "bg-ink/10 text-ink"}`}>{msg.texto}</p>}
 

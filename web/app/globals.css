@@ -217,3 +217,6 @@ h1, h2, h3 { font-family: var(--f-display), system-ui, sans-serif; letter-spacin
 .barra-h-in { animation: barra-h-in 520ms cubic-bezier(0.23, 1, 0.32, 1) both; }
 .anillo-in { animation: anillo-in 700ms cubic-bezier(0.23, 1, 0.32, 1) both; }
 @media (prefers-reduced-motion: reduce) { .barra-in, .barra-h-in, .anillo-in { animation: none; } }
+@keyframes barra-x-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.barra-x-in { transform-origin: left; animation: barra-x-in 520ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+@media (prefers-reduced-motion: reduce) { .barra-x-in { animation: none; } }

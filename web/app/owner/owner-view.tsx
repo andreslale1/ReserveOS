@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { crearEstudio } from "./actions";
+import { BarrasH, Distribucion, type Tono } from "@/components/graficas/graficas";
 import { LISTA_GIROS } from "@/lib/giros";
 import { ESTADOS, ESTADO_LABEL, EstadoModal } from "./estado-modal";
 
@@ -204,6 +205,18 @@ export default function OwnerView({ tenants: todos }: { tenants: Tenant[] }) {
           )}
         </div>
       )}
+
+      {tenants.length > 0 && (() => {
+        const TONO: Record<string, Tono> = { activo: "bueno", en_implantacion: "marca", borrador: "gris", pausado: "aviso", suspendido: "malo", cancelado: "gris" };
+        const partes = ESTADOS.map((e) => ({ nombre: ESTADO_LABEL[e]?.label ?? e, valor: tenants.filter((t) => t.status === e).length, tono: TONO[e] ?? "gris" }));
+        const clientas = [...tenants].sort((a, b) => b.clientas_registradas - a.clientas_registradas).slice(0, 6).map((t) => ({ nombre: t.name, valor: t.clientas_registradas, texto: `${t.clientas_registradas} · ${t.clientas_con_acceso} con acceso` }));
+        return (
+          <section aria-label="Resumen de estudios" className="mt-6 grid gap-4 lg:grid-cols-3">
+            <div className="border border-ink/15 bg-void-card p-5 lg:col-span-2"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Estudios por estado · {tenants.length}</h2><Distribucion partes={partes} /></div>
+            <div className="border border-ink/15 bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Clientas por estudio</h2><BarrasH filas={clientas} vacio="Aún no hay clientas." /></div>
+          </section>
+        );
+      })()}
 
       <ul className="mt-8 space-y-2">
         {tenants.map((t) => {

@@ -1,5 +1,7 @@
 "use client";
 
+import { BarrasH, Distribucion } from "@/components/graficas/graficas";
+
 import { useState, useTransition } from "react";
 import { marcarCarritoPerdido, recordarCarrito } from "./actions";
 
@@ -83,6 +85,18 @@ export default function TiendaView({
             </button>
           ))}
         </div>
+
+        {(productos.length > 0 || pedidos.length > 0) && (
+          <div className="mb-6 grid gap-4 lg:grid-cols-3">
+            <section className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Pedidos por estado</h2>
+              <Distribucion partes={[{ nombre: "Pagados o entregados", valor: pedidos.filter((p) => ["pagado", "entregado"].includes(p.estado)).length, tono: "bueno" }, { nombre: "Pendientes", valor: pedidos.filter((p) => ["pendiente", "pendiente_pago", "preparando"].includes(p.estado)).length, tono: "aviso" }, { nombre: "Cancelados", valor: pedidos.filter((p) => ["cancelado", "anulado"].includes(p.estado)).length, tono: "gris" }]} vacio="Aún no hay pedidos." /></section>
+            <section className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Stock por producto</h2>
+              <BarrasH filas={[...productos].map((p) => ({ nombre: p.nombre, valor: p.variantes.reduce((a, v) => a + v.stock, 0) })).sort((a, b) => a.valor - b.valor).slice(0, 6)} vacio="No hay productos." />
+              <p className="mt-3 text-[12px] text-ink-soft">Los de menos stock aparecen primero.</p></section>
+            <section className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Ventas por método de pago</h2>
+              <BarrasH formato="quetzales" filas={Object.entries(pedidos.filter((p) => ["pagado", "entregado"].includes(p.estado)).reduce<Record<string, number>>((a, p) => ({ ...a, [p.metodoPago]: (a[p.metodoPago] ?? 0) + Number(p.total) }), {})).sort((a, b) => b[1] - a[1]).map(([nombre, valor]) => ({ nombre, valor }))} vacio="Aún no hay ventas pagadas." /></section>
+          </div>
+        )}
 
         {tab === "Catálogo" &&
           (productos.length === 0 ? (

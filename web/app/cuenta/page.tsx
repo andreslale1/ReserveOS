@@ -5,6 +5,8 @@ import CheckinButton from "./checkin-button";
 import MiQr from "./mi-qr";
 import ConfirmarReserva from "./confirmar-reserva";
 import { vocabularioDe } from "@/lib/marca";
+import { hoyGT } from "@/lib/fechas";
+import { Anillo, Meta, Tendencia } from "@/components/graficas/graficas";
 
 type Resumen = {
   nombre: string; consentimiento_pendiente: boolean;
@@ -23,6 +25,19 @@ export default async function InicioPage() {
   const qrImagen = codigo ? await QRCode.toDataURL(`RSCK:${codigo}`, { margin: 1, width: 440 }) : null;
   const v = await vocabularioDe(actual!.slug);
   const activos = r.paquetes.filter((p) => p.estado === "activa");
+  // Mi constancia: reservas asistidas o próximas por semana, últimas 8 semanas (solo las mías).
+  const hoyIso = hoyGT();
+  const lunes = (d: Date) => { const x = new Date(d); x.setHours(12, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; };
+  const semana0 = lunes(new Date());
+  const inicio = new Date(semana0); inicio.setDate(inicio.getDate() - 49);
+  const { data: mias } = actual!.cliente_id
+    ? await supabase.from("reservas").select("fecha, asistio").eq("cliente_id", actual!.cliente_id).eq("estado", "confirmada").gte("fecha", inicio.toISOString().slice(0, 10)).lte("fecha", hoyIso)
+    : { data: [] };
+  const semanas = Array.from({ length: 8 }, (_, i) => { const d = new Date(inicio); d.setDate(d.getDate() + i * 7); const f = d.toISOString().slice(0, 10); const g = new Date(d); g.setDate(g.getDate() + 6); const t = g.toISOString().slice(0, 10);
+    return { etiqueta: `${d.getDate()} ${d.toLocaleDateString("es-GT", { month: "short" }).replace(".", "")}`, valor: (mias ?? []).filter((x) => x.fecha >= f && x.fecha <= t && x.asistio !== false).length }; });
+  let racha = 0; for (let i = semanas.length - 1; i >= 0; i--) { if (semanas[i].valor > 0) racha++; else if (i === semanas.length - 1) continue; else break; }
+  const pa = activos[0];
+  const usoPct = pa && pa.totales ? Math.round((pa.usadas / pa.totales) * 100) : null;
   const fmt = (f: string) => new Date(f + "T00:00:00").toLocaleDateString("es-GT", { weekday: "short", day: "numeric", month: "short" });
 
   return (
@@ -54,6 +69,16 @@ export default async function InicioPage() {
           {r.proximas[0] && <p className="mt-1 text-xs text-ink/50">Sede {r.proximas[0].sede}{r.proximas[0].para !== r.nombre ? ` · para ${r.proximas[0].para}` : ""}</p>}
         </Link>
       </div>
+      <section aria-label="Mi progreso" className="grid gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl border border-ink/10 bg-card p-5">
+          <h2 className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-ink/50">Mi paquete</h2>
+          <Anillo pct={usoPct} etiqueta={pa ? (pa.totales === null ? "Clases ilimitadas" : `${pa.usadas} de ${pa.totales} usadas`) : "Sin paquete activo"} />
+        </div>
+        <div className="rounded-2xl border border-ink/10 bg-card p-5 sm:col-span-2">
+          <div className="mb-3 flex items-baseline justify-between"><h2 className="text-[11px] font-semibold uppercase tracking-wider text-ink/50">Mi constancia · 8 semanas</h2>{racha > 0 && <span className="text-xs font-medium text-good">{racha} {racha === 1 ? "semana" : "semanas"} seguidas</span>}</div>
+          <Tendencia puntos={semanas} nombre="Clases" alto={150} />
+        </div>
+      </section>
       <div className="flex flex-wrap gap-3">
         <Link href="/cuenta/clases" className="rounded-full bg-peach px-6 py-3 text-sm font-semibold text-void transition-opacity hover:opacity-90">Reservar {v.clase}</Link>
         <Link href="/cuenta/paquetes" className="rounded-full border border-ink/20 px-6 py-3 text-sm font-semibold text-ink hover:border-peach">Mi paquete</Link>
@@ -98,9 +123,7 @@ export default async function InicioPage() {
             <h2 className="text-sm font-semibold uppercase tracking-wide text-ink/50">Reto del mes</h2>
             <p className="text-sm text-ink/70"><strong className="text-ink">{reto.asistidas}</strong> de {reto.meta} clases</p>
           </div>
-          <div className="mt-3 h-3 overflow-hidden rounded-full bg-ink/10" role="progressbar" aria-valuemin={0} aria-valuemax={reto.meta} aria-valuenow={Math.min(reto.asistidas, reto.meta)} aria-label="Avance del reto mensual">
-            <div className="h-full rounded-full bg-sage" style={{ width: `${reto.porcentaje}%` }} />
-          </div>
+          <div className="mt-3"><Meta actual={reto.asistidas} meta={reto.meta} /></div>
           <p className="mt-2 text-xs text-ink/60">
             {reto.cumplido ? "¡Reto cumplido este mes! 🎉" : reto.por_asistir > 0 ? `Te faltan ${reto.meta - reto.asistidas} clases · ya tienes ${reto.por_asistir} reservada${reto.por_asistir === 1 ? "" : "s"}.` : `Te faltan ${reto.meta - reto.asistidas} clases para completar el reto.`}
           </p>

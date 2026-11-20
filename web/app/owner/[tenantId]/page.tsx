@@ -4,6 +4,7 @@ import PlanModulos from "./plan-modulos";
 import AccesoExcepcional from "./acceso-excepcional";
 import GiroEstudio from "./giro-estudio";
 import { ESTADO_LABEL } from "@/lib/estados-estudio";
+import { Anillo, BarrasH, Distribucion } from "@/components/graficas/graficas";
 
 const DIAS = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 
@@ -82,6 +83,17 @@ export default async function OwnerTenantPage({
       {d.tenant.estado_motivo && d.tenant.status !== "activo" && (
         <p className="mt-3 text-xs text-ink/50">Motivo del estado: {d.tenant.estado_motivo}</p>
       )}
+
+      <section aria-label="Salud del estudio" className="mt-8 grid gap-4 lg:grid-cols-3">
+        <div className="border border-ink/15 bg-void-card p-5"><h3 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Clientas con acceso</h3>
+          <Anillo pct={m.clientas_registradas > 0 ? Math.round((m.clientas_con_acceso / m.clientas_registradas) * 100) : null} etiqueta={`${m.clientas_con_acceso} de ${m.clientas_registradas} ya usan su cuenta`} /></div>
+        <div className="border border-ink/15 bg-void-card p-5"><h3 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Qué requiere atención</h3>
+          <BarrasH filas={[{ nombre: "Pagos pendientes", valor: m.pagos_pendientes }, { nombre: "Tickets abiertos", valor: m.tickets_abiertos }, { nombre: "Errores en 24 h", valor: m.errores_24h }]} /></div>
+        <div className="border border-ink/15 bg-void-card p-5"><h3 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Clases de la semana por día</h3>
+          <BarrasH filas={DIAS.map((n, i) => ({ nombre: n, valor: d.proximas_clases.filter((c) => c.dia_semana === i).length })).filter((x) => x.valor > 0)} vacio="Aún no hay clases programadas." /></div>
+        <div className="border border-ink/15 bg-void-card p-5 lg:col-span-3"><h3 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Equipo por rol · {d.personal.length} personas</h3>
+          <Distribucion partes={Object.entries(d.personal.reduce<Record<string, number>>((a, x) => ({ ...a, [x.role]: (a[x.role] ?? 0) + 1 }), {})).map(([nombre, valor]) => ({ nombre, valor, tono: "marca" as const }))} vacio="Sin equipo registrado." /></div>
+      </section>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-4">
         {[

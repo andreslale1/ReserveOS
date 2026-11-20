@@ -209,8 +209,11 @@ export default function TodayView({
                       >
                         {estado.label}
                       </span>
-                      <span className="w-10 text-right text-xs tabular-nums text-ink/40">
-                        {c.ocupados}/{c.cupoMaximo}
+                      <span className="flex w-24 flex-col items-end gap-1 text-xs tabular-nums text-ink/60">
+                        <span>{c.ocupados}/{c.cupoMaximo}</span>
+                        <span className="h-1.5 w-full bg-ink/[0.08]" role="img" aria-label={`Ocupación ${Math.round((c.ocupados / Math.max(c.cupoMaximo, 1)) * 100)}%`}>
+                          <span className="block h-full barra-h-in" style={{ width: `${Math.min(100, (c.ocupados / Math.max(c.cupoMaximo, 1)) * 100)}%`, background: c.ocupados >= c.cupoMaximo ? "var(--color-bad)" : "var(--color-lime)" }} />
+                        </span>
                       </span>
                     </div>
                   </li>

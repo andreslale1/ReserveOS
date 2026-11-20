@@ -1,3 +1,4 @@
+import FinanzasGraficas from "./finanzas-graficas";
 type Gasto = {
   categoria: string;
   descripcion: string | null;
@@ -33,7 +34,6 @@ export default function FinanzasView({
     month: "long",
     year: "numeric",
   });
-  const pctMeta = meta ? Math.min(100, Math.round((ingresos / meta) * 100)) : null;
 
   return (
     <main className="min-h-screen bg-cream">
@@ -70,22 +70,7 @@ export default function FinanzasView({
           </div>
         </div>
 
-        {meta !== null && (
-          <div className="mt-6 rounded-2xl border border-ink/10 bg-card p-5">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium text-ink">Meta del mes</span>
-              <span className="text-ink-soft">
-                {fmt(ingresos)} / {fmt(meta)} ({pctMeta}%)
-              </span>
-            </div>
-            <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-neutral-tint">
-              <div
-                className="h-full rounded-full bg-peach transition-[width] duration-1000"
-                style={{ width: `${pctMeta}%` }}
-              />
-            </div>
-          </div>
-        )}
+        <FinanzasGraficas ingresos={ingresos} gastos={gastos} meta={meta} lista={listaGastos} sedes={atribucion?.sedes.map((x) => ({ sede: x.sede, neto: Number(x.neto) })) ?? []} diaDelMes={new Date().getDate()} diasDelMes={new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate()} />
 
         <h2 className="mt-10 text-sm font-medium uppercase tracking-wide text-ink-soft">
           Gastos registrados

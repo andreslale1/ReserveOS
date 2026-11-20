@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { BarrasH, Distribucion, Tendencia } from "@/components/graficas/graficas";
 import CampoFecha from "@/lib/campo-fecha";
 import { formatoFecha, hoyGT } from "@/lib/fechas";
 import { anularCobro, crearCobro, generarCobros, guardarSuscripcion, registrarPago, vistaPreviaCobros, type VistaPrevia } from "./actions";
@@ -52,6 +53,11 @@ export default function CobrosView({ resumen, estudios, cobros, planes }: { resu
     ["Por cobrar", q(resumen.por_cobrar), "text-ink"],
     ["En mora", `${q(resumen.en_mora)} · ${resumen.estudios_en_mora} estudio(s)`, resumen.en_mora > 0 ? "text-[#8f2f1f]" : "text-ink"],
   ];
+  const porPeriodo = Object.values(cobros.filter((c) => c.estado !== "anulado").reduce<Record<string, { etiqueta: string; valor: number; extra: number }>>((a, c) => {
+    const k = c.periodo.slice(0, 7); const x = a[k] ?? { etiqueta: k, valor: 0, extra: 0 };
+    x.valor += Number(c.pagado); x.extra += Number(c.saldo); a[k] = x; return a; }, {})).sort((a, b) => a.etiqueta.localeCompare(b.etiqueta)).slice(-8);
+  const porPlan = Object.entries(estudios.filter((e) => e.sub_estado === "activa" && e.precio_mensual).reduce<Record<string, number>>((a, e) => ({ ...a, [e.plan ?? "sin plan"]: (a[e.plan ?? "sin plan"] ?? 0) + Number(e.precio_mensual) }), {})).sort((a, b) => b[1] - a[1]).map(([nombre, valor]) => ({ nombre, valor }));
+  const moras = estudios.filter((e) => e.en_mora > 0).sort((a, b) => b.en_mora - a.en_mora).slice(0, 6).map((e) => ({ nombre: e.nombre, detalle: `${e.dias_mora} días`, valor: Number(e.en_mora) }));
   const lista = cobros.filter((c) => (filtro === "todos" ? c.estado !== "anulado" : filtro === "abierto" ? ["pendiente", "parcial"].includes(c.estado) : c.estado === filtro));
 
   return (
@@ -67,6 +73,26 @@ export default function CobrosView({ resumen, estudios, cobros, planes }: { resu
             <p className={`mt-1 text-2xl font-semibold ${c}`}>{v}</p>
           </div>
         ))}
+      </section>
+
+      <section aria-label="Gráficas de cobros" className="mt-4 grid gap-4 lg:grid-cols-3">
+        <div className="border border-ink/15 bg-void-card p-5 lg:col-span-2">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Cobrado y pendiente por periodo</h2>
+          <Tendencia nombre="Cobrado" nombreExtra="Pendiente" formato="quetzales" alto={190} puntos={porPeriodo} />
+        </div>
+        <div className="border border-ink/15 bg-void-card p-5">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Estado de la cartera</h2>
+          <Distribucion partes={[{ nombre: "Al corriente", valor: Math.max(Math.round(resumen.por_cobrar - resumen.en_mora), 0), tono: "bueno" }, { nombre: "En mora", valor: Math.round(resumen.en_mora), tono: "malo" }, { nombre: "Cobrado este mes", valor: Math.round(resumen.cobrado_mes), tono: "marca" }]} />
+          <p className="mt-3 text-[12px] text-ink/60">Montos en quetzales.</p>
+        </div>
+        <div className="border border-ink/15 bg-void-card p-5">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Ingreso recurrente por plan</h2>
+          <BarrasH formato="quetzales" filas={porPlan} vacio="Aún no hay suscripciones." />
+        </div>
+        <div className="border border-ink/15 bg-void-card p-5 lg:col-span-2">
+          <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Quién debe más y desde cuándo</h2>
+          <BarrasH formato="quetzales" filas={moras} vacio="Nadie está en mora." />
+        </div>
       </section>
 
       <section className="mt-8 rounded-2xl border border-ink/10 bg-void-card p-5">

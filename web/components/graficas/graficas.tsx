@@ -47,6 +47,7 @@ export function Tendencia({ puntos, nombre, nombreExtra, formato: fmt, alto = 22
     setI(Math.min(n - 1, Math.max(0, Math.floor((px - L) / paso))));
   }
   const sel = i !== null ? puntos[i] : null;
+  if (puntos.every((p) => p.valor === 0 && (p.extra ?? 0) === 0)) return <p className="flex items-center justify-center bg-ink/[0.03] text-[13px] text-ink-soft" style={{ height: alto * 0.6 }}>Sin movimiento en este periodo.</p>;
   return (
     <div>
       <div ref={ref} className="relative" onPointerMove={mover} onPointerLeave={() => setI(null)}
@@ -165,6 +166,53 @@ export function Anillo({ pct, etiqueta }: { pct: number | null; etiqueta: string
         <text x="44" y="44" transform="rotate(90 44 44)" textAnchor="middle" dominantBaseline="central" fontSize="20" fontWeight="600" fill="var(--color-ink)">{pct === null ? "—" : `${pct}%`}</text>
       </svg>
       <span className="text-[13px] text-ink-soft">{etiqueta}</span>
+    </div>
+  );
+}
+
+// ── Distribución: una barra 100 % dividida en partes, con leyenda y hover ──
+export type Tono = "marca" | "bueno" | "aviso" | "malo" | "gris";
+const COLOR: Record<Tono, string> = { marca: "var(--color-lime)", bueno: "var(--color-good)", aviso: "var(--color-warn)", malo: "var(--color-bad)", gris: "color-mix(in srgb, var(--color-ink) 28%, transparent)" };
+const ICONO: Record<Tono, string> = { marca: "●", bueno: "✓", aviso: "!", malo: "✕", gris: "–" };
+export function Distribucion({ partes, unidad = "", vacio = "Sin datos todavía." }: { partes: { nombre: string; valor: number; tono: Tono }[]; unidad?: string; vacio?: string }) {
+  const total = partes.reduce((a, p) => a + p.valor, 0);
+  const [h, setH] = useState<number | null>(null);
+  if (total === 0) return <p className="py-6 text-[13px] text-ink-soft">{vacio}</p>;
+  return (
+    <div>
+      <div className="flex h-5 gap-[2px]" role="img" aria-label={partes.map((p) => `${p.nombre}: ${p.valor}`).join(", ")}>
+        {partes.filter((p) => p.valor > 0).map((p) => {
+          const k = partes.indexOf(p);
+          return <div key={p.nombre} onPointerEnter={() => setH(k)} onPointerLeave={() => setH(null)} className="h-full min-w-[3px] rounded-[2px] transition-[opacity,transform] duration-150 barra-x-in" style={{ flex: p.valor, background: COLOR[p.tono], opacity: h === null || h === k ? 1 : 0.4 }} />;
+        })}
+      </div>
+      <ul className="mt-4 grid gap-x-6 gap-y-2 text-[13px] sm:grid-cols-2">
+        {partes.map((p, k) => (
+          <li key={p.nombre} onPointerEnter={() => setH(k)} onPointerLeave={() => setH(null)} className="flex items-center justify-between gap-3">
+            <span className="flex items-center gap-2 text-ink"><i aria-hidden className="grid h-4 w-4 place-items-center rounded-[3px] text-[9px] font-bold leading-none text-white" style={{ background: COLOR[p.tono] }}>{ICONO[p.tono]}</i>{p.nombre}</span>
+            <span className="tabular text-ink"><b>{num(p.valor)}{unidad}</b> <span className="text-ink-soft">· {Math.round((p.valor / total) * 100)}%</span></span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// ── Meta: barra de progreso con marca del ritmo esperado ──
+export function Meta({ actual, meta, esperado, formato }: { actual: number; meta: number; esperado?: number; formato?: Formato }) {
+  const p = meta > 0 ? Math.min(100, (actual / meta) * 100) : 0;
+  const e = esperado !== undefined && meta > 0 ? Math.min(100, (esperado / meta) * 100) : null;
+  return (
+    <div>
+      <div className="flex items-end justify-between gap-3">
+        <span className="tabular text-[34px] font-medium leading-none tracking-[-0.04em]">{Math.round(p)}%</span>
+        <span className="text-[12px] text-ink-soft">{aplicar(formato, actual)} de {aplicar(formato, meta)}</span>
+      </div>
+      <div className="relative mt-3 h-3 bg-ink/[0.06]" role="img" aria-label={`Avance de la meta: ${Math.round(p)}%`}>
+        <div className="h-full origin-left rounded-r-[2px] barra-h-in" style={{ width: `${p}%`, background: MARCA }} />
+        {e !== null && <i className="absolute -top-1 h-5 w-[2px] bg-ink" style={{ left: `${e}%` }} aria-hidden />}
+      </div>
+      {e !== null && <p className="mt-2 text-[12px] text-ink-soft">{p >= e ? "Vas al ritmo o mejor" : "Vas por debajo del ritmo"} · la marca negra es el avance esperado a hoy</p>}
     </div>
   );
 }

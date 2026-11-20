@@ -1,5 +1,7 @@
 "use client";
 
+import { Anillo, Distribucion, Tendencia } from "@/components/graficas/graficas";
+
 import Link from "next/link";
 import CuentaPanel, { type Detalle } from "./cuenta-panel";
 import { useState, useTransition } from "react";
@@ -154,6 +156,24 @@ export default function FichaView({
       </header>
 
       <div className="mx-auto grid max-w-5xl gap-6 px-6 py-8 md:px-10">
+        {reservas.length > 0 && (() => {
+          const conf = reservas.filter((r) => r.estado === "confirmada");
+          const marc = conf.filter((r) => r.asistio !== null);
+          const asist = marc.filter((r) => r.asistio === true).length;
+          const pct = marc.length ? Math.round((asist / marc.length) * 100) : null;
+          const lunes = (iso: string) => { const d = new Date(iso + "T12:00:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.toISOString().slice(0, 10); };
+          const porSemana = conf.reduce<Record<string, number>>((a, r) => { const k = lunes(r.fecha); a[k] = (a[k] ?? 0) + 1; return a; }, {});
+          const claves = Object.keys(porSemana).sort().slice(-12);
+          const puntos = claves.map((k) => ({ etiqueta: `${Number(k.slice(8))}/${Number(k.slice(5, 7))}`, valor: porSemana[k] }));
+          return (
+            <section aria-label="Constancia" className="grid gap-4 lg:grid-cols-3">
+              <div className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Asistencia</h2><Anillo pct={pct} etiqueta={pct === null ? "Aún sin asistencia marcada" : `${asist} de ${marc.length} clases marcadas`} /></div>
+              <div className="border border-line bg-void-card p-5 lg:col-span-2"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Clases por semana</h2><Tendencia puntos={puntos} nombre="Clases" alto={150} /></div>
+              <div className="border border-line bg-void-card p-5 lg:col-span-3"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Qué pasó con sus reservas</h2>
+                <Distribucion partes={[{ nombre: "Asistió", valor: asist, tono: "bueno" }, { nombre: "No vino", valor: marc.length - asist, tono: "malo" }, { nombre: "Sin marcar", valor: conf.length - marc.length, tono: "gris" }, { nombre: "Canceladas", valor: reservas.length - conf.length, tono: "gris" }]} /></div>
+            </section>
+          );
+        })()}
         {msg && (
           <p
             className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}

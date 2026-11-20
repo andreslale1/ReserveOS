@@ -6,6 +6,7 @@ import { Campo, enfocarPrimerError, inputOwner } from "@/components/owner/campo"
 import { Confirmar } from "@/components/owner/confirmar";
 import { EstadoVacio } from "@/components/owner/estado-vacio";
 import { guardarIncidente } from "./actions";
+import { BarrasH, Distribucion } from "@/components/graficas/graficas";
 
 export type Ticket = { id: string; estudio: string; asunto: string; prioridad: string; estado: string; asignado_a: string | null; sla_vence: string; sla_vencido: boolean; created_at: string };
 export type Incidente = { id: string; titulo: string; descripcion: string | null; severidad: string; estado: string; tenant_id: string | null; started_at: string; resolved_at: string | null };
@@ -41,6 +42,15 @@ export default function SoporteView({ tickets, incidentes, estudios, filtro }: {
       {filtro && <p className="mt-2 text-sm text-lime">Filtro activo: {filtro === "sla" ? "tickets con SLA vencido" : filtro === "incidentes" ? "incidentes sin resolver" : "tickets abiertos"}. <Link href="/owner/soporte" className="underline">Quitar filtro</Link></p>}
       <p className="mt-1 text-sm text-ink/70">Casos de los estudios e incidentes. El diagnóstico usa datos mínimos: no se abre la ficha de clientas ni la caja del estudio.</p>
       <div aria-live="polite">{msg && <p role={msg.ok ? "status" : "alert"} className={`mt-4 rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-lime/15 text-lime" : "bg-[#fbe9e5] text-[#8f2f1f]"}`}>{msg.texto}</p>}</div>
+
+      <section aria-label="Resumen de soporte" className="mt-6 grid gap-4 lg:grid-cols-3">
+        <div className="border border-ink/15 bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Tickets abiertos por prioridad</h2>
+          <Distribucion partes={[{ nombre: "Urgente", valor: tickets.filter((t) => abierto(t) && t.prioridad === "urgente").length, tono: "malo" }, { nombre: "Alta", valor: tickets.filter((t) => abierto(t) && t.prioridad === "alta").length, tono: "aviso" }, { nombre: "Normal", valor: tickets.filter((t) => abierto(t) && t.prioridad === "normal").length, tono: "marca" }, { nombre: "Baja", valor: tickets.filter((t) => abierto(t) && t.prioridad === "baja").length, tono: "gris" }]} vacio="No hay tickets abiertos." /></div>
+        <div className="border border-ink/15 bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Cumplimiento del plazo (SLA)</h2>
+          <Distribucion partes={[{ nombre: "En plazo", valor: tickets.filter((t) => abierto(t) && !t.sla_vencido).length, tono: "bueno" }, { nombre: "Plazo vencido", valor: tickets.filter((t) => abierto(t) && t.sla_vencido).length, tono: "malo" }]} vacio="No hay tickets abiertos." /></div>
+        <div className="border border-ink/15 bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink/60">Estudios con más casos</h2>
+          <BarrasH filas={Object.entries(tickets.filter(abierto).reduce<Record<string, number>>((a, t) => ({ ...a, [t.estudio]: (a[t.estudio] ?? 0) + 1 }), {})).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([nombre, valor]) => ({ nombre, valor }))} vacio="Sin casos abiertos." /></div>
+      </section>
 
       <section className="mt-6 rounded-2xl border border-ink/10 bg-void-card p-5">
         <div className="flex items-center justify-between">

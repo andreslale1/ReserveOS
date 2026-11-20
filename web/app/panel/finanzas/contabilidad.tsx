@@ -1,3 +1,4 @@
+import { Distribucion } from "@/components/graficas/graficas";
 type Resumen = { ingresos: number; gastos_fijos: number; gastos_variables: number; gastos_totales: number; margen_contribucion: number; margen_operativo: number; margen_operativo_pct: number | null; ocupacion_pct: number | null; punto_equilibrio_q: number | null; punto_equilibrio_clases: number | null; ocupacion_breakeven_pct: number | null } | null;
 type Iva = { tasa: number; ingresos: number; gastos_operativos: number; debito_fiscal_estimado: number; credito_fiscal_estimado: number; iva_por_pagar_estimado: number } | null;
 type Balance = { total_activos: number; total_pasivos: number; utilidad_acumulada: number; patrimonio_estimado: number } | null;
@@ -20,7 +21,8 @@ function Antiguedad({ titulo, c }: { titulo: string; c: Cuentas }) {
   return (
     <div className="rounded-2xl border border-ink/10 bg-card p-5">
       <h3 className="text-base font-semibold text-ink">{titulo}: {q(c.total)}</h3>
-      <table className="mt-3 w-full text-sm">
+      <div className="mt-3"><Distribucion vacio="Nada pendiente." partes={[{ nombre: "0 a 30 días", valor: Math.round(c.bucket_0_30), tono: "bueno" }, { nombre: "31 a 60 días", valor: Math.round(c.bucket_31_60), tono: "aviso" }, { nombre: "61 a 90 días", valor: Math.round(c.bucket_61_90), tono: "malo" }, { nombre: "Más de 90 días", valor: Math.round(c.bucket_90_mas), tono: "malo" }]} /></div>
+      <table className="mt-4 w-full text-sm">
         <caption className="sr-only">Antigüedad de {titulo.toLowerCase()}</caption>
         <thead className="text-left text-xs uppercase text-ink-soft"><tr><th className="py-1">Antigüedad</th><th className="py-1 text-right">Monto</th></tr></thead>
         <tbody className="divide-y divide-ink/10">
@@ -46,7 +48,7 @@ export default function Contabilidad({ resumen, iva, balance, cxc, cxp, gastos }
             <Card t="Ingreso confirmado" v={q(resumen.ingresos)} />
             <Card t="Gastos fijos / variables" v={`${q(resumen.gastos_fijos)} / ${q(resumen.gastos_variables)}`} />
             <Card t="Margen operativo" v={q(resumen.margen_operativo)} s={resumen.margen_operativo_pct === null ? undefined : `${(resumen.margen_operativo_pct * 100).toFixed(1)}% del ingreso`} />
-            <Card t="Ocupación" v={resumen.ocupacion_pct === null ? "—" : `${resumen.ocupacion_pct}%`} s={resumen.ocupacion_breakeven_pct ? `Equilibrio: ${resumen.ocupacion_breakeven_pct}%` : undefined} />
+            <Card t="Ocupación" v={resumen.ocupacion_pct === null ? "—" : `${Math.round(Number(resumen.ocupacion_pct) * 100)}%`} s={resumen.ocupacion_breakeven_pct ? `Equilibrio: ${Math.round(Number(resumen.ocupacion_breakeven_pct) * 100)}%` : undefined} />
             <Card t="Punto de equilibrio" v={q(resumen.punto_equilibrio_q)} s={resumen.punto_equilibrio_clases ? `${Math.ceil(Number(resumen.punto_equilibrio_clases))} clases al mes` : undefined} />
           </div>
         </section>

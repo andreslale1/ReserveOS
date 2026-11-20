@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { EnlaceDescarga } from "@/components/enlace-descarga";
 import { useMemo, useState, useTransition } from "react";
+import { BarrasH, Distribucion } from "@/components/graficas/graficas";
 import { crearCliente, crearInvitacionClienta, obtenerDetalleCliente } from "./actions";
 
 type Fila = {
@@ -105,6 +106,22 @@ export default function ClientesView({
     });
   }
 
+  // Salud de la cartera: dónde está cada persona respecto a su paquete (se recalcula solo con la lista).
+  const cartera = useMemo(() => {
+    const hoy = new Date().toISOString().slice(0, 10);
+    // eslint-disable-next-line react-hooks/purity -- la fecha de hoy es lo que se quiere
+    const en7 = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    let vigente = 0, porVencer = 0, pendiente = 0, sinPaquete = 0, vencida = 0;
+    for (const c of clientes) {
+      if (c.estadoMembresia === "activa" && (c.vencimiento === null || c.vencimiento >= hoy)) { if (c.vencimiento !== null && c.vencimiento <= en7) porVencer++; else vigente++; }
+      else if (c.estadoMembresia === "pendiente_pago") pendiente++;
+      else if (c.estadoMembresia === "sin_paquete") sinPaquete++;
+      else vencida++;
+    }
+    const top = [...clientes].filter((c) => c.ltv > 0).sort((a, b) => b.ltv - a.ltv).slice(0, 5);
+    return { vigente, porVencer, pendiente, sinPaquete, vencida, top };
+  }, [clientes]);
+
   const filtradas = useMemo(() => {
     if (filtro === "Activas") {
       return clientes.filter((c) => c.estadoMembresia === "activa");
@@ -152,6 +169,26 @@ export default function ClientesView({
       </header>
 
       <div className="mx-auto max-w-5xl px-6 py-8 md:px-10">
+        {clientes.length > 0 && (
+          <div className="mb-6 grid gap-4 lg:grid-cols-3">
+            <section className="border border-line bg-void-card p-5 lg:col-span-2">
+              <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Salud de la cartera · {clientes.length} personas</h2>
+              <Distribucion partes={[
+                { nombre: "Con paquete vigente", valor: cartera.vigente, tono: "bueno" },
+                { nombre: "Vence en 7 días", valor: cartera.porVencer, tono: "aviso" },
+                { nombre: "Pago pendiente", valor: cartera.pendiente, tono: "marca" },
+                { nombre: "Paquete vencido", valor: cartera.vencida, tono: "malo" },
+                { nombre: "Sin paquete", valor: cartera.sinPaquete, tono: "gris" },
+              ]} />
+            </section>
+            {puedeExportar && (
+              <section className="border border-line bg-void-card p-5">
+                <h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Quienes más han comprado</h2>
+                <BarrasH formato="quetzales" filas={cartera.top.map((c) => ({ nombre: c.nombre, valor: c.ltv }))} vacio="Aún no hay compras." />
+              </section>
+            )}
+          </div>
+        )}
         {mostrarAlta && (
           <div className="mb-6 grid gap-4 rounded-2xl border border-ink/10 bg-card p-5 sm:grid-cols-2">
             <label className="text-sm text-ink/60">

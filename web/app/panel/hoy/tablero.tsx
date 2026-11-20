@@ -39,7 +39,8 @@ export default function Tablero({ datos, dias, sedeId, sedes }: { datos: Datos; 
   const semanasIng = datos.semanas.map((s) => ({ etiqueta: corto(s.desde), valor: s.ingreso ?? 0 }));
   const semanasNuevos = datos.semanas.map((s) => ({ etiqueta: corto(s.desde), valor: s.nuevos }));
   const clases = datos.clases.filter((c) => c.reservas > 0).slice(0, 6).map((c) => ({ nombre: c.nombre, detalle: `${DIA[c.dia]} ${c.hora}`, valor: c.pct, texto: `${c.pct}% · ${c.reservas}/${c.lugares}` }));
-  const carriles = datos.carriles.map((c) => ({ nombre: c.nombre, valor: c.n }));
+  // Con varias sedes cada una tiene su «Carril 1»: se suman por nombre para que la lista no se repita.
+  const carriles = Object.entries(datos.carriles.reduce<Record<string, number>>((a, c) => ({ ...a, [c.nombre]: (a[c.nombre] ?? 0) + c.n }), {})).map(([nombre, valor]) => ({ nombre, valor }));
   const sinDatos = t.reservas === 0 && t.canceladas === 0 && t.nuevos === 0;
 
   return (
@@ -89,7 +90,7 @@ export default function Tablero({ datos, dias, sedeId, sedes }: { datos: Datos; 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <Tarjeta titulo="Cuándo se llena" ancho="lg:col-span-2"><Calor celdas={datos.calor} /></Tarjeta>
         {carriles.length > 0
-          ? <Tarjeta titulo="Uso de carriles"><BarrasH filas={carriles} /></Tarjeta>
+          ? <Tarjeta titulo={sedes.length > 1 && !sedeId ? "Uso de carriles · todas las sedes" : "Uso de carriles"}><BarrasH filas={carriles} /></Tarjeta>
           : datos.finanzas
             ? <Tarjeta titulo="Ingreso por semana"><Tendencia puntos={semanasIng} nombre="Ingreso" formato="quetzales" alto={190} /></Tarjeta>
             : <Tarjeta titulo="Clientes nuevos por semana"><Tendencia puntos={semanasNuevos} nombre="Nuevos" alto={190} /></Tarjeta>}

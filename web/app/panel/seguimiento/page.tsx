@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { BarrasH, Distribucion } from "@/components/graficas/graficas";
 import { getPanelContext, puedeVer, rutaHabilitada } from "@/lib/panel-context";
 
 type Fuga = {
@@ -49,6 +50,12 @@ export default async function SeguimientoPage() {
         <p className="mt-1 text-sm text-ink/60">A quién contactar hoy</p>
       </header>
       <div className="mx-auto grid max-w-4xl gap-6 px-6 py-8 md:px-10">
+        <div className="grid gap-4 md:grid-cols-2">
+          <section className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Riesgo de fuga por días sin reservar</h2>
+            <Distribucion vacio="Nadie en riesgo por ahora." partes={[{ nombre: "14 a 21 días", valor: enRiesgo.filter((c) => c.dias_sin_reservar <= 21).length, tono: "aviso" }, { nombre: "22 a 30 días", valor: enRiesgo.filter((c) => c.dias_sin_reservar > 21 && c.dias_sin_reservar <= 30).length, tono: "malo" }, { nombre: "Más de 30 días", valor: enRiesgo.filter((c) => c.dias_sin_reservar > 30).length, tono: "gris" }]} /></section>
+          <section className="border border-line bg-void-card p-5"><h2 className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-soft">Qué hay que atender</h2>
+            <BarrasH filas={[{ nombre: "En riesgo de irse", valor: enRiesgo.length }, { nombre: "Paquetes por vencer", valor: vencen.length }, { nombre: "Consentimiento pendiente", valor: sinConsentimiento.length }]} /></section>
+        </div>
         <Lista titulo="En riesgo de irse (14+ días sin reservar)" vacio="Nadie en riesgo por ahora.">
           {enRiesgo.map((c) => (
             <li key={c.cliente_id} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
