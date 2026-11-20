@@ -105,11 +105,11 @@ export function OwnerShell({ rol, nombre, children }: { rol: string; nombre: str
   );
 
   return (
-    <div className="min-h-screen bg-void text-ink lg:flex">
+    <div className="ro-workspace ro-workspace-owner min-h-screen bg-void text-ink lg:flex">
       <a href="#contenido" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[60] focus:rounded focus:bg-lime focus:px-3 focus:py-2 focus:text-void">Saltar al contenido</a>
 
       {/* Barra superior (móvil y tablet) */}
-      <header className="sticky top-0 z-40 flex items-center gap-3 border-b border-ink/15 bg-void-card px-4 py-3 lg:hidden">
+      <header className="ro-workspace-bar sticky top-0 z-40 flex items-center gap-3 border-b border-ink/15 bg-void-card px-4 py-3 lg:hidden">
         <button type="button" aria-expanded={menu} aria-controls="owner-menu-movil" aria-label={menu ? "Cerrar menú" : "Abrir menú"} onClick={() => setMenu(!menu)}
           className="flex h-10 w-10 items-center justify-center rounded-lg border border-ink/25 text-ink focus-visible:ring-2 focus-visible:ring-lime/70">
           <span aria-hidden className="text-lg leading-none">{menu ? "✕" : "☰"}</span>
@@ -126,7 +126,7 @@ export function OwnerShell({ rol, nombre, children }: { rol: string; nombre: str
       )}
 
       {/* Barra lateral (escritorio) */}
-      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-5 overflow-y-auto border-r border-ink/15 bg-void-card p-4 lg:flex">
+      <aside className="ro-workspace-side sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-5 overflow-y-auto border-r border-ink/15 bg-void-card p-4 lg:flex">
         <Link href="/owner/direccion" className="flex items-center gap-3 px-2 pt-1">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-lime text-sm font-black text-void" aria-hidden>R</span>
           <span className="text-sm font-semibold">ReserveOS · Operador</span>
@@ -148,7 +148,17 @@ export function OwnerShell({ rol, nombre, children }: { rol: string; nombre: str
 
       <div className="min-w-0 flex-1">
         <Breadcrumbs />
-        <div id="contenido" tabIndex={-1}>{children}</div>
+        <section className="ro-workspace-heading ro-workspace-masthead" aria-label="Sección de la consola">
+          <div>
+            <span className="ro-workspace-eyebrow">RESERVEOS / CONSOLA DE PLATAFORMA / {(NOMBRES_RUTA[primero] ?? "ESTUDIOS").toUpperCase()}</span>
+            <h1 className="ro-workspace-title">{NOMBRES_RUTA[primero] ?? "Estudios"}</h1>
+            <p className="ro-workspace-subtitle">Gestión central · {rol} · {nombre}</p>
+          </div>
+          <nav className="ro-workspace-quick" aria-label="Accesos rápidos autorizados">
+            {grupos.flatMap(g=>g.enlaces).filter(l=>!activa(l.href)).slice(0,3).map(l=><Link href={l.href} key={l.href}>{l.label} <span aria-hidden="true">↗</span></Link>)}
+          </nav>
+        </section>
+        <div className="ro-route-content" id="contenido" tabIndex={-1} key={ruta}>{children}</div>
       </div>
     </div>
   );
