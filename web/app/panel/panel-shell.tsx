@@ -17,7 +17,7 @@ export default function PanelShell({
   const ruta = usePathname() ?? "";
   // El cajón se cierra solo al cambiar de ruta: se guarda la ruta en la que se abrió.
   const [abiertoEn, setAbiertoEn] = useState<string | null>(null);
-  const [moduloExpandido, setModuloExpandido] = useState<string | null>(null);
+  const [expansion, setExpansion] = useState<{ ruta: string; id: string } | null>(null);
   const abierto = abiertoEn === ruta;
   const setAbierto = (v: boolean) => setAbiertoEn(v ? ruta : null);
 
@@ -47,7 +47,8 @@ export default function PanelShell({
     <nav aria-label="Módulos del panel" className="flex flex-col gap-1">
       {areas.map((a) => {
         const on = a.id === areaActiva?.id;
-        const expandido = moduloExpandido === a.id || (moduloExpandido === null && on);
+        const elegido = expansion?.ruta === ruta ? expansion.id : null;
+        const expandido = elegido === a.id || (elegido === null && on);
         const panelId = `modulo-${a.id}`;
         return (
           <div key={a.id} className={`border-b border-line/70 pb-1.5 last:border-b-0 ${on ? "border-lime/40" : ""}`}>
@@ -62,7 +63,7 @@ export default function PanelShell({
               {a.items.length > 1 && (
                 <button type="button" aria-label={`${expandido ? "Contraer" : "Expandir"} pestañas de ${a.titulo}`}
                   aria-expanded={expandido} aria-controls={panelId}
-                  onClick={() => setModuloExpandido(expandido ? "" : a.id)}
+                  onClick={() => setExpansion({ ruta, id: expandido ? "" : a.id })}
                   className="grid h-9 w-9 shrink-0 place-items-center text-ink-soft hover:bg-ink/5 hover:text-ink">
                   <span aria-hidden className={`inline-block text-[14px] transition-transform duration-150 ${expandido ? "rotate-90" : ""}`}>›</span>
                 </button>
