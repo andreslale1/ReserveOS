@@ -72,9 +72,9 @@ export default function TodayView({
     : 0;
 
   return (
-    <main className="min-h-screen bg-cream">
+    <main className="ro-screen ro-screen-today min-h-screen bg-cream">
       {encabezado ?? (
-      <header className="border-b border-ink/10 bg-card px-6 py-6 md:px-10">
+      <header className="ro-screen-header border-b border-ink/10 bg-card px-6 py-6 md:px-10">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-ink/45">
@@ -108,9 +108,9 @@ export default function TodayView({
         </div>
 
         {vista === "semana" && (
-          <ul className="grid gap-3">
+          <ul className="ro-session-list grid gap-3">
             {semana.map((d, i) => (
-              <li key={d.fecha} className="rounded-2xl border border-ink/10 bg-card p-4">
+              <li key={d.fecha} className="ro-session-card rounded-2xl border border-ink/10 bg-card p-4">
                 <div className="flex items-center justify-between">
                   <Link href={`/panel/hoy?vista=dia&f=${d.fecha}`} className="text-sm font-medium capitalize text-ink hover:underline">{DIAS[i]} {Number(d.fecha.slice(8))}{d.fecha === hoy ? " · hoy" : ""}</Link>
                   <span className="text-xs text-ink/50">{d.clases.length} {d.clases.length === 1 ? "clase" : "clases"}</span>
@@ -163,7 +163,7 @@ export default function TodayView({
               const estado = estadoCupo(c.ocupados, c.cupoMaximo);
               return (
                 <Reveal key={c.id} delay={i * 60}>
-                  <li className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-card p-5 shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]">
+                  <li className="ro-session-card flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-ink/10 bg-card p-5 shadow-[0_2px_8px_-4px_rgba(17,17,17,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:shadow-[0_16px_28px_-12px_rgba(17,17,17,0.18)]">
                     <div className="flex items-center gap-5">
                       <div className="w-14 text-center">
                         <p className="font-serif text-lg text-blue">
