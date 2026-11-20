@@ -37,7 +37,7 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="ro-screen ro-client-booking grid gap-4">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-3xl text-ink">Reservar {vocab.clase}</h1>
         <Link href="/cuenta/clases/privadas" className="text-sm text-ink underline">Clases privadas 1 a 1</Link>
@@ -71,10 +71,10 @@ export default function ClasesView({ sedes, sedeId, dias, dia, dependientes, par
       </div>
       {msg && <p className={`rounded-xl px-4 py-3 text-sm ${msg.ok ? "bg-sage-tint text-sage" : "bg-peach-tint text-ink"}`}>{msg.texto}</p>}
 
-      <ul className="grid gap-3">
+      <ul className="ro-session-list grid gap-3">
         {clases.length === 0 && <li className="rounded-2xl border border-ink/10 bg-card p-5 text-sm text-ink/60">No hay {vocab.clases} ese día en esta sede.</li>}
         {clases.map((c) => (
-          <li key={c.id} className="rounded-2xl border border-ink/10 bg-card p-4">
+          <li key={c.id} className="ro-session-card rounded-2xl border border-ink/10 bg-card p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-base font-semibold text-ink">{c.inicio} · {c.nombre}</p>
